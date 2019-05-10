@@ -1,0 +1,154 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Deploy an api service.
+Parameters:
+  StageName:
+    Type: String
+    Default: SANDPIT
+    Description: The API environment
+  ServiceName:
+    Type: String
+    Default: api
+    Description: A name for the service
+  TableName:
+    Type: String
+    Default: bookings
+    Description: A name for the service
+  SubdomainName:
+    Type: String
+    Default: spacenow
+    Description: A name for the service
+  FirstAttributeName:
+    Type: String
+    Default: listingId
+  SecondAttributeName:
+    Type: String
+    Default: bookingId
+  ReadTableThroughputs:
+    Type: Number
+    Default: 1
+  WriteTableThroughputs:
+    Type: Number
+    Default: 1
+
+# NOTE: update this with your service name
+service: !Join ['-', [!Ref SubdomainName,!Ref TableName,!Ref ServiceName]]
+
+# Use the serverless-webpack plugin to transpile ES6
+plugins:
+  - serverless-webpack
+  - serverless-offline
+
+# serverless-webpack configuration
+# Enable auto-packing of external modules
+custom:
+  # Our stage is based on what is passed in when running serverless
+  # commands. Or fallsback to what we have set in the provider section.
+  stage: [!Ref StageName]
+  # Set the table name here so we can use it while testing locally
+  tableName: !Join ['-', [!Ref StageName,!Ref TableName]]
+  # Set our DynamoDB throughput for prod and all other non-prod stages.
+  tableThroughput: [!Ref ReadTableThroughputs]
+  # Load our webpack config
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: [!Ref StageName]
+  # To load environment variables externally
+  # rename env.example to env.yml and uncomment
+  # the following line. Also, make sure to not
+  # commit your env.yml.
+  #
+  #environment: ${file(env.yml):${self:provider.stage}}
+  
+  # These environment variables are made available to our functions
+  # under process.env.
+  # environment:
+  #   tableName: ${self:custom.tableName}
+
+  # 'iamRoleStatements' defines the permission policy for the Lambda function.
+  # In this case Lambda functions are granted with permissions to access DynamoDB.
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      # Restrict our IAM role permissions to
+      # the specific table for the stage
+      Resource:
+        - "Fn::GetAtt": [ DynamoTable, Arn ]
+
+functions:
+  create:
+    handler: core/create.main
+    events:
+      - http:
+          path: bookings
+          method: post
+          cors: true
+          authorizer: aws_iam
+  get:
+    handler: core/get.main
+    events:
+      - http:
+          path: bookings/{id}
+          method: get
+          cors: true
+          authorizer: aws_iam
+  list:
+    handler: core/list.main
+    events:
+      - http:
+          path: bookings
+          method: get
+          cors: true
+          authorizer: aws_iam
+
+# Create our resources with separate CloudFormation templates
+resources:
+  # API Gateway Errors
+  GatewayResponseDefault4XX:
+    Type: 'AWS::ApiGateway::GatewayResponse'
+    Properties:
+      ResponseParameters:
+         gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+         gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+      ResponseType: DEFAULT_4XX
+      RestApiId:
+        Ref: 'ApiGatewayRestApi'
+  GatewayResponseDefault5XX:
+    Type: 'AWS::ApiGateway::GatewayResponse'
+    Properties:
+      ResponseParameters:
+         gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+         gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+      ResponseType: DEFAULT_5XX
+      RestApiId:
+        Ref: 'ApiGatewayRestApi'
+  # DynamoDB
+  DynamoTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: [!Ref TableName]
+      AttributeDefinitions:
+        - AttributeName: [!Ref FirstAttributeName]
+          AttributeType: S
+        - AttributeName: [!Ref SecondAttributeName]
+          AttributeType: S
+      KeySchema:
+        - AttributeName: [!Ref FirstAttributeName]
+          KeyType: HASH
+        - AttributeName: [!Ref SecondAttributeName]
+          KeyType: RANGE
+      # Set the capacity based on the stage
+      ProvisionedThroughput:
+        ReadCapacityUnits: [!Ref ReadTableThroughputs]
+        WriteCapacityUnits: [!Ref WriteTableThroughputs]
