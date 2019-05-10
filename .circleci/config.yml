@@ -46,8 +46,6 @@ jobs:
       - run:
           name: Deploy
           command: |
-            export ACCOUNT_ID=159220020591 #SANDPIT Account
-            source scripts/assume-role.sh
             sls deploy
             # ./scripts/deploy.sh ${AWS_DEFAULT_REGION} ${TARGET_ENV} ${FULL_IMAGE_NAME} ${APP_SLICE}
           no_output_timeout: 15m

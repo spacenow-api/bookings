@@ -6,11 +6,11 @@
   "scripts": {
     "test": "jest"
   },
-  "author": "",
+  "author": "Lucas Nascimento",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/AnomalyInnovations/serverless-nodejs-starter.git"
+    "url": "https://github.com/spacenow-api/booking"
   },
   "devDependencies": {
     "aws-sdk": "^2.451.0",
