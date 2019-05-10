@@ -7,7 +7,7 @@ jobs:
     environment: 
         TARGET_ENV: SANDPIT
 
-    working_directory: /tmp/repo
+    working_directory: ~/repo
 
     steps:
       - checkout
@@ -43,7 +43,7 @@ jobs:
     environment: 
         TARGET_ENV: NONPROD
 
-    working_directory: /tmp/repo
+    working_directory: ~/repo
 
     steps:
       - checkout
@@ -79,7 +79,7 @@ jobs:
     environment: 
         TARGET_ENV: PROD
 
-    working_directory: /tmp/repo
+    working_directory: ~/repo
 
     steps:
       - checkout
