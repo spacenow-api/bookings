@@ -43,11 +43,10 @@ jobs:
     environment: 
         TARGET_ENV: SANDPIT
 
+    working_directory: /tmp/repo
+
     steps:
       - setup_remote_docker
-
-      - attach_workspace:
-        working_directory: /tmp/repo
 
       - restore_cache:
           keys:
