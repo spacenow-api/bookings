@@ -24,7 +24,7 @@ jobs:
           key: v1-dependencies-{{ checksum "yarn.lock" }}
   deploy-dev:
     docker:
-      - image: circleci/python:3.6.1
+      - image: circleci/node:8
     environment:
       AWS_DEFAULT_OUTPUT: json
       TARGET_ENV: SANDPIT
@@ -35,12 +35,6 @@ jobs:
           at: .
       - restore_cache:
           key: v1-awscli
-      - run:
-          name: Install npm
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install npm
       - run:
           name: Install awscli
           command: |
