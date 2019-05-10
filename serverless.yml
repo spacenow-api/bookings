@@ -22,6 +22,7 @@ custom:
   TableThroughputs:
     non-prod: 3
     prod: 5
+    SANDPIT: 1
     default: 1
   TableThroughput: ${self:custom.tableThroughputs.${self:custom.StageName}, self:custom.tableThroughputs.default}
   # Load our webpack config
