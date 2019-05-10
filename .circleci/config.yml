@@ -2,53 +2,107 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:8
+      - image: circleci/node:8.10
+
     working_directory: ~/repo
+
     steps:
       - checkout
-      - setup_remote_docker
+
       # Download and cache dependencies
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "yarn.lock" }}
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
+
       - run:
           name: Install Serverless CLI and dependencies
-          command: yarn --frozen-lockfile
-      - save_cache:
-          name: Save Yarn Package Cache
-          paths:
-            - ~/.cache/yarn
-            - node_modules
-          key: v1-dependencies-{{ checksum "yarn.lock" }}
-  deploy-dev:
-    docker:
-      - image: circleci/node:8
-    environment:
-      AWS_DEFAULT_OUTPUT: json
-      TARGET_ENV: SANDPIT
-      STACK_NAME: ${CIRCLE_BRANCH}
-    steps:
-      - setup_remote_docker
-      - attach_workspace:
-          at: .
-      - restore_cache:
-          key: v1-awscli
-      - run:
-          name: Install awscli
           command: |
             sudo npm i -g serverless
+            npm install
+            sudo apt-get install awscli
+
       - save_cache:
-          key: v1-awscli
           paths:
-            - "venv"
+            - node_modules
+          key: v1-dependencies-
+        
+      # run tests!
+      # - run: 
+      #     name: Run tests with coverage
+      #     command: npm test --coverage
+
       - run:
-          name: Deploy
+          name: Deploy application
           command: |
-            sls deploy
-            # ./scripts/deploy.sh ${AWS_DEFAULT_REGION} ${TARGET_ENV} ${FULL_IMAGE_NAME} ${APP_SLICE}
-          no_output_timeout: 15m
+            export ACCOUNT_ID=159220020591
+            chmod +x scripts/aws-cli-assumerole.sh
+            source scripts/aws-cli-assumerole.sh
+            sls deploy --stage dev
+
+      # - run:
+      #     name: Deploy application
+      #     command: |
+      #       chmod +x scripts/aws-cli-assumerole.sh
+      #       source scripts/aws-cli-assumerole.sh
+      #       sls deploy --stage prod
+
+
+
+
+  # build:
+  #   docker:
+  #     - image: circleci/node:8
+  #   working_directory: ~/repo
+  #   steps:
+  #     - checkout
+  #     - setup_remote_docker
+  #     # Download and cache dependencies
+  #     - restore_cache:
+  #         keys:
+  #         - v1-dependencies-{{ checksum "yarn.lock" }}
+  #         # fallback to using the latest cache if no exact match is found
+  #         - v1-dependencies-
+  #     - run:
+  #         name: Install Serverless CLI and dependencies
+  #         command: yarn --frozen-lockfile
+  #     - save_cache:
+  #         name: Save Yarn Package Cache
+  #         paths:
+  #           - ~/.cache/yarn
+  #           - node_modules
+  #         key: v1-dependencies-{{ checksum "yarn.lock" }}
+  # deploy-dev:
+  #   docker:
+  #     - image: circleci/node:8
+  #   environment:
+  #     AWS_DEFAULT_OUTPUT: json
+  #     TARGET_ENV: SANDPIT
+  #     STACK_NAME: ${CIRCLE_BRANCH}
+  #   steps:
+  #     - setup_remote_docker
+  #     - attach_workspace:
+  #         at: .
+  #     - restore_cache:
+  #         key: v1-awscli
+  #     - run:
+  #         name: Install serverless cli
+  #         command: |
+  #           sudo npm i -g serverless
+  #           sudo apt-get install awscli
+  #     - save_cache:
+  #         key: v1-awscli
+  #         paths:
+  #           - "venv"
+  #     - run:
+  #         name: Deploy
+  #         command: |
+  #           export ACCOUNT_ID=159220020591
+  #           source scripts/assume-role.sh
+  #           sls deploy
+  #           # ./scripts/deploy.sh ${AWS_DEFAULT_REGION} ${TARGET_ENV} ${FULL_IMAGE_NAME} ${APP_SLICE}
+  #         no_output_timeout: 15m
   # deploy-qa:
   #   docker:
   #     - image: circleci/python:3.6.1
