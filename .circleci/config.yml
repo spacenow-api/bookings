@@ -1,41 +1,5 @@
 version: 2
 jobs:
-  build:
-    docker:
-      - image: circleci/node:8.10
-
-    working_directory: ~/repo
-
-    steps:
-      - checkout
-
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "yarn.lock" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-
-      - run:
-          name: Install Serverless CLI and dependencies
-          command: yarn
-
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-
-        
-      # run tests!
-      # - run: 
-      #     name: Run tests with coverage
-      #     command: npm test --coverage
-
-      # - run:
-      #     name: Deploy application
-      #     command: |
-      #       chmod +x scripts/aws-cli-assumerole.sh
-      #       source scripts/aws-cli-assumerole.sh
-      #       sls deploy --stage prod
-
   deploy-dev:
     docker:
       - image: circleci/node:8.10
@@ -43,24 +7,27 @@ jobs:
     environment: 
         TARGET_ENV: SANDPIT
 
-    working_directory: ~/repo
+    working_directory: /tmp/repo
 
     steps:
-      - setup_remote_docker
+      - checkout
 
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "yarn.lock" }}
+          - v1-dependencies-
 
       - run:
           name: Install Serverless CLI and dependencies
-          command: sudo npm i -g serverless
-    
+          command: |
+            yarn
+            sudo npm i -g serverless
+
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-
-
+      
       - run:
           name: Deploy dev application
           command: |
@@ -69,195 +36,116 @@ jobs:
             source scripts/aws-cli-assumerole.sh
             sls deploy --stage ${TARGET_ENV} --region ${AWS_DEFAULT_REGION}
 
+  deploy-non-prod:
+    docker:
+      - image: circleci/node:8.10
 
+    environment: 
+        TARGET_ENV: NONPROD
 
+    working_directory: /tmp/repo
 
+    steps:
+      - checkout
 
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "yarn.lock" }}
+          - v1-dependencies-
 
+      - run:
+          name: Install Serverless CLI and dependencies
+          command: |
+            yarn
+            sudo npm i -g serverless
 
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-
+      
+      - run:
+          name: Deploy non prod application
+          command: |
+            export ACCOUNT_ID=211853473677
+            chmod +x scripts/aws-cli-assumerole.sh
+            source scripts/aws-cli-assumerole.sh
+            sls deploy --stage ${TARGET_ENV} --region ${AWS_DEFAULT_REGION}
 
+  deploy-prod:
+    docker:
+      - image: circleci/node:8.10
 
+    environment: 
+        TARGET_ENV: PROD
 
+    working_directory: /tmp/repo
 
+    steps:
+      - checkout
 
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "yarn.lock" }}
+          - v1-dependencies-
 
+      - run:
+          name: Install Serverless CLI and dependencies
+          command: |
+            yarn
+            sudo npm i -g serverless
 
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-
+      
+      - run:
+          name: Deploy prod application
+          command: |
+            export ACCOUNT_ID=985566274543
+            chmod +x scripts/aws-cli-assumerole.sh
+            source scripts/aws-cli-assumerole.sh
+            sls deploy --stage ${TARGET_ENV} --region ${AWS_DEFAULT_REGION}
 
-
-
-
-
-  # build:
-  #   docker:
-  #     - image: circleci/node:8
-  #   working_directory: ~/repo
-  #   steps:
-  #     - checkout
-  #     - setup_remote_docker
-  #     # Download and cache dependencies
-  #     - restore_cache:
-  #         keys:
-  #         - v1-dependencies-{{ checksum "yarn.lock" }}
-  #         # fallback to using the latest cache if no exact match is found
-  #         - v1-dependencies-
-  #     - run:
-  #         name: Install Serverless CLI and dependencies
-  #         command: yarn --frozen-lockfile
-  #     - save_cache:
-  #         name: Save Yarn Package Cache
-  #         paths:
-  #           - ~/.cache/yarn
-  #           - node_modules
-  #         key: v1-dependencies-{{ checksum "yarn.lock" }}
-  # deploy-dev:
-  #   docker:
-  #     - image: circleci/node:8
-  #   environment:
-  #     AWS_DEFAULT_OUTPUT: json
-  #     TARGET_ENV: SANDPIT
-  #     STACK_NAME: ${CIRCLE_BRANCH}
-  #   steps:
-  #     - setup_remote_docker
-  #     - attach_workspace:
-  #         at: .
-  #     - restore_cache:
-  #         key: v1-awscli
-  #     - run:
-  #         name: Install serverless cli
-  #         command: |
-  #           sudo npm i -g serverless
-  #           sudo apt-get install awscli
-  #     - save_cache:
-  #         key: v1-awscli
-  #         paths:
-  #           - "venv"
-  #     - run:
-  #         name: Deploy
-  #         command: |
-  #           export ACCOUNT_ID=159220020591
-  #           source scripts/assume-role.sh
-  #           sls deploy
-  #           # ./scripts/deploy.sh ${AWS_DEFAULT_REGION} ${TARGET_ENV} ${FULL_IMAGE_NAME} ${APP_SLICE}
-  #         no_output_timeout: 15m
-  # deploy-qa:
-  #   docker:
-  #     - image: circleci/python:3.6.1
-  #   environment:
-  #     AWS_DEFAULT_OUTPUT: json
-  #     TARGET_ENV: NONPROD
-  #     STACK_NAME: ${CIRCLE_BRANCH}
-  #   steps:
-  #     - attach_workspace:
-  #         at: .
-  #     - restore_cache:
-  #         key: v1-awscli
-  #     - run:
-  #         name: Install awscli
-  #         command: |
-  #           python3 -m venv venv
-  #           . venv/bin/activate
-  #           pip install awscli
-  #     - save_cache:
-  #         key: v1-awscli
-  #         paths:
-  #           - "venv"
-  #     - run:
-  #         name: Setup common environment variables
-  #         command: |
-  #           echo 'export ECR_REPOSITORY_NAME="${AWS_RESOURCE_NAME_PREFIX}"' >> $BASH_ENV
-  #           echo 'export APP_SLICE="$(echo ${CIRCLE_BRANCH} | tr -dc '[:alnum:]\n\r' | tr '[:upper:]' '[:lower:]' )"' >> $BASH_ENV
-  #           echo 'export IMAGE_TAG="${APP_SLICE}-$(echo $CIRCLE_SHA1 | cut -c -7)"' >> $BASH_ENV
-  #           echo 'export FULL_IMAGE_NAME="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${ECR_REPOSITORY_NAME}:${IMAGE_TAG}"' >> $BASH_ENV
-  #     - run:
-  #         name: Deploy
-  #         command: |
-  #           . venv/bin/activate
-  #           export ACCOUNT_ID=211853473677 #NONPROD Account
-  #           source scripts/assume-role.sh
-  #           ./scripts/deploy.sh $AWS_DEFAULT_REGION ${TARGET_ENV} ${FULL_IMAGE_NAME} ${APP_SLICE}
-  #         no_output_timeout: 15m
-  # deploy-prod:
-  #   docker:
-  #     - image: circleci/python:3.6.1
-  #   environment:
-  #     AWS_DEFAULT_OUTPUT: json
-  #     TARGET_ENV: PROD
-  #     STACK_NAME: ${CIRCLE_BRANCH}
-  #   steps:
-  #     - attach_workspace:
-  #         at: .
-  #     - restore_cache:
-  #         key: v1-awscli
-  #     - run:
-  #         name: Install awscli
-  #         command: |
-  #           python3 -m venv venv
-  #           . venv/bin/activate
-  #           pip install awscli
-  #     - save_cache:
-  #         key: v1-awscli
-  #         paths:
-  #           - "venv"
-  #     - run:
-  #         name: Setup common environment variables
-  #         command: |
-  #           echo 'export ECR_REPOSITORY_NAME="${AWS_RESOURCE_NAME_PREFIX}"' >> $BASH_ENV
-  #           echo 'export APP_SLICE="$(echo ${CIRCLE_BRANCH} | tr -dc '[:alnum:]\n\r' | tr '[:upper:]' '[:lower:]' )"' >> $BASH_ENV
-  #           echo 'export IMAGE_TAG="${APP_SLICE}-$(echo $CIRCLE_SHA1 | cut -c -7)"' >> $BASH_ENV
-  #           echo 'export FULL_IMAGE_NAME="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${ECR_REPOSITORY_NAME}:${IMAGE_TAG}"' >> $BASH_ENV
-  #     - run:
-  #         name: Deploy
-  #         command: |
-  #           . venv/bin/activate
-  #           export ACCOUNT_ID=985566274543 #PROD Account
-  #           source scripts/assume-role.sh
-  #           ./scripts/deploy.sh $AWS_DEFAULT_REGION ${TARGET_ENV} ${FULL_IMAGE_NAME} ${APP_SLICE}
-  #         no_output_timeout: 15m
 workflows:
   version: 2
   build-deploy:
     jobs:
-      - build:
-          filters:
-            branches:
-              only:
-                - master
       - deploy-dev:
-          requires:
-            - build
           filters:
             branches:
               only:
                 - master
-      # - qa-approval:
-      #     type: approval
-      #     requires:
-      #       - deploy-dev
-      #     filters:
-      #       branches:
-      #         only:
-      #           - master
-      # - deploy-qa:
-      #     requires:
-      #       - qa-approval
-      #     filters:
-      #       branches:
-      #         only:
-      #           - master
-      # - prod-approval:
-      #     type: approval
-      #     requires:
-      #       - deploy-qa
-      #     filters:
-      #       branches:
-      #         only:
-      #           - master
-      # - deploy-prod:
-      #     requires:
-      #       - prod-approval
-      #     filters:
-      #       branches:
-      #         only:
-      #           - master
+      - non-prod-approval:
+          type: approval
+          requires:
+            - deploy-dev
+          filters:
+            branches:
+              only:
+                - master
+      - deploy-non-prod:
+          requires:
+            - non-prod-approval
+          filters:
+            branches:
+              only:
+                - master
+      - prod-approval:
+          type: approval
+          requires:
+            - deploy-non-prod
+          filters:
+            branches:
+              only:
+                - master
+      - deploy-prod:
+          requires:
+            - prod-approval
+          filters:
+            branches:
+              only:
+                - master
 
 
