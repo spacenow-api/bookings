@@ -1,5 +1,5 @@
 # NOTE: update this with your service name
-service: ${self:custom.SubdomainNamea}-${self:custom.TableName}-${self:custom.ServiceName}
+service: ${self:custom.SubdomainName}-${self:custom.TableName}-${self:custom.ServiceName}
 
 # Use the serverless-webpack plugin to transpile ES6
 plugins:
