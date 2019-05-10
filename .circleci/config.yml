@@ -36,6 +36,12 @@ jobs:
       - restore_cache:
           key: v1-awscli
       - run:
+          name: Install npm
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install npm
+      - run:
           name: Install awscli
           command: |
             sudo npm i -g serverless
