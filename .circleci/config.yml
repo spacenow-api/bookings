@@ -9,7 +9,6 @@ jobs:
     steps:
       - checkout
 
-      # Download and cache dependencies
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "yarn.lock" }}
@@ -18,10 +17,7 @@ jobs:
 
       - run:
           name: Install Serverless CLI and dependencies
-          command: |
-            sudo npm i -g serverless
-            npm install
-            sudo apt-get install awscli
+          command: yarn
 
       - save_cache:
           paths:
@@ -33,20 +29,60 @@ jobs:
       #     name: Run tests with coverage
       #     command: npm test --coverage
 
-      - run:
-          name: Deploy dev application
-          command: |
-            export ACCOUNT_ID=159220020591
-            chmod +x scripts/aws-cli-assumerole.sh
-            source scripts/aws-cli-assumerole.sh
-            sls deploy --stage SANDPIT
-
       # - run:
       #     name: Deploy application
       #     command: |
       #       chmod +x scripts/aws-cli-assumerole.sh
       #       source scripts/aws-cli-assumerole.sh
       #       sls deploy --stage prod
+
+  deploy-dev:
+    docker:
+      - image: circleci/node:8.10
+
+    environment: 
+        TARGET_ENV: SANDPIT
+    steps:
+      - setup_remote_docker
+
+      - attach_workspace:
+        at: .
+
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "yarn.lock" }}
+
+      - run:
+          name: Install Serverless CLI and dependencies
+          command: sudo npm i -g serverless
+    
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-
+
+      - run:
+          name: Deploy dev application
+          command: |
+            export ACCOUNT_ID=159220020591
+            chmod +x scripts/aws-cli-assumerole.sh
+            source scripts/aws-cli-assumerole.sh
+            sls deploy --stage ${TARGET_ENV} --region ${AWS_DEFAULT_REGION}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -189,6 +225,10 @@ workflows:
       - deploy-dev:
           requires:
             - build
+          filters:
+            branches:
+              only:
+                - master
       # - qa-approval:
       #     type: approval
       #     requires:
