@@ -20,8 +20,9 @@ jobs:
       - run:
           name: Install Serverless CLI and dependencies
           command: |
-            yarn
             sudo npm i -g serverless
+            yarn
+            sudo apt-get install awscli
 
       - save_cache:
           paths:
