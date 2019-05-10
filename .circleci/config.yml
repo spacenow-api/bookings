@@ -34,12 +34,12 @@ jobs:
       #     command: npm test --coverage
 
       - run:
-          name: Deploy application
+          name: Deploy dev application
           command: |
             export ACCOUNT_ID=159220020591
             chmod +x scripts/aws-cli-assumerole.sh
             source scripts/aws-cli-assumerole.sh
-            sls deploy --stage dev
+            sls deploy --stage SANDPIT
 
       # - run:
       #     name: Deploy application
