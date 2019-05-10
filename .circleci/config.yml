@@ -43,7 +43,7 @@ jobs:
     environment: 
         TARGET_ENV: SANDPIT
 
-    working_directory: /tmp/repo
+    working_directory: ~/repo
 
     steps:
       - setup_remote_docker
