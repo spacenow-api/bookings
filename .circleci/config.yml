@@ -5,7 +5,7 @@ jobs:
       - image: circleci/node:8.10
 
     environment: 
-        TARGET_ENV: SANDPIT
+        TARGET_ENV: sandpit
 
     working_directory: ~/repo
 
@@ -42,7 +42,7 @@ jobs:
       - image: circleci/node:8.10
 
     environment: 
-        TARGET_ENV: NONPROD
+        TARGET_ENV: nonprod
 
     working_directory: ~/repo
 
@@ -79,7 +79,7 @@ jobs:
       - image: circleci/node:8.10
 
     environment: 
-        TARGET_ENV: PROD
+        TARGET_ENV: prod
 
     working_directory: ~/repo
 
