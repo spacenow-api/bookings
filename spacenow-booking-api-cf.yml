@@ -91,6 +91,46 @@ functions:
           method: get
           cors: true
           authorizer: aws_iam
+  approve:
+    handler: core/approve.main
+    events:
+      - http:
+          path: bookings/{id}
+          method: put
+          cors: true
+          authorizer: aws_iam
+  cancel:
+    handler: core/cancel.main
+    events:
+      - http:
+          path: bookings/{id}
+          method: put
+          cors: true
+          authorizer: aws_iam
+  complete:
+    handler: core/complete.main
+    events:
+      - http:
+          path: bookings/{id}
+          method: put
+          cors: true
+          authorizer: aws_iam
+  decline:
+    handler: core/decline.main
+    events:
+      - http:
+          path: bookings/{id}
+          method: put
+          cors: true
+          authorizer: aws_iam
+  expire:
+    handler: core/expire.main
+    events:
+      - http:
+          path: bookings/{id}
+          method: put
+          cors: true
+          authorizer: aws_iam
 
 # Create our resources with separate CloudFormation templates
 resources:
