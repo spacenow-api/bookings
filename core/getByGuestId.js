@@ -6,7 +6,7 @@ export const main = async (event, context) => {
   const params = {
     TableName: process.env.tableName,
     Key: {
-      guestId: event.params.guestId,
+      guestId: event.pathParameters.guestId,
     }
   }
 
