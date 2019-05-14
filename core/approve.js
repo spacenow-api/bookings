@@ -1,22 +1,21 @@
-import uuid from "uuid"
-
 import * as dynamoDbLib from "../libs/dynamodb-lib"
 import { success, failure } from "../libs/response-lib"
 
 export async function main(event, context) {
 
-  const data = JSON.parse(event.body)
-
   const params = {
     TableName: process.env.tableName,
     Key: {
-      bookingId: event.pathParameters.bookingId
+      bookingId: event.pathParameters.id
     },
-    UpdateExpression: "SET bookingState = :bookingState, updatedAt = :updatedAt",
+    ExpressionAttributeNames: {
+      '#booking_state': 'state',
+    },
     ExpressionAttributeValues: {
-      ":bookingState": "Approved",
+      ":state": "Approved",
       ":updatedAt": Date.now() || null
     },
+    UpdateExpression: "SET #booking_state = :state, updatedAt = :updatedAt",
     ReturnValues: "ALL_NEW"
   }
 
