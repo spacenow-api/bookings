@@ -16,10 +16,7 @@ export const main = async (event, context) => {
 
   try {
     const result = await dynamoDbLib.call("scan", params);
-    if (result.Item)
-      return success(result.Item)
-    else
-      return failure({ status: false, error: "Booking not found." })
+    return success(result.Items)
   } catch (e) {
     console.log(e)
     return failure({ status: false })
