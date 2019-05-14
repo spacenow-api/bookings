@@ -6,13 +6,9 @@ Resources:
       AttributeDefinitions:
         - AttributeName: ${self:custom.FirstAttributeName}
           AttributeType: S
-        - AttributeName: ${self:custom.SecondAttributeName}
-          AttributeType: S
       KeySchema:
         - AttributeName: ${self:custom.FirstAttributeName}
           KeyType: HASH
-        - AttributeName: ${self:custom.SecondAttributeName}
-          KeyType: RANGE
       # Set the capacity based on the stage
       ProvisionedThroughput:
         ReadCapacityUnits: ${self:custom.TableThroughput}
