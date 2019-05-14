@@ -9,13 +9,13 @@ export async function main(event, context) {
       bookingId: event.pathParameters.id
     },
     ExpressionAttributeNames: {
-      '#booking_state': 'state',
+      '#booking_state': 'bookingState',
     },
     ExpressionAttributeValues: {
-      ":state": "Approved",
+      ":bookingState": "Approved",
       ":updatedAt": Date.now() || null
     },
-    UpdateExpression: "SET #booking_state = :state, updatedAt = :updatedAt",
+    UpdateExpression: "SET #booking_state = :bookingState, updatedAt = :updatedAt",
     ReturnValues: "ALL_NEW"
   }
 
