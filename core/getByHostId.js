@@ -5,7 +5,6 @@ export const main = async (event, context) => {
   
   const params = {
     TableName: process.env.tableName,
-    FilterExpression: "hostId = :hostId",
     KeyConditionExpression: "#hostId = :hostId",
     ExpressionAttributeNames:{
         "#hostId": "hostId"
