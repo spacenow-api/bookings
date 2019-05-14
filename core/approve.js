@@ -10,7 +10,7 @@ export async function main(event, context) {
   const params = {
     TableName: process.env.tableName,
     Key: {
-      listingId: event.requestContext.listingId,
+      listingId: event.listingId,
       bookingId: event.pathParameters.bookingId
     },
     UpdateExpression: "SET bookingState = :bookingState, updatedAt = :updatedAt",

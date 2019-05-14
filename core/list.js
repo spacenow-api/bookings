@@ -7,7 +7,7 @@ export const main = async (event, context) => {
     TableName: process.env.tableName,
     KeyConditionExpression: "listingId = :listingId",
     ExpressionAttributeValues: {
-      ":listingId": event.requestContext.listingId,
+      ":listingId": event.listingId,
     }
   }
 

@@ -1,7 +1,5 @@
 {
-  "requestContext": {
-    "listingId": "31"
-  },
+  "listingId": "31",
   "pathParameters": {
     "bookingId": "c61f26f0-7219-11e9-80f8-bf5bbbfec6a5"
   },

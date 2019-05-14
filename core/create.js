@@ -9,7 +9,7 @@ export const main = async (event, context) => {
   const params = {
     TableName: process.env.tableName,
     Item: {
-      listingId: event.requestContext.listingId,
+      listingId: event.listingId,
       bookingId: uuid.v1(),
       hostId: data.hostId,
       guestId: data.guestId,
