@@ -14,8 +14,8 @@ custom:
   ServiceName: "bookings"
   StageName: ${opt:stage, 'sandpit'}
   SubdomainName: "spacenow"
-  FirstAttributeName: "bookingId"
-  SecondAttributeName: "listingId"
+  FirstAttributeName: "listingId"
+  SecondAttributeName: "bookingId"
   # Set the table name here so we can use it while testing locally
   TableName: ${self:custom.StageName}-${self:custom.ServiceName}
   # Set our DynamoDB throughput for prod and all other non-prod stages.
