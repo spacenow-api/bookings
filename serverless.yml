@@ -5,6 +5,7 @@ service: ${self:custom.SubdomainName}-${self:custom.ServiceName}-api
 plugins:
   - serverless-webpack
   - serverless-offline
+  - serverless-domain-manager
 
 # serverless-webpack configuration
 # Enable auto-packing of external modules
@@ -30,6 +31,11 @@ custom:
   domains:
     default: api.${self:custom.ServiceName}.${self:custom.StageName}.cloud.spacenow.com
     prod: api.${self:custom.ServiceName}.spacenow.com
+  customDomain:
+    domainName: ${self:custom.domains.${self:custom.StageName}, self:custom.domains.default}
+    basePath: ''
+    stage: ${self:custom.StageName}
+    createRoute53Record: true
 
 provider:
   name: aws
