@@ -87,7 +87,15 @@ functions:
     handler: core/getByHostId.main
     events:
       - http:
-          path: bookings/{id}
+          path: bookings
+          method: get
+          cors: true
+          authorizer: aws_iam
+  getByGuestId:
+    handler: core/getByGuestId.main
+    events:
+      - http:
+          path: bookings
           method: get
           cors: true
           authorizer: aws_iam
