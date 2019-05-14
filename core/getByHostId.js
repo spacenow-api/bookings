@@ -20,6 +20,7 @@ export const main = async (event, context) => {
     else
       return failure({ status: false, error: "Booking not found." })
   } catch (e) {
+    console.log(e)
     return failure({ status: false })
   }
 
