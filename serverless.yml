@@ -87,7 +87,7 @@ functions:
     handler: core/getByHostId.main
     events:
       - http:
-          path: bookings
+          path: bookings/byHostId/{id}
           method: get
           cors: true
           authorizer: aws_iam
@@ -95,7 +95,7 @@ functions:
     handler: core/getByGuestId.main
     events:
       - http:
-          path: bookings
+          path: bookings/byGuestId/{id}
           method: get
           cors: true
           authorizer: aws_iam
@@ -111,7 +111,7 @@ functions:
     handler: core/approve.main
     events:
       - http:
-          path: bookings/{id}
+          path: bookings/approve/{id}
           method: put
           cors: true
           authorizer: aws_iam
@@ -119,7 +119,7 @@ functions:
     handler: core/cancel.main
     events:
       - http:
-          path: bookings/{id}
+          path: bookings/cancel/{id}
           method: put
           cors: true
           authorizer: aws_iam
@@ -127,7 +127,7 @@ functions:
     handler: core/complete.main
     events:
       - http:
-          path: bookings/{id}
+          path: bookings/complete/{id}
           method: put
           cors: true
           authorizer: aws_iam
@@ -135,7 +135,7 @@ functions:
     handler: core/decline.main
     events:
       - http:
-          path: bookings/{id}
+          path: bookings/decline/{id}
           method: put
           cors: true
           authorizer: aws_iam
@@ -143,7 +143,7 @@ functions:
     handler: core/expire.main
     events:
       - http:
-          path: bookings/{id}
+          path: bookings/expire/{id}
           method: put
           cors: true
           authorizer: aws_iam

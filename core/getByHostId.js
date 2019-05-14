@@ -10,7 +10,7 @@ export const main = async (event, context) => {
         "#hostId": "hostId"
     },
     ExpressionAttributeValues: {
-      ":hostId": event.hostId
+      ":hostId": event.pathParameters.hostId
     }
   }
 

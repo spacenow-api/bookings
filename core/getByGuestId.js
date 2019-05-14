@@ -5,17 +5,13 @@ export const main = async (event, context) => {
   
   const params = {
     TableName: process.env.tableName,
-    FilterExpression: "#guestId = :guestId",
-    ExpressionAttributeNames:{
-        "#guestId": "guestId"
-    },
-    ExpressionAttributeValues: {
-      ":guestId": event.guestId
+    Key: {
+      guestId: event.params.guestId,
     }
   }
 
   try {
-    const result = await dynamoDbLib.call("scan", params);
+    const result = await dynamoDbLib.call("query", params);
     return success(result.Items)
   } catch (e) {
     console.log(e)
