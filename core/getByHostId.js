@@ -5,11 +5,8 @@ export const main = async (event, context) => {
   
   const params = {
     TableName: process.env.tableName,
-    IndexName: "bookingId-index",
-    ProjectionExpression: "hostId",
-    KeyConditionExpression: "hostId = :hostId",
-    ExpressionAttributeValues: {
-        ":hostId": event.hostId
+    Key: {
+      hostId: event.hostId
     }
   }
 
