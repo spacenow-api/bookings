@@ -5,17 +5,18 @@ export const main = async (event, context) => {
   
   const params = {
     TableName: process.env.tableName,
-    Key: {
-      guestId: event.pathParameters.id,
+    FilterExpression: "#gId = :guestId",
+    ExpressionAttributeNames:{
+        "#gId": "guestId"
+    },
+    ExpressionAttributeValues: {
+      ":guestId": event.pathParameters.id
     }
   }
 
   try {
-    const result = await dynamoDbLib.call("get", params);
-    if (result.Item)
-      return success(result.Item)
-    else
-      return failure({ status: false, error: "Booking not found." })
+    const result = await dynamoDbLib.call("scan", params);
+    return success(result.Items)
   } catch (e) {
     console.log(e)
     return failure({ status: false })
