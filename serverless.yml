@@ -35,7 +35,9 @@ custom:
     domainName: ${self:custom.domains.${self:custom.StageName}, self:custom.domains.default}
     basePath: ''
     stage: ${self:custom.StageName}
+    certificateArn: arn:aws:acm:ap-southeast-2:159220020591:certificate/ec3b5931-c71d-4ddd-8157-d59964d168f2
     createRoute53Record: true
+    endpointType: 'regional'
 
 provider:
   name: aws
@@ -79,7 +81,7 @@ functions:
           path: bookings
           method: post
           cors: true
-          authorizer: aws_iam
+          # authorizer: aws_iam
   get:
     handler: core/get.main
     events:
@@ -87,7 +89,7 @@ functions:
           path: bookings/{id}
           method: get
           cors: true
-          authorizer: aws_iam
+          # authorizer: aws_iam
   getByHostId:
     handler: core/getByHostId.main
     events:
@@ -95,7 +97,7 @@ functions:
           path: bookings/byHostId/{id}
           method: get
           cors: true
-          authorizer: aws_iam
+          # authorizer: aws_iam
   getByGuestId:
     handler: core/getByGuestId.main
     events:
@@ -103,7 +105,7 @@ functions:
           path: bookings/byGuestId/{id}
           method: get
           cors: true
-          authorizer: aws_iam
+          # authorizer: aws_iam
   list:
     handler: core/list.main
     events:
@@ -111,7 +113,7 @@ functions:
           path: bookings
           method: get
           cors: true
-          authorizer: aws_iam
+          # authorizer: aws_iam
   approve:
     handler: core/approve.main
     events:
@@ -119,7 +121,7 @@ functions:
           path: bookings/approve/{id}
           method: put
           cors: true
-          authorizer: aws_iam
+          # authorizer: aws_iam
   cancel:
     handler: core/cancel.main
     events:
@@ -127,7 +129,7 @@ functions:
           path: bookings/cancel/{id}
           method: put
           cors: true
-          authorizer: aws_iam
+          # authorizer: aws_iam
   complete:
     handler: core/complete.main
     events:
@@ -135,7 +137,7 @@ functions:
           path: bookings/complete/{id}
           method: put
           cors: true
-          authorizer: aws_iam
+          # authorizer: aws_iam
   decline:
     handler: core/decline.main
     events:
@@ -143,7 +145,7 @@ functions:
           path: bookings/decline/{id}
           method: put
           cors: true
-          authorizer: aws_iam
+          # authorizer: aws_iam
   expire:
     handler: core/expire.main
     events:
@@ -151,7 +153,7 @@ functions:
           path: bookings/expire/{id}
           method: put
           cors: true
-          authorizer: aws_iam
+          # authorizer: aws_iam
 
 # Create our resources with separate CloudFormation templates
 resources:
