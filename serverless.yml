@@ -57,6 +57,8 @@ provider:
     tableName: ${self:custom.TableName}
     accountId: ${opt:accountId}
     region: ${opt:region, 'ap-southeast-2'}
+    queueName: ${self:custom.SubdomainName}-${self:custom.TableName}
+
 
   # 'iamRoleStatements' defines the permission policy for the Lambda function.
   # In this case Lambda functions are granted with permissions to access DynamoDB.

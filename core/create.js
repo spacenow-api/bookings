@@ -7,7 +7,7 @@ import { success, failure } from "../libs/response-lib"
 export const main = async (event, context) => {
 
   const data = JSON.parse(event.body)
-  const queueUrl = `https://sqs.${process.env.region}.amazonaws.com/${process.env.accountId}/BookingQueue`;
+  const queueUrl = `https://sqs.${process.env.region}.amazonaws.com/${process.env.accountId}/${process.env.queueName}`;
 
   const params = {
     TableName: process.env.tableName,
