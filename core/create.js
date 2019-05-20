@@ -8,12 +8,13 @@ export const main = async (event, context) => {
 
   const data = JSON.parse(event.body)
   const queueUrl = `https://sqs.${process.env.region}.amazonaws.com/${process.env.accountId}/${process.env.queueName}`;
+  const bookingId = uuid.v1();
 
   const params = {
     TableName: process.env.tableName,
     Item: {
       listingId: event.listingId,
-      bookingId: uuid.v1(),
+      bookingId: bookingId,
       hostId: data.hostId,
       guestId: data.guestId,
       reservations: data.reservations,
@@ -39,7 +40,7 @@ export const main = async (event, context) => {
 
   const paramsQueue = {
     QueueUrl: queueUrl,
-    MessageBody: JSON.stringify({ blockedDates: data.reservations })
+    MessageBody: JSON.stringify({ bookingId: bookingId, listingId: event.listingId, blockedDates: data.reservations })
   }
 
   try {
