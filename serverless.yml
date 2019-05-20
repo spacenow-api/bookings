@@ -29,8 +29,8 @@ custom:
     webpackConfig: ./webpack.config.js
     includeModules: true
   domains:
-    default: api.${self:custom.ServiceName}.${self:custom.StageName}.cloud.spacenow.com
-    prod: api.${self:custom.ServiceName}.spacenow.com
+    default: api-${self:custom.ServiceName}.${self:custom.StageName}.cloud.spacenow.com
+    prod: api-${self:custom.ServiceName}.spacenow.com
   customDomain:
     domainName: ${self:custom.domains.${self:custom.StageName}, self:custom.domains.default}
     basePath: ''
