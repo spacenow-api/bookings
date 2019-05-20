@@ -35,7 +35,7 @@ jobs:
             export ACCOUNT_ID=159220020591
             chmod +x scripts/aws-cli-assumerole.sh
             source scripts/aws-cli-assumerole.sh
-            sls deploy --stage ${TARGET_ENV} --region ${AWS_DEFAULT_REGION}
+            sls deploy --stage ${TARGET_ENV} --region ${AWS_DEFAULT_REGION} --accountId ${ACCOUNT_ID}
 
   deploy-non-prod:
     docker:

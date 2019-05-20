@@ -1,10 +1,13 @@
 import uuid from "uuid"
 
 import * as dynamoDbLib from "../libs/dynamodb-lib"
+import * as queueLib from "../libs/queue-lib"
 import { success, failure } from "../libs/response-lib"
 
 export const main = async (event, context) => {
+
   const data = JSON.parse(event.body)
+  const queueUrl = `https://sqs.${process.env.region}.amazonaws.com/${process.env.accountId}/BookingQueue`;
 
   const params = {
     TableName: process.env.tableName,
@@ -34,8 +37,14 @@ export const main = async (event, context) => {
     }
   }
 
+  const paramsQueue = {
+    QueueUrl: queueUrl,
+    blockedDates: data.reservations
+  }
+
   try {
     await dynamoDbLib.call("put", params);
+    await queueLib.call(paramsQueue);
     return success(params.Item);
   } catch (e) {
     console.log(e)

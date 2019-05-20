@@ -2,3 +2,25 @@
   "listingId": "31",
   "body": "{\"hostId\":\"9af8ed30-6017-11e9-9e5e-05148d6daebf\",\"guestId\":\"f0889e50-6056-11e9-9917-7f151ab760a4\",\"reservations\":[\"2019-05-29 10:00:00\"],\"quantity\": 1,\"basePrice\":120,\"fees\":10,\"currency\":\"AUD\",\"guestServiceFee\":12,\"hostServiceFee\":3.6,\"totalPrice\":132,\"confirmationCode\":563245,\"paymentState\":\"completed\",\"bookingState\":\"completed\",\"sourceId\":\"card_1EUnaLEuMfHEpXb5xRbXI6yU\",\"priceType\":\"daily\"}"
 }
+
+
+// {
+//   "listingId": "31",
+//   "body": {
+//         "hostId":"9af8ed30-6017-11e9-9e5e-05148d6daebf",
+//         "guestId":"f0889e50-6056-11e9-9917-7f151ab760a4",
+//         "reservations":["2019-05-29 10:00:00"],
+//         "quantity": 1,
+//         "basePrice":120,
+//         "fees":10,
+//         "currency":"AUD",
+//         "guestServiceFee":12,
+//         "hostServiceFee":3.6,
+//         "totalPrice":132,
+//         "confirmationCode":563245,
+//         "paymentState":"completed",
+//         "bookingState":"completed",
+//         "sourceId":"card_1EUnaLEuMfHEpXb5xRbXI6yU",
+//         "priceType":"daily"
+//     }
+// }

@@ -55,6 +55,8 @@ provider:
   # under process.env.
   environment:
     tableName: ${self:custom.TableName}
+    accountId: ${opt:accountId}
+    region: ${opt:region, 'ap-southeast-2'}
 
   # 'iamRoleStatements' defines the permission policy for the Lambda function.
   # In this case Lambda functions are granted with permissions to access DynamoDB.
