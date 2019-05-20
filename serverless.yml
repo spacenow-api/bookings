@@ -76,6 +76,11 @@ provider:
       # the specific table for the stage
       Resource:
         - "Fn::GetAtt": [ DynamoTable, Arn ]
+    - Effect: "Allow"
+      Action:
+        - "sqs:SendMessage"
+        - "sqs:GetQueueUrl"
+      Resource: "arn:aws:sqs:${self:provider.region}:${opt:accountId}:${self:custom.queueName}"
 
 functions:
   create:
