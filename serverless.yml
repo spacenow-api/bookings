@@ -80,7 +80,7 @@ provider:
       Action:
         - "sqs:SendMessage"
         - "sqs:GetQueueUrl"
-      Resource: "arn:aws:sqs:${self:provider.region}:${opt:accountId}:${self:custom.queueName}"
+      Resource: "arn:aws:sqs:${opt:region}:${opt:accountId}:${self:custom.SubdomainName}-${self:custom.TableName}"
 
 functions:
   create:
