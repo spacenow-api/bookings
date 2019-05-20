@@ -14,26 +14,26 @@ export const main = async (event, context) => {
   const params = {
     TableName: process.env.tableName,
     Item: {
-      listingId: event.listingId,
+      listingId: data.listingId,
       bookingId: bookingId,
-      hostId: data.hostId,
-      guestId: data.guestId,
-      reservations: data.reservations,
-      quantity: data.quantity,
-      basePrice: data.basePrice,
-      fees: data.fees,
-      currency: data.currency,
-      guestServiceFee: data.guestServiceFee,
-      hostServiceFee: data.hostServiceFee,
-      totalPrice: data.totalPrice,
-      confirmationCode: data.confirmationCode,
+      hostId: data.body.hostId,
+      guestId: data.body.guestId,
+      reservations: data.body.reservations,
+      quantity: data.body.quantity,
+      basePrice: data.body.basePrice,
+      fees: data.body.fees,
+      currency: data.body.currency,
+      guestServiceFee: data.body.guestServiceFee,
+      hostServiceFee: data.body.hostServiceFee,
+      totalPrice: data.body.totalPrice,
+      confirmationCode: data.body.confirmationCode,
       paymentState: "Pending",
-      payoutId: data.payoutId,
+      payoutId: data.body.payoutId,
       bookingState: "Pending",
-      paymentMethodId: data.paymentMethodId,
-      subscriptionId: data.subscriptionId,
-      sourceId: data.sourceId,
-      priceType: data.priceType,
+      paymentMethodId: data.body.paymentMethodId,
+      subscriptionId: data.body.subscriptionId,
+      sourceId: data.body.sourceId,
+      priceType: data.body.priceType,
       updatedAt: Date.now(),
       createdAt: Date.now()
     }
@@ -41,7 +41,7 @@ export const main = async (event, context) => {
 
   const paramsQueue = {
     QueueUrl: queueUrl,
-    MessageBody: JSON.stringify({ bookingId: bookingId, listingId: event.listingId, blockedDates: data.reservations })
+    MessageBody: JSON.stringify({ bookingId: bookingId, listingId: data.listingId, blockedDates: data.body.reservations })
   }
 
   try {
