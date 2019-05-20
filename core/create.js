@@ -39,7 +39,9 @@ export const main = async (event, context) => {
 
   const paramsQueue = {
     QueueUrl: queueUrl,
-    blockedDates: data.reservations
+    MessageBody: {
+      blockedDates: data.reservations
+    }
   }
 
   try {
