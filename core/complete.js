@@ -12,7 +12,7 @@ export async function main(event, context) {
       '#booking_state': 'bookingState',
     },
     ExpressionAttributeValues: {
-      ":bookingState": "Completed",
+      ":bookingState": "completed",
       ":updatedAt": Date.now() || null
     },
     UpdateExpression: "SET #booking_state = :bookingState, updatedAt = :updatedAt",

@@ -6,8 +6,7 @@ import { success, failure } from "../libs/response-lib"
 
 export const main = async (event, context) => {
 
-  const data = JSON.parse(event.body)
-  console.log("Data --->>> ", data)
+  const data = JSON.parse(event)
   const queueUrl = `https://sqs.${process.env.region}.amazonaws.com/${process.env.accountId}/${process.env.queueName}`;
   const bookingId = uuid.v1();
 
@@ -27,9 +26,9 @@ export const main = async (event, context) => {
       hostServiceFee: data.body.hostServiceFee,
       totalPrice: data.body.totalPrice,
       confirmationCode: data.body.confirmationCode,
-      paymentState: "Pending",
+      paymentState: "pending",
       payoutId: data.body.payoutId,
-      bookingState: "Pending",
+      bookingState: "pending",
       paymentMethodId: data.body.paymentMethodId,
       subscriptionId: data.body.subscriptionId,
       sourceId: data.body.sourceId,
