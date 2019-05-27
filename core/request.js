@@ -13,7 +13,7 @@ export async function main(event, context) {
       '#paymentState': 'paymentState',
     },
     ExpressionAttributeValues: {
-      ":bookingState": "approved",
+      ":bookingState": "requested",
       ":paymentState": "completed",
       ":updatedAt": Date.now() || null
     },

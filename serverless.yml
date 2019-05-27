@@ -131,6 +131,14 @@ functions:
           method: put
           cors: true
           # authorizer: aws_iam
+  request:
+    handler: core/request.main
+    events:
+      - http:
+          path: bookings/request/{id}
+          method: put
+          cors: true
+          # authorizer: aws_iam
   cancel:
     handler: core/cancel.main
     events:
