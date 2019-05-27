@@ -29,6 +29,7 @@ export const main = async (event, context) => {
       paymentState: "pending",
       payoutId: data.payoutId,
       bookingState: "pending",
+      bookingType: data.bookingType,
       paymentMethodId: data.paymentMethodId,
       subscriptionId: data.subscriptionId,
       sourceId: data.sourceId,
