@@ -6,8 +6,7 @@ import { success, failure } from "../libs/response-lib"
 
 export const main = async (event, context) => {
 
-  console.log("EVENT ===>>> ", event);
-  const data = JSON.parse(event)
+  const data = JSON.parse(event.body)
   const queueUrl = `https://sqs.${process.env.region}.amazonaws.com/${process.env.accountId}/${process.env.queueName}`;
   const bookingId = uuid.v1();
 
