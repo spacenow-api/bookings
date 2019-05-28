@@ -9,16 +9,17 @@ export const main = async event => {
       bookingId: event.pathParameters.id
     },
     ExpressionAttributeValues: {
-      ":updatedAt": Date.now(),
-      ":sourceId": data.sourceId,
-      ":chargeId": data.chargeId,
+      ':updatedAt': Date.now(),
+      ':sourceId': data.sourceId,
+      ':chargeId': data.chargeId
     },
-    UpdateExpression: "SET updatedAt = :updatedAt, sourceId = :sourceId, chargeId = :chargeId",
-    ReturnValues: "ALL_NEW"
-  }
+    UpdateExpression:
+      'SET updatedAt = :updatedAt, sourceId = :sourceId, chargeId = :chargeId',
+    ReturnValues: 'ALL_NEW'
+  };
   try {
-    const bookingObj = await dynamoDbLib.call('update', params);
-    return success({ status: 'updated', data: bookingObj });
+    const { Items } = await dynamoDbLib.call('update', params);
+    return success({ status: 'updated', data: Items });
   } catch (e) {
     return failure({ status: 'error', error: e });
   }
