@@ -5,23 +5,15 @@ const calcTotal = (basePrice, quantity = 1, period, guestFee) => {
 }
 
 const getEndDate = (startDate, period, bookingType) => {
-  var eDate = moment(startDate, "DD-MM-YYYY");
-
+  
   switch(bookingType) {
     case 'daily':
-      eDate.add(period, 'days')
-      break;
+      return moment(startDate).add(period, 'days').format('DD-MM-YYYY');
     case 'weekly':
-      eDate.add(period, 'weeks')
-      break;
+      return moment(startDate).add(period, 'weeks').format('DD-MM-YYYY');
     case 'monthly':
-      eDate.add(period, 'months')
-      break;
+      return moment(startDate).add(period, 'months').format('DD-MM-YYYY');
   }
-
-  console.log("END DATE", eDate);
-
-  return eDate;
 
 }
 
