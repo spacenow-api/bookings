@@ -8,16 +8,12 @@ export const main = async event => {
     Key: {
       bookingId: event.pathParameters.id
     },
-    ExpressionAttributeNames: {
-      '#sourceId': 'sourceId',
-      '#chargeId': 'chargeId',
-    },
     ExpressionAttributeValues: {
       ":updatedAt": Date.now(),
       ":sourceId": data.sourceId,
       ":chargeId": data.chargeId,
     },
-    UpdateExpression: "SET #updatedAt = :updatedAt, #sourceId = :sourceId, #chargeId = :chargeId",
+    UpdateExpression: "SET updatedAt = :updatedAt, sourceId = :sourceId, chargeId = :chargeId",
     ReturnValues: "ALL_NEW"
   }
   try {
