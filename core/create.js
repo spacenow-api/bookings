@@ -16,6 +16,8 @@ export const main = async (event, context) => {
   const hostServiceFee = data.isAbsorvedFee ? 1.1 : 1;
   const endDate = getEndDate(data.reservations[0], data.period, data.bookingType);
   const reservationDates = getDates(data.reservations[0], endDate);
+  const totalPrice = calcTotal(data.basePrice, data.quantity, data.period, guestServiceFee);
+  console.log("TOTAL PRICE", totalPrice);
 
   const params = {
     TableName: process.env.tableName,
@@ -32,7 +34,7 @@ export const main = async (event, context) => {
       currency: data.currency,
       guestServiceFee: guestServiceFee,
       hostServiceFee: hostServiceFee,
-      totalPrice: calcTotal(data.basePrice, data.quantity, data.period, guestServiceFee),
+      totalPrice: totalPrice,
       confirmationCode: confirmationCode,
       paymentState: "pending",
       payoutId: data.payoutId,

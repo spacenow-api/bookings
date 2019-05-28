@@ -19,6 +19,8 @@ const getEndDate = (startDate, period, bookingType) => {
       break;
   }
 
+  console.log("END DATE", eDate);
+
   return eDate;
 
 }
@@ -26,12 +28,16 @@ const getEndDate = (startDate, period, bookingType) => {
 const getDates = (startDate, endDate) => {
 
   var arrDates = new Array();
-  var sDate = new Date(startDate)
+  var sDate = new Date(startDate);
   var eDate = new Date(endDate);
+  
   while (sDate <= eDate) {
-    arrDates.push(sDate)
-    sDate = sDate.addDays(1);
+    arrDates.push(new Date(sDate));
+    sDate.setDate(sDate.getDate() + 1);
   }
+
+  console.log("ARRAY DATES", arrDates);
+
   return arrDates;
 
 }
