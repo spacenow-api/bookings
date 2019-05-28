@@ -95,7 +95,7 @@ functions:
     handler: core/update.main
     events:
       - http:
-          path: bookings
+          path: bookings/{id}
           method: put
           cors: true
           # authorizer: aws_iam
