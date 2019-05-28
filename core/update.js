@@ -18,8 +18,8 @@ export const main = async event => {
     ReturnValues: 'ALL_NEW'
   };
   try {
-    const { Items } = await dynamoDbLib.call('update', params);
-    return success({ status: 'updated', data: Items });
+    const { Attributes } = await dynamoDbLib.call('update', params);
+    return success({ status: 'updated', data: Attributes });
   } catch (e) {
     return failure({ status: 'error', error: e });
   }
