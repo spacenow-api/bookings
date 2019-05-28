@@ -3,7 +3,7 @@ import uuid from "uuid"
 import * as dynamoDbLib from "../libs/dynamodb-lib"
 import * as queueLib from "../libs/queue-lib"
 import { success, failure } from "../libs/response-lib"
-import { calcTotal, getDates } from '../validations'
+import { calcTotal, getDates, getEndDate } from '../validations'
 
 export const main = async (event, context) => {
 
@@ -14,6 +14,8 @@ export const main = async (event, context) => {
   const confirmationCode = Math.floor((100000 + Math.random()) * 900000);
   const guestServiceFee = data.isAbsorvedFee ? 1.035 : 1.135;
   const hostServiceFee = data.isAbsorvedFee ? 1.1 : 1;
+  const endDate = getEndDate(data.reservations[0], data.period, data.bookingType);
+  const reservationDates = getDates(data.reservations[0], endDate);
 
   const params = {
     TableName: process.env.tableName,
@@ -22,7 +24,7 @@ export const main = async (event, context) => {
       bookingId: bookingId,
       hostId: data.hostId,
       guestId: data.guestId,
-      reservations: data.reservations,
+      reservations: reservationDates,
       quantity: data.quantity || 1,
       basePrice: data.basePrice,
       fees: data.fees,
@@ -30,7 +32,7 @@ export const main = async (event, context) => {
       currency: data.currency,
       guestServiceFee: guestServiceFee,
       hostServiceFee: hostServiceFee,
-      totalPrice: calcTotal(data.basePrice, guestServiceFee, data.reservations),
+      totalPrice: calcTotal(data.basePrice, data.quantity, data.period, guestServiceFee),
       confirmationCode: confirmationCode,
       paymentState: "pending",
       payoutId: data.payoutId,
@@ -47,7 +49,7 @@ export const main = async (event, context) => {
 
   const paramsQueue = {
     QueueUrl: queueUrl,
-    MessageBody: JSON.stringify({ bookingId: bookingId, listingId: data.listingId, blockedDates: data.reservations })
+    MessageBody: JSON.stringify({ bookingId: bookingId, listingId: data.listingId, blockedDates: reservationDates })
   }
 
   try {
