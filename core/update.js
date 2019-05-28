@@ -2,7 +2,6 @@ import * as dynamoDbLib from '../libs/dynamodb-lib';
 import { success, failure } from '../libs/response-lib';
 
 export const main = async event => {
-  console.debug(`Booking Update: ${event.pathParameters.id}`);
   const data = JSON.parse(event.body);
   const params = {
     TableName: process.env.tableName,
@@ -22,10 +21,9 @@ export const main = async event => {
     ReturnValues: "ALL_NEW"
   }
   try {
-    await dynamoDbLib.call('update', params);
-    return success({ status: true });
+    const bookingObj = await dynamoDbLib.call('update', params);
+    return success({ status: 'updated', data: bookingObj });
   } catch (e) {
-    console.error(e);
-    return failure({ status: false });
+    return failure({ status: 'error', error: e });
   }
 };
