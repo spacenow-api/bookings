@@ -14,6 +14,7 @@ custom:
   # commands. Or fallsback to what we have set in the provider section.
   ServiceName: "bookings"
   StageName: ${opt:stage, 'sandpit'}
+  StageNameCert: ${opt:stageCert, 'SANDPIT'}
   SubdomainName: "spacenow"
   FirstAttributeName: "bookingId"
   # Set the table name here so we can use it while testing locally
@@ -35,7 +36,8 @@ custom:
     domainName: ${self:custom.domains.${self:custom.StageName}, self:custom.domains.default}
     basePath: ''
     stage: ${self:custom.StageName}
-    certificateArn: arn:aws:acm:ap-southeast-2:159220020591:certificate/ec3b5931-c71d-4ddd-8157-d59964d168f2
+    certificateArn: ${ssm:/${self:custom.StageNameCert}/ACM_CERTIFICATE}
+    # certificateArn: arn:aws:acm:ap-southeast-2:159220020591:certificate/ec3b5931-c71d-4ddd-8157-d59964d168f2
     createRoute53Record: true
     endpointType: 'regional'
 
