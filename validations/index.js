@@ -31,7 +31,7 @@ const getDates = (startDate, endDate) => {
   var eDate = moment(endDate);
   
   while (sDate < eDate) {
-    arrDates.push(sDate.toDate());
+    arrDates.push(sDate.toISOString());
     sDate = sDate.clone().add(1, 'd');
   }
 
