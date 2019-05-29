@@ -8,11 +8,11 @@ const getEndDate = (startDate, period, bookingType) => {
   
   switch(bookingType) {
     case 'daily':
-      return moment(startDate).add(period, 'days').format('DD-MM-YYYY');
+      return moment(startDate).add(period, 'days');
     case 'weekly':
-      return moment(startDate).add(period, 'weeks').format('DD-MM-YYYY');
+      return moment(startDate).add(period, 'weeks');
     case 'monthly':
-      return moment(startDate).add(period, 'months').format('DD-MM-YYYY');
+      return moment(startDate).add(period, 'months');
   }
 
 }
@@ -20,11 +20,11 @@ const getEndDate = (startDate, period, bookingType) => {
 const getDates = (startDate, endDate) => {
 
   var arrDates = [];
-  var sDate = moment(startDate).format('DD-MM-YYYY');
-  var eDate = moment(endDate).format('DD-MM-YYYY');
+  var sDate = moment(startDate);
+  var eDate = moment(endDate);
   
   while (sDate <= eDate) {
-    arrDates.push(sDate.toDate().format('DD-MM-YYYY'));
+    arrDates.push(sDate.toDate());
     sDate = sDate.clone().add(1, 'd');
   }
 
