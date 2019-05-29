@@ -8,24 +8,24 @@ const getEndDate = (startDate, period, bookingType) => {
   
   switch(bookingType) {
     case 'daily':
-      return moment(startDate).add(period, 'days').format('YYYY-MM-DD');
+      return moment(startDate).add(period, 'days').format('DD-MM-YYYY');
     case 'weekly':
-      return moment(startDate).add(period, 'weeks').format('YYYY-MM-DD');
+      return moment(startDate).add(period, 'weeks').format('DD-MM-YYYY');
     case 'monthly':
-      return moment(startDate).add(period, 'months').format('YYYY-MM-DD');
+      return moment(startDate).add(period, 'months').format('DD-MM-YYYY');
   }
 
 }
 
 const getDates = (startDate, endDate) => {
 
-  var arrDates = new Array();
-  var sDate = new Date(startDate);
-  var eDate = new Date(endDate);
+  var arrDates = [];
+  var sDate = moment(startDate).format('DD-MM-YYYY');
+  var eDate = moment(endDate).format('DD-MM-YYYY');
   
   while (sDate <= eDate) {
-    arrDates.push(new Date(sDate));
-    sDate.setDate(sDate.getDate() + 1);
+    arrDates.push(sDate.toDate().format('DD-MM-YYYY'));
+    sDate = sDate.clone().add(1, 'd');
   }
 
   console.log("ARRAY DATES", arrDates);
