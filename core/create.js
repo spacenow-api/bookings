@@ -15,8 +15,8 @@ export const main = async (event, context) => {
   const guestServiceFee = data.isAbsorvedFee ? 1.035 : 1.135;
   const hostServiceFee = data.isAbsorvedFee ? 1.1 : 1;
 
-  const reservationDates;
-  const totalPrice;
+  let reservationDates;
+  let totalPrice;
 
   if (data.priceType === 'daily'){
     reservationDates = data.reservations;
