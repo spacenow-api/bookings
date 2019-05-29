@@ -30,7 +30,7 @@ const getDates = (startDate, endDate) => {
   var sDate = moment(startDate);
   var eDate = moment(endDate);
   
-  while (sDate <= eDate) {
+  while (sDate < eDate) {
     arrDates.push(sDate.toDate());
     sDate = sDate.clone().add(1, 'd');
   }
