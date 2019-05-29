@@ -4,11 +4,11 @@ const calcTotal = (basePrice, quantity = 1, period, guestFee) => {
   return basePrice * quantity * period * guestFee;
 }
 
-const getEndDate = (startDate, period, bookingType) => {
+const getEndDate = (startDate, period, priceType) => {
   
   var eDate;
 
-  switch(bookingType) {
+  switch(priceType) {
     case 'daily':
       eDate = moment(startDate).add(period, 'days');
     break;
@@ -19,8 +19,6 @@ const getEndDate = (startDate, period, bookingType) => {
       eDate = moment(startDate).add(period, 'months');
     break;
   }
-
-  console.log("END DATE GET", eDate)
 
   return eDate;
 
@@ -36,8 +34,6 @@ const getDates = (startDate, endDate) => {
     arrDates.push(sDate.toDate());
     sDate = sDate.clone().add(1, 'd');
   }
-
-  console.log("ARRAY DATES", arrDates);
 
   return arrDates;
 
