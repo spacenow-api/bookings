@@ -14,9 +14,18 @@ export const main = async (event, context) => {
   const confirmationCode = Math.floor((100000 + Math.random()) * 900000);
   const guestServiceFee = data.isAbsorvedFee ? 1.035 : 1.135;
   const hostServiceFee = data.isAbsorvedFee ? 1.1 : 1;
-  const endDate = getEndDate(data.reservations[0], data.period, data.priceType);
-  const reservationDates = getDates(data.reservations[0], endDate);
-  const totalPrice = calcTotal(data.basePrice, data.quantity, data.period, guestServiceFee);
+
+  const reservationDates;
+  const totalPrice;
+
+  if (data.priceType === 'daily'){
+    reservationDates = data.reservations;
+    totalPrice = calcTotal(data.basePrice, data.quantity, reservationDates.length, guestServiceFee);
+  } else {
+    const endDate = getEndDate(data.reservations[0], data.period, data.priceType);
+    reservationDates = getDates(data.reservations[0], endDate);
+    totalPrice = calcTotal(data.basePrice, data.quantity, data.period, guestServiceFee);
+  }
 
   const params = {
     TableName: process.env.tableName,
