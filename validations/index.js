@@ -6,14 +6,23 @@ const calcTotal = (basePrice, quantity = 1, period, guestFee) => {
 
 const getEndDate = (startDate, period, bookingType) => {
   
+  var eDate;
+
   switch(bookingType) {
     case 'daily':
-      return moment(startDate).add(period, 'days');
+      eDate = moment(startDate).add(period, 'days');
+    break;
     case 'weekly':
-      return moment(startDate).add(period, 'weeks');
+      eDate = moment(startDate).add(period, 'weeks');
+    break;
     case 'monthly':
-      return moment(startDate).add(period, 'months');
+      eDate = moment(startDate).add(period, 'months');
+    break;
   }
+
+  console.log("END DATE GET", eDate)
+
+  return eDate;
 
 }
 
