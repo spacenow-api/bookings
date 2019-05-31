@@ -22,11 +22,11 @@ export async function main(event, context) {
   }
 
   try {
-    await dynamoDbLib.call("update", params)
-    return success({ status: true })
+    const { Attributes } = await dynamoDbLib.call("update", params)
+    return success({ status: true, data: Attributes })
   } catch (e) {
     console.log(e)
-    return failure({ status: false })
+    return failure({ status: false, error: e })
   }
 
 }
