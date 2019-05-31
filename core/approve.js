@@ -1,32 +1,38 @@
-import * as dynamoDbLib from "../libs/dynamodb-lib"
-import { success, failure } from "../libs/response-lib"
+import * as dynamoDbLib from '../libs/dynamodb-lib';
+import { success, failure } from '../libs/response-lib';
 
-export async function main(event, context) {
+export async function main(event) {
+  const bookingId = event.pathParameters.id;
+
+  const { Item: bookingObj } = await dynamoDbLib.call('get', {
+    TableName: process.env.tableName,
+    Key: {
+      bookingId: bookingId
+    }
+  });
+
+  const bookingState =
+    bookingObj.bookingType === 'instant' ? 'approved' : 'requested';
 
   const params = {
     TableName: process.env.tableName,
     Key: {
-      bookingId: event.pathParameters.id
-    },
-    ExpressionAttributeNames: {
-      '#booking_state': 'bookingState',
-      '#paymentState': 'paymentState',
+      bookingId: bookingId
     },
     ExpressionAttributeValues: {
-      ":bookingState": "approved",
-      ":paymentState": "completed",
-      ":updatedAt": Date.now() || null
+      ':updatedAt': Date.now(),
+      ':bookingState': bookingState,
+      ':paymentState': 'completed'
     },
-    UpdateExpression: "SET #booking_state = :bookingState, #paymentState = :paymentState, updatedAt = :updatedAt",
-    ReturnValues: "ALL_NEW"
-  }
+    UpdateExpression:
+      'SET bookingState = :bookingState, paymentState = :paymentState, updatedAt = :updatedAt',
+    ReturnValues: 'ALL_NEW'
+  };
 
   try {
-    const { Attributes } = await dynamoDbLib.call("update", params)
-    return success({ status: true, data: Attributes })
+    const { Attributes } = await dynamoDbLib.call('update', params);
+    return success({ status: true, data: Attributes });
   } catch (e) {
-    console.log(e)
-    return failure({ status: false, error: e })
+    return failure({ status: 'error', error: e });
   }
-
 }
