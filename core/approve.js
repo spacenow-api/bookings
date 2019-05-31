@@ -11,8 +11,7 @@ export async function main(event) {
     }
   });
 
-  const bookingState =
-    bookingObj.bookingType === 'instant' ? 'approved' : 'requested';
+  const bookingState = bookingObj.bookingType == 'instant' ? 'approved' : 'requested';
 
   const params = {
     TableName: process.env.tableName,
