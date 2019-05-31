@@ -13,7 +13,7 @@ export const main = async (event, context) => {
 
   const confirmationCode = Math.floor((100000 + Math.random()) * 900000);
   const guestServiceFee = data.isAbsorvedFee ? 1.035 : 1.135;
-  const hostServiceFee = data.isAbsorvedFee ? 1.1 : 1;
+  const hostServiceFee = data.isAbsorvedFee ? 0.1 : 0;
 
   let reservationDates;
   let totalPrice;
