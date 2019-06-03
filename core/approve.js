@@ -4,15 +4,15 @@ import { success, failure } from '../libs/response-lib';
 export async function main(event) {
   const bookingId = event.pathParameters.id;
 
-  const { Item: bookingObj } = await dynamoDbLib.call('get', {
-    TableName: process.env.tableName,
-    Key: {
-      bookingId: bookingId
-    }
-  });
+  // const { Item: bookingObj } = await dynamoDbLib.call('get', {
+  //   TableName: process.env.tableName,
+  //   Key: {
+  //     bookingId: bookingId
+  //   }
+  // });
 
-  const bookingState =
-    bookingObj.bookingType === 'instant' ? 'approved' : 'requested';
+  // const bookingState =
+  //   bookingObj.bookingType === 'instant' ? 'approved' : 'requested';
 
   const params = {
     TableName: process.env.tableName,
@@ -21,7 +21,7 @@ export async function main(event) {
     },
     ExpressionAttributeValues: {
       ':updatedAt': Date.now(),
-      ':bookingState': bookingState,
+      ':bookingState': 'approved',
       ':paymentState': 'completed'
     },
     UpdateExpression:
