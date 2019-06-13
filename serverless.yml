@@ -3,6 +3,7 @@ service: ${self:custom.SubdomainName}-${self:custom.ServiceName}-api
 
 # Use the serverless-webpack plugin to transpile ES6
 plugins:
+  - serverless-dotenv-plugin
   - serverless-webpack
   - serverless-domain-manager
   - serverless-dynamodb-local
