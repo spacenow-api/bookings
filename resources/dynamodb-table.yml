@@ -2,12 +2,12 @@ Resources:
   DynamoTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: ${self:custom.TableName}
+      TableName: ${self:custom.TableName, 'dev-bookings'}
       AttributeDefinitions:
-        - AttributeName: ${self:custom.FirstAttributeName}
+        - AttributeName: ${self:custom.FirstAttributeName, 'bookingId'}
           AttributeType: S
       KeySchema:
-        - AttributeName: ${self:custom.FirstAttributeName}
+        - AttributeName: ${self:custom.FirstAttributeName, 'bookingId'}
           KeyType: HASH
       # Set the capacity based on the stage
       ProvisionedThroughput:

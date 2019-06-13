@@ -1,4 +1,4 @@
-<!-- # Serverless Node.js Starter
+# Serverless Node.js Starter
 
 A Serverless starter that adds ES7 syntax, serverless-offline, environment variables, and unit test support. Part of the [Serverless Stack](http://serverless-stack.com) guide.
 
@@ -26,22 +26,26 @@ A demo version of this service is hosted on AWS - [`https://z6pv80ao4l.execute-a
 
 And here is the ES7 source behind it
 
-``` javascript
+```javascript
 export const hello = async (event, context) => {
   return {
     statusCode: 200,
     body: JSON.stringify({
-      message: `Go Serverless v1.0! ${(await message({ time: 1, copy: 'Your function executed successfully!'}))}`,
-      input: event,
-    }),
+      message: `Go Serverless v1.0! ${await message({
+        time: 1,
+        copy: 'Your function executed successfully!'
+      })}`,
+      input: event
+    })
   };
 };
 
-const message = ({ time, ...rest }) => new Promise((resolve, reject) =>
-  setTimeout(() => {
-    resolve(`${rest.copy} (with a delay)`);
-  }, time * 1000)
-);
+const message = ({ time, ...rest }) =>
+  new Promise((resolve, reject) =>
+    setTimeout(() => {
+      resolve(`${rest.copy} (with a delay)`);
+    }, time * 1000)
+  );
 ```
 
 ### Requirements
@@ -53,19 +57,19 @@ const message = ({ time, ...rest }) => new Promise((resolve, reject) =>
 
 To create a new Serverless project.
 
-``` bash
+```bash
 $ serverless install --url https://github.com/AnomalyInnovations/serverless-nodejs-starter --name my-project
 ```
 
 Enter the new directory
 
-``` bash
+```bash
 $ cd my-project
 ```
 
 Install the Node.js packages
 
-``` bash
+```bash
 $ npm install
 ```
 
@@ -73,25 +77,25 @@ $ npm install
 
 To run unit tests on your local
 
-``` bash
+```bash
 $ npm test
 ```
 
 To run a function on your local
 
-``` bash
+```bash
 $ serverless invoke local --function hello
 ```
 
 To simulate API Gateway locally using [serverless-offline](https://github.com/dherault/serverless-offline)
 
-``` bash
+```bash
 $ serverless offline start
 ```
 
 Run your tests
 
-``` bash
+```bash
 $ npm test
 ```
 
@@ -99,13 +103,13 @@ We use Jest to run our tests. You can read more about setting up your tests [her
 
 Deploy your project
 
-``` bash
+```bash
 $ serverless deploy
 ```
 
 Deploy a single function
 
-``` bash
+```bash
 $ serverless deploy function --function hello
 ```
 
@@ -126,4 +130,4 @@ To add environment variables to your project
 
 ### Maintainers
 
-Serverless Node.js Starter is maintained by Frank Wang ([@fanjiewang](https://twitter.com/fanjiewang)) & Jay V ([@jayair](https://twitter.com/jayair)). [**Subscribe to our newsletter**](http://eepurl.com/cEaBlf) for updates. Send us an [email](mailto:contact@anoma.ly) if you have any questions. -->
+Serverless Node.js Starter is maintained by Frank Wang ([@fanjiewang](https://twitter.com/fanjiewang)) & Jay V ([@jayair](https://twitter.com/jayair)). [**Subscribe to our newsletter**](http://eepurl.com/cEaBlf) for updates. Send us an [email](mailto:contact@anoma.ly) if you have any questions.

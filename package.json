@@ -4,7 +4,8 @@
   "description": "A Node.js starter for the Serverless Framework with async/await and unit test support",
   "main": "handler.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "debug": "export SLS_DEBUG=* && node --inspect ./node_modules/.bin/serverless offline -s dev -P 4000"
   },
   "author": "Lucas Nascimento",
   "license": "MIT",
@@ -21,7 +22,9 @@
     "babel-preset-env": "^1.7.0",
     "babel-preset-stage-3": "^6.24.1",
     "jest": "^21.2.1",
+    "serverless": "1.45.1",
     "serverless-domain-manager": "^3.2.1",
+    "serverless-dynamodb-local": "^0.2.38",
     "serverless-offline": "^3.25.6",
     "serverless-webpack": "^5.1.0",
     "webpack": "^4.16.2",
