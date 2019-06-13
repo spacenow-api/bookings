@@ -5,13 +5,43 @@ import * as queueLib from '../libs/queue-lib';
 import { success, failure } from '../libs/response-lib';
 import { calcTotal, getDates, getEndDate } from '../validations';
 
-const QUEUE_ULR = `https://sqs.${process.env.region}.amazonaws.com/${process.env.accountId}/${process.env.queueName}`;
+const QUEUE_ULR = `https://sqs.${process.env.region}.amazonaws.com/${
+  process.env.accountId
+}/${process.env.queueName}`;
 
 const IS_ABSORVE = 0.035;
 const NO_ABSORVE = 0.135;
 
-const hasBlockAvailabilities = (listingId, reservationDates) => {
-  return false;
+const hasBlockAvailabilities = async (listingId, reservationDates) => {
+  try {
+    // todo: Consider a query in this case to a better and cheper approach [Arthemus]
+    // const response = await dynamoDbLib.call('query', {
+    //   TableName: process.env.tableName,
+    //   IndexName: 'BookingsByListing',
+    //   KeyConditionExpression: 'listingId = :listingId',
+    //   ProjectionExpression: 'reservations',
+    //   ExpressionAttributeValues: {
+    //     ':listingId': listingId
+    //   }
+    // });
+    const response = await dynamoDbLib.call('scan', {
+      TableName: process.env.tableName,
+      FilterExpression:
+        'listingId = :listingId AND (bookingState = :pending OR bookingState = :requested OR bookingState = :accepted)',
+      ProjectionExpression: 'reservations',
+      ExpressionAttributeValues: {
+        ':listingId': listingId,
+        ':pending': 'pending',
+        ':requested': 'requested',
+        ':accepted': 'accepted'
+      }
+    });
+    console.log('\n\n\nhasBlockAvailabilities ->\n\n\n', response);
+    return false;
+  } catch (err) {
+    console.error(err);
+    return true; // to block reservations because a query error...
+  }
 };
 
 export const main = async (event, context) => {
