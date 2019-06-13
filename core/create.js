@@ -46,7 +46,7 @@ const hasBlockAvailabilities = async (listingId, reservationDates) => {
 
 export const main = async (event, context) => {
   const data = JSON.parse(event.body);
-  if (hasBlockAvailabilities(data.listingId, data.reservations)) {
+  if (await hasBlockAvailabilities(data.listingId, data.reservations)) {
     return failure({
       status: false,
       error: 'The requested dates are not available.'
