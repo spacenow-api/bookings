@@ -21,6 +21,7 @@ export const main = async event => {
     const { Attributes } = await dynamoDbLib.call('update', params);
     return success({ status: 'updated', data: Attributes });
   } catch (e) {
+    console.error(e);
     return failure({ status: 'error', error: e });
   }
 };

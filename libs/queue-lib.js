@@ -1,6 +1,6 @@
-import AWS from "aws-sdk";
+import AWS from 'aws-sdk';
 
-export const call = (params) => {
+export const call = params => {
   const sqs = new AWS.SQS();
   return sqs.sendMessage(params).promise();
-}
+};

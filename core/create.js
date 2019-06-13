@@ -10,7 +10,9 @@ const NO_ABSORVE = 0.135;
 
 export const main = async (event, context) => {
   const data = JSON.parse(event.body);
-  const queueUrl = `https://sqs.${process.env.region}.amazonaws.com/${process.env.accountId}/${process.env.queueName}`;
+  const queueUrl = `https://sqs.${process.env.region}.amazonaws.com/${
+    process.env.accountId
+  }/${process.env.queueName}`;
 
   const bookingId = uuid.v1();
 
