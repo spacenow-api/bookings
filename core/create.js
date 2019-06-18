@@ -85,6 +85,11 @@ export const main = async (event, context) => {
       error: 'The requested dates are not available.'
     });
   } else {
+    // Defining checkIn, checkOut booking dates...
+    const sortedReservations = reservationDates.sort((a, b) => a.valueOf() - b.valueOf());
+    const checkIn = sortedReservations[0];
+    const checkOut = sortedReservations[sortedReservations.length - 1];
+
     const params = {
       TableName: process.env.tableName,
       Item: {
@@ -110,6 +115,8 @@ export const main = async (event, context) => {
         subscriptionId: data.subscriptionId,
         sourceId: data.sourceId,
         priceType: data.priceType,
+        checkIn,
+        checkOut,
         updatedAt: Date.now(),
         createdAt: Date.now()
       }
