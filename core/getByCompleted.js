@@ -6,7 +6,7 @@ export const main = async (event, context) => {
   const currentDate = moment().toString();
   const params = {
     TableName: process.env.tableName,
-    FilterExpression: `#bookingState = :bookingState AND #checkOut > :currentDate`,
+    FilterExpression: `#bookingState = :bookingState AND` + moment(`#checkOut`)  + `> :currentDate`,
     ExpressionAttributeNames: {
       '#bookingState': 'bookingState',
       '#checkOut': 'checkOut'
