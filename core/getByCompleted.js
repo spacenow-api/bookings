@@ -6,7 +6,7 @@ export const main = async (event, context) => {
   const currentDate = moment();
   const params = {
     TableName: process.env.tableName,
-    FilterExpression: `#bookingState = :bookingState`,
+    FilterExpression: `#bookingState = :bookingState && #checkOut < :currentDate`,
     ExpressionAttributeNames: {
       '#bookingState': 'bookingState',
       '#checkOut': 'checkOut'
@@ -24,5 +24,3 @@ export const main = async (event, context) => {
     return failure({ status: false });
   }
 };
-
-// && #checkOut < :currentDate
