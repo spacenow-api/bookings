@@ -3,7 +3,7 @@ import { success, failure } from '../libs/response-lib';
 import moment from 'moment'
 
 export const main = async (event, context) => {
-  const currentDate = moment().format('YYYY-MM-DD').toString();
+  const currentDate = moment().toString();
   const params = {
     TableName: process.env.tableName,
     FilterExpression: `#bookingState = :bookingState AND #checkOut > :currentDate`,
