@@ -185,6 +185,14 @@ functions:
           method: put
           cors: true
           # authorizer: aws_iam
+  getByCompleted:
+    handler: core/getByCompleted.main
+    events:
+      - http:
+          path: bookings/getByCompleted
+          method: get
+          cors: true
+          # authorizer: aws_iam
 
 # Create our resources with separate CloudFormation templates
 resources:
