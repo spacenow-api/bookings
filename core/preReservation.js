@@ -39,23 +39,15 @@ export const fetchAllPreReservations = async () => {
 };
 
 export const getPreReservationsByBookingId = async event => {
-  const data = JSON.parse(event.body);
-  if (data && data.bookingId) {
-    try {
-      const result = await dynamoDbLib.call('scan', {
-        TableName: BOOKINGS_PRE_RESERVATION_TABLE,
-        FilterExpression: 'bookingId = :bookingId',
-        ExpressionAttributeValues: { ':bookingId': data.bookingId }
-      });
-      return success(result.Items);
-    } catch (e) {
-      console.error(e);
-      return failure({ status: false, error: e });
-    }
-  } else {
-    return failure({
-      status: false,
-      error: "The field 'bookingId' is required."
+  try {
+    const result = await dynamoDbLib.call('scan', {
+      TableName: BOOKINGS_PRE_RESERVATION_TABLE,
+      FilterExpression: 'bookingId = :bookingId',
+      ExpressionAttributeValues: { ':bookingId': event.pathParameters.id }
     });
+    return success(result.Items);
+  } catch (e) {
+    console.error(e);
+    return failure({ status: false, error: e });
   }
 };
