@@ -200,6 +200,9 @@ functions:
     events:
       - http:
           path: bookings/getByExpired
+          method: get
+          cors: true
+          # authorizer: aws_iam
   fetchAllPreReservations:
     handler: core/preReservation.fetchAllPreReservations
     events:
