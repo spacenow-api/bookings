@@ -1,5 +1,5 @@
 Resources:
-  DynamoTableBooking:
+  DynamoTable:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: ${self:custom.TableName, 'dev-bookings'}
