@@ -3,7 +3,7 @@ import { success, failure } from '../libs/response-lib';
 import moment from 'moment'
 
 export const main = async (event, context) => {
-  const nextDay = moment().add(1, 'days').format('YYYY-MM-DD').toString();
+  const nextDay = moment().subtract(1, 'days').format('YYYY-MM-DD').toString();
   const params = {
     TableName: process.env.tableName,
     FilterExpression: `#bookingState = :bookingState AND #checkOut = :nextDay`,
