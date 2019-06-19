@@ -4,8 +4,8 @@ import moment from 'moment'
 
 export const main = async (event, context) => {
   // let plusTime = moment().subtract(1, 'days').unix()*1000;
-  let plusHour = moment().subtract(1, 'days').add(35, 'minutes').unix()*1000;
-  let lessHour = moment().subtract(1, 'days').subtract(35, 'minutes').unix()*1000;
+  let plusHour = moment().subtract(1, 'hours').add(35, 'minutes').unix()*1000;
+  let lessHour = moment().subtract(1, 'hours').subtract(35, 'minutes').unix()*1000;
   console.log('plusHour', plusHour)
   console.log('lessHour', lessHour)
 
