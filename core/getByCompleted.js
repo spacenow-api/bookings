@@ -6,14 +6,14 @@ export const main = async (event, context) => {
   const nextDay = moment().add(1, 'days').format('YYYY-MM-DD').toString();
   const params = {
     TableName: process.env.tableName,
-    FilterExpression: `#bookingState = :bookingState AND #checkOut = :currentDate`,
+    FilterExpression: `#bookingState = :bookingState AND #checkOut = :nextDay`,
     ExpressionAttributeNames: {
       '#bookingState': 'bookingState',
       '#checkOut': 'checkOut'
     },
     ExpressionAttributeValues: {
       ':bookingState': 'approved',
-      ':currentDate': currentDate
+      ':nextDay': nextDay
     }
   };
   try {
