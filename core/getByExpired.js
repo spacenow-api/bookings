@@ -3,12 +3,12 @@ import { success, failure } from '../libs/response-lib';
 import moment from 'moment'
 
 export const main = async (event, context) => {
-  let plusTime = moment().add(1, 'days');
-  plusTime = new Date(plusTime)
+  let plusTime = moment.unix().add(1, 'days');
+  // plusTime = new Date(plusTime)
   console.log('plusTime', plusTime)
   const params = {
     TableName: process.env.tableName,
-    FilterExpression: `#bookingState = :bookingState AND #createdAt >= :plusTime`,
+    FilterExpression: `#bookingState = :bookingState AND #createdAt > :plusTime`,
     ExpressionAttributeNames: {
       '#bookingState': 'bookingState',
       '#createdAt': 'createdAt'
