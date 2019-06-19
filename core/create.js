@@ -87,8 +87,8 @@ export const main = async (event, context) => {
   } else {
     // Defining checkIn, checkOut booking dates...
     const sortedReservations = reservationDates.sort((a, b) => a.valueOf() - b.valueOf());
-    const checkIn = sortedReservations[0];
-    const checkOut = sortedReservations[sortedReservations.length - 1];
+    const checkIn = moment(sortedReservations[0]).format('YYYY-MM-DD').toString();
+    const checkOut = moment(sortedReservations[sortedReservations.length - 1]).format('YYYY-MM-DD').toString();
 
     const params = {
       TableName: process.env.tableName,
