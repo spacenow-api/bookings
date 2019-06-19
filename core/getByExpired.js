@@ -4,16 +4,20 @@ import moment from 'moment'
 
 export const main = async (event, context) => {
   let plusTime = moment().subtract(1, 'days').unix()*1000;
+  let plusHour = plusTime.add(35, 'minutes')
+  let lessHour = plusTime.subtract(35, 'minutes')
+
   const params = {
     TableName: process.env.tableName,
-    FilterExpression: `#bookingState = :bookingState AND #createdAt > :plusTime`,
+    FilterExpression: `#bookingState = :bookingState AND #createdAt BETWEEN :plusHour AND :lessHour`,
     ExpressionAttributeNames: {
       '#bookingState': 'bookingState',
       '#createdAt': 'createdAt'
     },
     ExpressionAttributeValues: {
       ':bookingState': 'requested',
-      ':plusTime': plusTime
+      ':plusHour': plusHour,
+      ':lessHour': lessHour
     }
   };
   try {
