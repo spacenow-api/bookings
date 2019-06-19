@@ -4,7 +4,7 @@ import moment from 'moment'
 
 export const main = async (event, context) => {
   let plusTime = moment().add(1, 'days').unix()*1000;
-  // plusTime = new Date(plusTime)
+  plusTime = new Date(plusTime)
   console.log('plusTime', plusTime)
   const params = {
     TableName: process.env.tableName,
