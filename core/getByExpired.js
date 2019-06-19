@@ -4,7 +4,6 @@ import moment from 'moment'
 
 export const main = async (event, context) => {
   let plusTime = moment().subtract(1, 'days').unix()*1000;
-  console.log('plusTime', plusTime)
   const params = {
     TableName: process.env.tableName,
     FilterExpression: `#bookingState = :bookingState AND #createdAt > :plusTime`,
