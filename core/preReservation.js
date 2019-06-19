@@ -40,7 +40,7 @@ export const fetchAllPreReservations = async () => {
 
 export const getPreReservationsByBookingId = async event => {
   const data = JSON.parse(event.body);
-  if (data.bookingId) {
+  if (data && data.bookingId) {
     try {
       const result = await dynamoDbLib.call('scan', {
         TableName: BOOKINGS_PRE_RESERVATION_TABLE,

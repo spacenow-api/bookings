@@ -195,6 +195,22 @@ functions:
           method: get
           cors: true
           # authorizer: aws_iam
+  fetchAllPreReservations:
+    handler: core/preReservation.fetchAllPreReservations
+    events:
+      - http:
+          path: bookings/preReservations
+          method: get
+          cors: true
+          # authorizer: aws_iam
+  getPreReservationsByBookingId:
+    handler: core/preReservation.getPreReservationsByBookingId
+    events:
+      - http:
+          path: bookings/preReservation/{id}
+          method: get
+          cors: true
+          # authorizer: aws_iam
 
 # Create our resources with separate CloudFormation templates
 resources:
