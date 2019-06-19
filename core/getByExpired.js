@@ -11,7 +11,7 @@ export const main = async (event, context) => {
 
   const params = {
     TableName: process.env.tableName,
-    FilterExpression: `#bookingState = :bookingState AND #createdAt BETWEEN :plusHour AND :lessHour`,
+    FilterExpression: `#bookingState = :bookingState AND #createdAt BETWEEN :lessHour AND :plusHour`,
     ExpressionAttributeNames: {
       '#bookingState': 'bookingState',
       '#createdAt': 'createdAt'
