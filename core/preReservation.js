@@ -7,13 +7,14 @@ const BOOKINGS_PRE_RESERVATION_TABLE = process.env.preReservationTableName;
 
 export const createPreReservation = async bookingId => {
   if (bookingId) {
+    const expireTime = Math.floor(new Date(Date.now() + 60 * 1000) / 1000);
     try {
       await dynamoDbLib.call('put', {
         TableName: BOOKINGS_PRE_RESERVATION_TABLE,
         Item: {
           id: uuid.v1(),
           bookingId: bookingId,
-          ttl: Math.floor(Date.now() / 1000)
+          ttl: expireTime
         }
       });
     } catch (err) {
