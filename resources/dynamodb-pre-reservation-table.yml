@@ -13,6 +13,9 @@ Resources:
           KeyType: HASH
         - AttributeName: ttl
           KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: ${self:custom.TableThroughput}
+        WriteCapacityUnits: ${self:custom.TableThroughput}
       TimeToLiveSpecification:
         AttributeName: ttl
         Enabled: true
