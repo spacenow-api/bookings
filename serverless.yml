@@ -83,7 +83,8 @@ provider:
       # Restrict our IAM role permissions to
       # the specific table for the stage
       Resource:
-        - 'Fn::GetAtt': [DynamoTableBooking, DynamoTablePreReservation, Arn]
+        - 'Fn::GetAtt': [DynamoTableBooking, Arn]
+        - 'Fn::GetAtt': [DynamoTablePreReservation, Arn]
     - Effect: 'Allow'
       Action:
         - 'sqs:SendMessage'
