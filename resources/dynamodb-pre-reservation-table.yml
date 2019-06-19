@@ -1,5 +1,5 @@
 Resources:
-  DynamoTable:
+  DynamoTablePreReservation:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: ${self:custom.PreReservationTableName, 'dev-bookings-pre-reservation'}

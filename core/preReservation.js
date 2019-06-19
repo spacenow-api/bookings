@@ -5,15 +5,18 @@ import { success, failure } from '../libs/response-lib';
 
 const BOOKINGS_PRE_RESERVATION_TABLE = process.env.preReservationTableName;
 
+const EXPIRATION_TIME = 60 * 1000; // 1 minute
+
 export const createPreReservation = async bookingId => {
   if (bookingId) {
+    const expirationTime = Math.floor((Date.now() + EXPIRATION_TIME) / 1000);
     try {
       await dynamoDbLib.call('put', {
         TableName: BOOKINGS_PRE_RESERVATION_TABLE,
         Item: {
           id: uuid.v1(),
           bookingId: bookingId,
-          ttl: Math.floor(Date.now() / 1000)
+          ttl: expirationTime
         }
       });
     } catch (err) {
@@ -26,12 +29,21 @@ export const createPreReservation = async bookingId => {
   }
 };
 
+function onCheckExpirationTime(items) {
+  const now = Math.floor(Date.now() / 1000);
+  return items.map(o => {
+    o.isExpired = now > o.ttl;
+    return o;
+  });
+}
+
 export const fetchAllPreReservations = async () => {
   try {
     const result = await dynamoDbLib.call('scan', {
       TableName: BOOKINGS_PRE_RESERVATION_TABLE
     });
-    return success(result.Items);
+    const preReservations = onCheckExpirationTime(result.Items);
+    return success(preReservations);
   } catch (e) {
     console.error(e);
     return failure({ status: false, error: e });
@@ -45,7 +57,8 @@ export const getPreReservationsByBookingId = async event => {
       FilterExpression: 'bookingId = :bookingId',
       ExpressionAttributeValues: { ':bookingId': event.pathParameters.id }
     });
-    return success(result.Items);
+    const preReservations = onCheckExpirationTime(result.Items);
+    return success(preReservations);
   } catch (e) {
     console.error(e);
     return failure({ status: false, error: e });
