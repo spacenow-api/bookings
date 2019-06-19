@@ -223,4 +223,4 @@ resources:
   - ${file(resources/api-gateway-errors.yml)}
   # DynamoDB
   - ${file(resources/dynamodb-table.yml)}
-  - ${file(resources/dynamodb-pre-reservation-table.yml)}
+  # - ${file(resources/dynamodb-pre-reservation-table.yml)}
