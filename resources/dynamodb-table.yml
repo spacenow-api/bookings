@@ -1,5 +1,5 @@
 Resources:
-  BookingsTable:
+  DynamoTableBooking:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: ${self:custom.TableName, 'dev-bookings'}
@@ -13,7 +13,7 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: ${self:custom.TableThroughput}
         WriteCapacityUnits: ${self:custom.TableThroughput}
-  PreReservationTable:
+  DynamoTablePreReservation:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: ${self:custom.PreReservationTableName, 'dev-bookings-pre-reservation'}
