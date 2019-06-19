@@ -21,6 +21,7 @@ custom:
   FirstAttributeName: 'bookingId'
   # Set the table name here so we can use it while testing locally
   TableName: ${self:custom.StageName}-${self:custom.ServiceName}
+  PreReservationTableName: ${self:custom.StageName}-${self:custom.ServiceName}-pre-reservation
   # Set our DynamoDB throughput for prod and all other non-prod stages.
   TableThroughputs:
     nonprod: 2
@@ -62,6 +63,7 @@ provider:
   # under process.env.
   environment:
     tableName: ${self:custom.TableName}
+    preReservationTableName: ${self:custom.PreReservationTableName}
     accountId: ${opt:accountId, ''}
     region: ${opt:region, 'ap-southeast-2'}
     queueName: ${self:custom.SubdomainName}-${self:custom.TableName}
@@ -200,3 +202,4 @@ resources:
   - ${file(resources/api-gateway-errors.yml)}
   # DynamoDB
   - ${file(resources/dynamodb-table.yml)}
+  - ${file(resources/dynamodb-pre-reservation-table.yml)}

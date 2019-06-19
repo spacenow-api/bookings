@@ -4,9 +4,12 @@ import moment from 'moment';
 import * as dynamoDbLib from '../libs/dynamodb-lib';
 import * as queueLib from '../libs/queue-lib';
 import { success, failure } from '../libs/response-lib';
+import { createPreReservation } from './preReservation';
 import { calcTotal, getDates, getEndDate } from '../validations';
 
 const QUEUE_ULR = `https://sqs.${process.env.region}.amazonaws.com/${process.env.accountId}/${process.env.queueName}`;
+
+const BOOKINGS_TABLE = process.env.tableName;
 
 const IS_ABSORVE = 0.035;
 const NO_ABSORVE = 0.135;
@@ -14,7 +17,7 @@ const NO_ABSORVE = 0.135;
 const hasBlockAvailabilities = async (listingId, reservationDates) => {
   try {
     const response = await dynamoDbLib.call('scan', {
-      TableName: process.env.tableName,
+      TableName: BOOKINGS_TABLE,
       FilterExpression: 'listingId = :listingId AND (bookingState = :pending OR bookingState = :requested OR bookingState = :accepted)',
       ProjectionExpression: 'reservations',
       ExpressionAttributeValues: {
@@ -91,7 +94,7 @@ export const main = async (event, context) => {
     const checkOut = moment(sortedReservations[sortedReservations.length - 1]).format('YYYY-MM-DD').toString();
 
     const params = {
-      TableName: process.env.tableName,
+      TableName: BOOKINGS_TABLE,
       Item: {
         listingId: data.listingId,
         bookingId: bookingId,
@@ -122,22 +125,31 @@ export const main = async (event, context) => {
       }
     };
 
-    const paramsQueue = {
-      QueueUrl: QUEUE_ULR,
-      MessageBody: JSON.stringify({
-        bookingId: bookingId,
-        listingId: data.listingId,
-        blockedDates: reservationDates
-      })
-    };
-
+    // Creating record on 'bookings' table...
     try {
       await dynamoDbLib.call('put', params);
     } catch (err) {
       return failure({ status: false, error: err });
     }
+
+    // Creating record on 'bookings-pre-reservation' table...
     try {
-      await queueLib.call(paramsQueue);
+      await createPreReservation(bookingId);
+      console.debug('Pre-Reservation created with success.');
+    } catch (err) {
+      console.error('\nProblems to register a pre-reservation record:', err);
+    }
+
+    // Creating availabilities...
+    try {
+      await queueLib.call({
+        QueueUrl: QUEUE_ULR,
+        MessageBody: JSON.stringify({
+          bookingId: bookingId,
+          listingId: data.listingId,
+          blockedDates: reservationDates
+        })
+      });
     } catch (err) {
       console.error('\nProblems to register reservation on Queue:', err);
     }
