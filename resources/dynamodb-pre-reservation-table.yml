@@ -1,0 +1,21 @@
+Resources:
+  DynamoTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:custom.PreReservationTableName, 'dev-bookings-pre-reservation'}
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: ttl
+          AttributeType: N
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+        - AttributeName: ttl
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: ${self:custom.TableThroughput}
+        WriteCapacityUnits: ${self:custom.TableThroughput}
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
