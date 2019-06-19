@@ -3,7 +3,7 @@ import { success, failure } from '../libs/response-lib';
 import moment from 'moment'
 
 export const main = async (event, context) => {
-  let plusTime = moment.unix().add(1, 'days');
+  let plusTime = moment().add(1, 'days').unix();
   // plusTime = new Date(plusTime)
   console.log('plusTime', plusTime)
   const params = {
