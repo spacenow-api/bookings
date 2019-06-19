@@ -3,9 +3,9 @@ import { success, failure } from '../libs/response-lib';
 import moment from 'moment'
 
 export const main = async (event, context) => {
-  let plusTime = moment().subtract(1, 'days').unix()*1000;
-  let plusHour = plusTime.add(35, 'minutes')
-  let lessHour = plusTime.subtract(35, 'minutes')
+  // let plusTime = moment().subtract(1, 'days').unix()*1000;
+  let plusHour = moment().subtract(1, 'days').add(35, 'minutes').unix()*1000;
+  let lessHour = moment().subtract(1, 'days').subtract(35, 'minutes').unix()*1000;
 
   const params = {
     TableName: process.env.tableName,
