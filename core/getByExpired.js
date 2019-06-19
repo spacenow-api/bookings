@@ -3,17 +3,19 @@ import { success, failure } from '../libs/response-lib';
 import moment from 'moment'
 
 export const main = async (event, context) => {
-  const currentDate = Date.now();
+  let plusTime = moment().add(1, 'days');
+  plusTime = new Date(plusTime)
+  console.log('plusTime', plusTime)
   const params = {
     TableName: process.env.tableName,
-    FilterExpression: `#bookingState = :bookingState AND (#createdAt - :currentDate) >= 24`,
+    FilterExpression: `#bookingState = :bookingState AND #createdAt >= :plusTime`,
     ExpressionAttributeNames: {
       '#bookingState': 'bookingState',
-      '#checkOut': 'checkOut'
+      '#createdAt': 'createdAt'
     },
     ExpressionAttributeValues: {
       ':bookingState': 'requested',
-      ':currentDate': currentDate
+      ':plusTime': plusTime
     }
   };
   try {
