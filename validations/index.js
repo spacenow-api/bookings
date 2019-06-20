@@ -1,5 +1,16 @@
 import moment from 'moment';
 
+/**
+ * Possible Spacenow bookings States;
+ */
+const BookingStates = {
+  PENDING: 'pending',
+  CANCELLED: 'cancelled',
+  TIMEOUT: 'timeout',
+  REQUESTED: 'requested'
+};
+const BookingStatesArray = Object.values(BookingStates);
+
 const calcTotal = (basePrice, quantity = 1, period, guestFee) => {
   let total = basePrice * quantity * period;
   total += total * guestFee;
@@ -33,4 +44,4 @@ const getDates = (startDate, endDate) => {
   return arrDates;
 };
 
-export { calcTotal, getDates, getEndDate };
+export { calcTotal, getDates, getEndDate, BookingStates, BookingStatesArray };

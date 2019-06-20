@@ -88,8 +88,11 @@ export const main = async (event, context) => {
       error: 'The requested dates are not available.'
     });
   } else {
+    // Defining a sorted reservation list...
+    let sortedReservations = JSON.parse(JSON.stringify(reservationDates));
+    sortedReservations = onSortDates(sortedReservations);
+
     // Defining checkIn, checkOut booking dates...
-    const sortedReservations = reservationDates.sort((a, b) => a.valueOf() - b.valueOf());
     const checkIn = moment(sortedReservations[0]).format('YYYY-MM-DD').toString();
     const checkOut = moment(sortedReservations[sortedReservations.length - 1]).format('YYYY-MM-DD').toString();
 
@@ -100,7 +103,7 @@ export const main = async (event, context) => {
         bookingId: bookingId,
         hostId: data.hostId,
         guestId: data.guestId,
-        reservations: reservationDates,
+        reservations: sortedReservations,
         quantity: data.quantity || 1,
         basePrice: data.basePrice,
         fees: data.fees,
@@ -147,7 +150,7 @@ export const main = async (event, context) => {
         MessageBody: JSON.stringify({
           bookingId: bookingId,
           listingId: data.listingId,
-          blockedDates: reservationDates
+          blockedDates: sortedReservations
         })
       });
     } catch (err) {
@@ -155,4 +158,12 @@ export const main = async (event, context) => {
     }
     return success(params.Item);
   }
+};
+
+const onSortDates = dates => {
+  return dates.sort((a, b) => {
+    const dateA = new Date(a);
+    const dateB = new Date(b);
+    return dateA.getTime() - dateB.getTime();
+  });
 };

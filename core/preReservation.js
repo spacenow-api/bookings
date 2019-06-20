@@ -29,7 +29,7 @@ export const createPreReservation = async bookingId => {
   }
 };
 
-function onCheckExpirationTime(items) {
+const onCheckExpirationTime = (items) => {
   const now = Math.floor(Date.now() / 1000);
   return items.map(o => {
     o.isExpired = now > o.ttl;
@@ -52,15 +52,23 @@ export const fetchAllPreReservations = async () => {
 
 export const getPreReservationsByBookingId = async event => {
   try {
+    const preReservations = fetchPreReservationsByBookingId(event.pathParameters.id);
+    return success(preReservations);
+  } catch (err) {
+    console.error(e);
+    return failure({ status: false, error: e });
+  }
+};
+
+export const fetchPreReservationsByBookingId = async bookingId => {
+  try {
     const result = await dynamoDbLib.call('scan', {
       TableName: BOOKINGS_PRE_RESERVATION_TABLE,
       FilterExpression: 'bookingId = :bookingId',
-      ExpressionAttributeValues: { ':bookingId': event.pathParameters.id }
+      ExpressionAttributeValues: { ':bookingId': bookingId }
     });
-    const preReservations = onCheckExpirationTime(result.Items);
-    return success(preReservations);
-  } catch (e) {
-    console.error(e);
-    return failure({ status: false, error: e });
+    return onCheckExpirationTime(result.Items);
+  } catch (err) {
+    throw new Error(err);
   }
 };
