@@ -51,11 +51,15 @@ export const fetchAllPreReservations = async () => {
 };
 
 export const getPreReservationsByBookingId = async event => {
+  return fetchPreReservationsByBookingId(event.pathParameters.id);
+};
+
+export const fetchPreReservationsByBookingId = async bookingId => {
   try {
     const result = await dynamoDbLib.call('scan', {
       TableName: BOOKINGS_PRE_RESERVATION_TABLE,
       FilterExpression: 'bookingId = :bookingId',
-      ExpressionAttributeValues: { ':bookingId': event.pathParameters.id }
+      ExpressionAttributeValues: { ':bookingId': bookingId }
     });
     const preReservations = onCheckExpirationTime(result.Items);
     return success(preReservations);
