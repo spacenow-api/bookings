@@ -20,7 +20,7 @@ export const main = async event => {
         ProjectionExpression: 'bookingId',
         ExpressionAttributeValues: {
           ':listingId': data.listingId,
-          ':pending': 'pending'
+          ':pending': BookingStates.PENDING
         }
       });
       const bookings = response.Items;
@@ -28,7 +28,7 @@ export const main = async event => {
         const preReservations = await fetchPreReservationsByBookingId(item.bookingId);
         for (const pre of preReservations) {
           if (pre.isExpired) {
-            await updateBookingState(item.bookingId, BookingStates.PEDDING);
+            await updateBookingState(item.bookingId, BookingStates.TIMEOUT);
             await onCleanAvailabilities(item.bookingId);
           }
         }

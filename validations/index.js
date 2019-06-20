@@ -4,7 +4,7 @@ import moment from 'moment';
  * Possible Spacenow bookings States;
  */
 const BookingStates = {
-  PEDDING: 'pedding',
+  PENDING: 'pending',
   CANCELLED: 'cancelled',
   TIMEOUT: 'timeout',
   REQUESTED: 'requested'
