@@ -32,7 +32,7 @@ export const main = async event => {
         for (const pre of preReservations) {
           console.log('Is expired =>', pre);
           if (pre.isExpired) {
-            // await updateBookingState(item.bookingId, BookingStates.TIMEOUT);
+            await updateBookingState(item.bookingId, BookingStates.TIMEOUT);
             // await onCleanAvailabilities(item.bookingId);
           }
         }
