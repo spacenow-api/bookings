@@ -14,6 +14,7 @@ export const main = async event => {
   const data = JSON.parse(event.body);
   if (data.listingId) {
     try {
+      console.log('Listing ID =>', data.listingId);
       const response = await dynamoDbLib.call('scan', {
         TableName: BOOKINGS_TABLE,
         FilterExpression: 'listingId = :listingId AND (bookingState = :pending)',
