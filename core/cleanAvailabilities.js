@@ -10,7 +10,7 @@ const BOOKINGS_TABLE = process.env.tableName;
 
 const lambda = new AWS.Lambda();
 
-export default async event => {
+export const main = async event => {
   const data = JSON.parse(event.body);
   if (data.listingId) {
     try {

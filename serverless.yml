@@ -221,7 +221,7 @@ functions:
           cors: true
           # authorizer: aws_iam
   cleanAvailabilities:
-    handler: core/cleanAvailabilities
+    handler: core/cleanAvailabilities.main
     events:
       - http:
           path: bookings/cleanAvailabilities
