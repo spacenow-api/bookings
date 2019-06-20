@@ -30,7 +30,6 @@ export const main = async event => {
         const preReservations = await fetchPreReservationsByBookingId(item.bookingId);
         console.log('Pre Reservations =>', preReservations);
         for (const pre of preReservations) {
-          console.log('Is expired =>', pre);
           if (pre.isExpired) {
             await updateBookingState(item.bookingId, BookingStates.TIMEOUT);
             await onCleanAvailabilities(item.bookingId);
@@ -57,7 +56,6 @@ const onCleanAvailabilities = async bookingId => {
   await lambda.invoke(
     {
       FunctionName: 'spacenow-availabilities-api-sandpit-deleteByBooking',
-      InvocationType: 'Event',
       Payload: JSON.stringify({ bookingId })
     },
     (error) => {
