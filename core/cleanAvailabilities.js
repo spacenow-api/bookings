@@ -14,7 +14,6 @@ export const main = async event => {
   const data = JSON.parse(event.body);
   if (data.listingId) {
     try {
-      console.log('Listing ID =>', data.listingId);
       const response = await dynamoDbLib.call('scan', {
         TableName: BOOKINGS_TABLE,
         FilterExpression: 'listingId = :listingId AND (bookingState = :pending)',
@@ -25,10 +24,8 @@ export const main = async event => {
         }
       });
       const bookings = response.Items;
-      console.log('Bookings =>', response.Items);
       for (const item of bookings) {
         const preReservations = await fetchPreReservationsByBookingId(item.bookingId);
-        console.log('Pre Reservations =>', preReservations);
         for (const pre of preReservations) {
           if (pre.isExpired) {
             await updateBookingState(item.bookingId, BookingStates.TIMEOUT);
@@ -52,7 +49,6 @@ export const main = async event => {
 };
 
 const onCleanAvailabilities = async bookingId => {
-  console.log('onCleanAvailabilities =>', bookingId);
   await lambda.invoke(
     {
       FunctionName: 'spacenow-availabilities-api-sandpit-deleteByBooking',
