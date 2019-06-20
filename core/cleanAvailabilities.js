@@ -1,3 +1,5 @@
+import AWS from 'aws-sdk';
+
 import * as dynamoDbLib from '../libs/dynamodb-lib';
 import { success, failure } from '../libs/response-lib';
 import { fetchPreReservationsByBookingId } from './preReservation';
@@ -5,6 +7,8 @@ import updateBookingState from './updateBookingState';
 import { BookingStates } from './../validations';
 
 const BOOKINGS_TABLE = process.env.tableName;
+
+const lambda = new AWS.Lambda();
 
 export default async event => {
   const data = JSON.parse(event.body);
@@ -29,6 +33,7 @@ export default async event => {
           }
         }
       }
+      return success({ status: true });
     } catch (err) {
       return failure({
         status: false,
@@ -43,6 +48,17 @@ export default async event => {
   }
 };
 
-const onCleanAvailabilities = async (bookingId) => {
-  
-}
+const onCleanAvailabilities = async bookingId => {
+  await lambda.invoke(
+    {
+      FunctionName: 'spacenow-availabilities-api-sandpit-deleteByBooking',
+      Payload: JSON.stringify(bookingId)
+    },
+    (error, data) => {
+      if (error) {
+        throw new Error(error);
+      }
+      console.info(`Availabilities removed with success to booking ${bookingId}`);
+    }
+  );
+};
