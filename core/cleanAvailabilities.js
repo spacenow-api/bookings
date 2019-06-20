@@ -24,12 +24,15 @@ export const main = async event => {
         }
       });
       const bookings = response.Items;
+      console.log('Bookings =>', response.Items);
       for (const item of bookings) {
         const preReservations = await fetchPreReservationsByBookingId(item.bookingId);
+        console.log('Pre Reservations =>', preReservations);
         for (const pre of preReservations) {
+          console.log('Is expired =>', pre);
           if (pre.isExpired) {
-            await updateBookingState(item.bookingId, BookingStates.TIMEOUT);
-            await onCleanAvailabilities(item.bookingId);
+            // await updateBookingState(item.bookingId, BookingStates.TIMEOUT);
+            // await onCleanAvailabilities(item.bookingId);
           }
         }
       }
