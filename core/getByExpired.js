@@ -3,8 +3,8 @@ import { success, failure } from '../libs/response-lib';
 import moment from 'moment'
 
 export const main = async (event, context) => {
-  let plusHour = moment().subtract(26, 'hours').unix()*1000;
-  let lessHour = moment().subtract(24, 'hours').unix()*1000;
+  let lessHour = moment().subtract(26, 'hours').unix()*1000;
+  let plusHour = moment().subtract(24, 'hours').unix()*1000;
 
   const params = {
     TableName: process.env.tableName,
