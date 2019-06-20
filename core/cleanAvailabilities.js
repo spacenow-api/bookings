@@ -33,7 +33,7 @@ export const main = async event => {
           console.log('Is expired =>', pre);
           if (pre.isExpired) {
             await updateBookingState(item.bookingId, BookingStates.TIMEOUT);
-            // await onCleanAvailabilities(item.bookingId);
+            await onCleanAvailabilities(item.bookingId);
           }
         }
       }
@@ -63,6 +63,7 @@ const onCleanAvailabilities = async bookingId => {
         throw new Error(error);
       }
       console.info(`Availabilities removed with success to booking ${bookingId}`);
+      console.log('onCleanAvailabilities', data);
     }
   );
 };
