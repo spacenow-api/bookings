@@ -231,6 +231,14 @@ functions:
           method: post
           cors: true
           # authorizer: aws_iam
+  timeOut:
+    handler: core/timeOut.main
+    events:
+      - http:
+          path: bookings/timeOut/{id}
+          method: put
+          cors: true
+          # authorizer: aws_iam
 
 # Create our resources with separate CloudFormation templates
 resources:
