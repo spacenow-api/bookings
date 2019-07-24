@@ -27,9 +27,10 @@ export async function main(event, context) {
       const booking = await getBookings(event.pathParameters.id);
       if (booking.bookingState == 'pending') {
         await dynamoDbLib.call('update', params);
+        // clean availability
       }
-      return success({ status: true });
      }, 60000);
+     return success({ status: true });
   } catch (e) {
     console.error(e);
     return failure({ status: false });
