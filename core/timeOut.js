@@ -23,7 +23,7 @@ export async function main(event, context) {
   };
 
   try {
-    setTimeout(function(){
+    setTimeout(async () => {
       const booking = await getBookings(event.pathParameters.id);
       if (booking.bookingState == 'pending') {
         await dynamoDbLib.call('update', params);
