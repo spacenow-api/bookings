@@ -23,7 +23,7 @@ export async function main(event, context) {
   };
 
   try {
-    setTimeout(async () => {
+    setTimeout(async function () {
       const booking = await getBookings({ pathParameters: {id:  event.pathParameters.id }});
       const bookingData = JSON.parse(booking.body)
       if (bookingData.bookingState == 'pending') {
