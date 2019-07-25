@@ -19,7 +19,7 @@ export const main = async event => {
     try {
       const response = await dynamoDbLib.call('scan', {
         TableName: BOOKINGS_TABLE,
-        FilterExpression: 'listingId = :listingId AND (bookingState = :pending) AND (createdAt <= :expirationTime)',
+        FilterExpression: 'listingId = :listingId AND (bookingState = :pending) AND (createdAt < :expirationTime)',
         ProjectionExpression: 'bookingId',
         ExpressionAttributeValues: {
           ':listingId': event.pathParameters.id,
@@ -27,6 +27,7 @@ export const main = async event => {
           ':expirationTime': expirationTime
         }
       });
+      console.log('response', response)
       const bookings = response.Items;
       console.log('bookings', bookings)
       for (const item of bookings) {
