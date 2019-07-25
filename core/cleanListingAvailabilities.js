@@ -13,6 +13,7 @@ export const main = async event => {
   // const data = JSON.parse(event.body);
   console.log('event.pathParameters.id', event.pathParameters.id)
   if (event.pathParameters.id) {
+    console.log('BookingStates.PENDING', BookingStates.PENDING)
     let expirationTime = Date.now() - 60000;  // 1 minute to expire  #createdAt < :expirationTime
     const params = {
       TableName: BOOKINGS_TABLE,
@@ -24,7 +25,7 @@ export const main = async event => {
       },
       ExpressionAttributeValues: {
         ':listingId': event.pathParameters.id,
-        ':pending': BookingStates.PENDING
+        ':pending': 'pending'
       }
     };
     
