@@ -26,10 +26,11 @@ export async function main(event, context) {
     // setTimeout(async () => {
       console.log('---- >booking id', event.pathParameters.id)
       const booking = await getBookings({ pathParameters: {id:  event.pathParameters.id }});
-      const bookingData = await booking.body.json();
+      console.log('----> booking.body', booking.body)
+      const bookingData = await booking.json();
 
       console.log('----> booking', booking)
-      console.log('----> booking.body', booking.body)
+      
       console.log('----> bookingData', bookingData)
       if (bookingData.bookingState == 'pending') {
         console.log('ENTRA AL IF')
