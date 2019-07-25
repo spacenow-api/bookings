@@ -16,7 +16,7 @@ export const main = async event => {
     let expirationTime = Date.now() - 60000;  // 1 minute to expire  #createdAt < :expirationTime
     const params = {
       TableName: BOOKINGS_TABLE,
-      FilterExpression: `#listingId = :listingId AND #bookingState = :pending AND`,
+      FilterExpression: `#listingId = :listingId AND #bookingState = :pending`,
       ProjectionExpression: 'bookingId',
       ExpressionAttributeNames: {
         '#listingId': 'listingId',
