@@ -31,7 +31,6 @@ export async function main(event, context) {
         await dynamoDbLib.call('update', params);
         return success({ status: true });
         // clean availability
-        
       }
      }, 6000);
      
