@@ -231,13 +231,13 @@ functions:
           method: post
           cors: true
           # authorizer: aws_iam
-  # cleanListingAvailabilities:
-  #   handler: core/cleanListingAvailabilities.main
-  #   events:
-  #     - http:
-  #         path: bookings/cleanListingAvailabilities/{id}
-  #         method: put
-  #         cors: true
+  cleanListingAvailabilities:
+    handler: core/cleanListingAvailabilities.main
+    events:
+      - http:
+          path: bookings/cleanListingAvailabilities/{id}
+          method: put
+          cors: true
           # authorizer: aws_iam
 
 # Create our resources with separate CloudFormation templates
