@@ -11,8 +11,9 @@ const BOOKINGS_TABLE = process.env.tableName;
 const lambda = new AWS.Lambda();
 
 export const main = async event => {
-  const data = JSON.parse(event.body);
-  if (data.listingId) {
+  // const data = JSON.parse(event.body);
+  console.log('event.pathParameters.id', event.pathParameters.id)
+  if (event.pathParameters.id) {
     let expirationTime = Date.now() - 60000;  // 1 minute to expire
     console.log('expirationTime', expirationTime)
     try {
@@ -21,7 +22,7 @@ export const main = async event => {
         FilterExpression: 'listingId = :listingId AND (bookingState = :pending) AND (createdAt <= :expirationTime)',
         ProjectionExpression: 'bookingId',
         ExpressionAttributeValues: {
-          ':listingId': data.listingId,
+          ':listingId': event.pathParameters.id,
           ':pending': BookingStates.PENDING,
           ':expirationTime': expirationTime
         }

@@ -235,8 +235,8 @@ functions:
     handler: core/cleanListingAvailabilities.main
     events:
       - http:
-          path: bookings/cleanListingAvailabilities
-          method: post
+          path: bookings/cleanListingAvailabilities/{id}
+          method: put
           cors: true
           # authorizer: aws_iam
 
