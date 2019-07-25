@@ -20,13 +20,11 @@ export const main = async event => {
       ProjectionExpression: 'bookingId',
       ExpressionAttributeNames: {
         '#listingId': 'listingId',
-        '#bookingState': 'bookingState',
-        // '#createdAt': 'createdAt'
+        '#bookingState': 'bookingState'
       },
       ExpressionAttributeValues: {
         ':listingId': event.pathParameters.id,
-        ':pending': BookingStates.PENDING,
-        // ':expirationTime': expirationTime
+        ':pending': BookingStates.PENDING
       }
     };
     
