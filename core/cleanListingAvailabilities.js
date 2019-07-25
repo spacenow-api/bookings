@@ -15,25 +15,25 @@ export const main = async event => {
   console.log('event.pathParameters.id', event.pathParameters.id)
   if (event.pathParameters.id) {
     let expirationTime = Date.now() - 60000;  // 1 minute to expire
-    console.log('expirationTime', expirationTime)
+    
     try {
       const response = await dynamoDbLib.call('scan', {
         TableName: BOOKINGS_TABLE,
-        FilterExpression: 'listingId = :listingId AND (bookingState = :pending) AND (createdAt < :expirationTime)',
+        FilterExpression: 'listingId = :listingId AND (bookingState = :pending)',
         ProjectionExpression: 'bookingId',
         ExpressionAttributeValues: {
           ':listingId': event.pathParameters.id,
-          ':pending': BookingStates.PENDING,
-          ':expirationTime': expirationTime
+          ':pending': BookingStates.PENDING
         }
       });
+
       console.log('response', response)
       const bookings = response.Items;
       console.log('bookings', bookings)
-      for (const item of bookings) {
-        await updateBookingState(item.bookingId, BookingStates.TIMEOUT);
-        await onCleanAvailabilities(item.bookingId);
-      }
+      // for (const item of bookings) {
+      //   await updateBookingState(item.bookingId, BookingStates.TIMEOUT);
+      //   await onCleanAvailabilities(item.bookingId);
+      // }
       return success({ status: true });
     } catch (err) {
       return failure({
