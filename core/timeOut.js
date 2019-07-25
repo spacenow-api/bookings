@@ -29,7 +29,7 @@ export async function main(event, context) {
       });
     }
 
-    await wait(6000);
+    await wait(3000);
     const booking = await getBookings({ pathParameters: {id:  event.pathParameters.id }});
     const bookingData = JSON.parse(booking.body)
     if (bookingData.bookingState == 'pending') {
