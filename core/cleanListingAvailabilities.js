@@ -22,7 +22,7 @@ export const main = async event => {
         '#bookingState': 'bookingState'
       },
       ExpressionAttributeValues: {
-        ':listingId': event.pathParameters.id,
+        ':listingId': event.pathParameters.id.toString(),
         ':bookingState': BookingStates.PENDING
       }
     };
