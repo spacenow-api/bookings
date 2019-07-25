@@ -23,19 +23,16 @@ export async function main(event, context) {
   };
 
   try {
-    // setTimeout(async () => {
+    setTimeout(async () => {
       const booking = await getBookings({ pathParameters: {id:  event.pathParameters.id }});
       const bookingData = JSON.parse(booking.body)
-      console.log('type of bookingData', typeof bookingData)
-      console.log(' bookingData', bookingData)
       if (bookingData.bookingState == 'pending') {
         console.log('ENTRA AL IF')
         await dynamoDbLib.call('update', params);
-        return success({ status: true });
         // clean availability
       }
       // return success({ status: true });
-    //  }, 60000);
+     }, 60000);
      
   } catch (e) {
     console.error(e);
