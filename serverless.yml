@@ -231,12 +231,12 @@ functions:
           method: post
           cors: true
           # authorizer: aws_iam
-  timeOut:
-    handler: core/timeOut.main
+  cleanListingAvailabilities:
+    handler: core/cleanListingAvailabilities.main
     events:
       - http:
-          path: bookings/timeOut/{id}
-          method: put
+          path: bookings/cleanListingAvailabilities
+          method: post
           cors: true
           # authorizer: aws_iam
 
