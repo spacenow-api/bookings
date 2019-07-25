@@ -27,13 +27,14 @@ export async function main(event, context) {
       console.log('---- >booking id', event.pathParameters.id)
       const booking = await getBookings({ pathParameters: {id:  event.pathParameters.id }});
 
-      console.log('----> booking', booking)
+      console.log('----> booking', booking.bookingState)
       if (booking.bookingState == 'pending') {
+        console.log('ENTRA AL IF')
         await dynamoDbLib.call('update', params);
-        return success({ status: 'updated' });
+        return success({ status: true });
         // clean availability
       }
-      return success({ status: true });
+      // return success({ status: true });
     //  }, 60000);
      
   } catch (e) {
