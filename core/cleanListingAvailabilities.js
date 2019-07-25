@@ -17,7 +17,6 @@ export const main = async event => {
     const params = {
       TableName: BOOKINGS_TABLE,
       FilterExpression: `#listingId = :listingId AND #bookingState = :bookingState`,
-      ProjectionExpression: 'bookingId',
       ExpressionAttributeNames: {
         '#listingId': 'listingId',
         '#bookingState': 'bookingState'
