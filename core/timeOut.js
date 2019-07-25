@@ -29,10 +29,11 @@ export async function main(event, context) {
       if (bookingData.bookingState == 'pending') {
         console.log('ENTRA AL IF')
         await dynamoDbLib.call('update', params);
+        return success({ status: true });
         // clean availability
       }
      }, 6000);
-     return success({ status: true });
+     
   } catch (e) {
     console.error(e);
     return failure({ status: false });
