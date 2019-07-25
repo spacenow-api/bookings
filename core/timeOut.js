@@ -23,8 +23,7 @@ export async function main(event, context) {
   };
 
   try {
-    // setTimeout(function () {
-      await wait(6000);
+    setTimeout(function () {
       const booking = await getBookings({ pathParameters: {id:  event.pathParameters.id }});
       const bookingData = JSON.parse(booking.body)
       if (bookingData.bookingState == 'pending') {
@@ -34,7 +33,7 @@ export async function main(event, context) {
         // clean availability
         
       }
-    //  }, 6000);
+     }, 6000);
      
   } catch (e) {
     console.error(e);
