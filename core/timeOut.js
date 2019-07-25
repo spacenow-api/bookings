@@ -23,16 +23,25 @@ export async function main(event, context) {
   };
 
   try {
-    setTimeout(async function () {
-      const booking = await getBookings({ pathParameters: {id:  event.pathParameters.id }});
-      const bookingData = JSON.parse(booking.body)
-      if (bookingData.bookingState == 'pending') {
-        console.log('ENTRA AL IF')
-        await dynamoDbLib.call('update', params);
-        return success({ status: true });
-        // clean availability
-      }
-     }, 6000);
+    async function wait(ms) {
+      return new Promise(resolve => {
+        setTimeout(resolve, ms);
+      });
+    }
+
+    await wait(6000);
+    const booking = await getBookings({ pathParameters: {id:  event.pathParameters.id }});
+    const bookingData = JSON.parse(booking.body)
+    if (bookingData.bookingState == 'pending') {
+      console.log('ENTRA AL IF')
+      await dynamoDbLib.call('update', params);
+      return success({ status: true });
+      // clean availability
+    }
+        
+    // setTimeout(async function () {
+      
+    //  }, 6000);
      
   } catch (e) {
     console.error(e);
