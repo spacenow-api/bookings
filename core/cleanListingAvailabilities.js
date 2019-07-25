@@ -13,19 +13,25 @@ export const main = async event => {
   // const data = JSON.parse(event.body);
   console.log('event.pathParameters.id', event.pathParameters.id)
   if (event.pathParameters.id) {
-    let expirationTime = Date.now() - 60000;  // 1 minute to expire
+    let expirationTime = Date.now() - 60000;  // 1 minute to expire  #createdAt < :expirationTime
+    const params = {
+      TableName: BOOKINGS_TABLE,
+      FilterExpression: '#listingId = :listingId AND #bookingState = :pending AND',
+      ProjectionExpression: 'bookingId',
+      ExpressionAttributeNames: {
+        '#listingId': 'listingId',
+        '#bookingState': 'bookingState',
+        // '#createdAt': 'createdAt'
+      },
+      ExpressionAttributeValues: {
+        ':listingId': event.pathParameters.id,
+        ':pending': BookingStates.PENDING,
+        // ':expirationTime': expirationTime
+      }
+    };
     
     try {
-      const response = await dynamoDbLib.call('scan', {
-        TableName: BOOKINGS_TABLE,
-        FilterExpression: 'listingId = :listingId AND (bookingState = :pending) AND (createdAt < :expirationTime)',
-        ProjectionExpression: 'bookingId',
-        ExpressionAttributeValues: {
-          ':listingId': event.pathParameters.id,
-          ':pending': BookingStates.PENDING,
-          ':expirationTime': expirationTime
-        }
-      });
+      const response = await dynamoDbLib.call('scan', params);
       console.log('response', response)
       const bookings = response.Items;
       console.log('bookings', bookings)
