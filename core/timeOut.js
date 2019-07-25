@@ -24,15 +24,8 @@ export async function main(event, context) {
 
   try {
     // setTimeout(async () => {
-      console.log('---- >booking id', event.pathParameters.id)
       const booking = await getBookings({ pathParameters: {id:  event.pathParameters.id }});
-      console.log('----> booking.body', booking.body)
-      const bookingData = await booking.json();
-
-      console.log('----> booking', booking)
-      
-      console.log('----> bookingData', bookingData)
-      if (bookingData.bookingState == 'pending') {
+      if (booking.body.bookingState == 'pending') {
         console.log('ENTRA AL IF')
         await dynamoDbLib.call('update', params);
         return success({ status: true });
