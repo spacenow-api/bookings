@@ -23,13 +23,13 @@ export async function main(event, context) {
   };
 
   try {
-    setTimeout(async function () {
+    setTimeout(function () {
       const booking = await getBookings({ pathParameters: {id:  event.pathParameters.id }});
       const bookingData = JSON.parse(booking.body)
       if (bookingData.bookingState == 'pending') {
         console.log('ENTRA AL IF')
-        await dynamoDbLib.call('update', params);
-        return success({ status: true });
+        dynamoDbLib.call('update', params);
+        // return success({ status: true });
         // clean availability
       }
      }, 6000);
