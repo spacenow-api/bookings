@@ -24,13 +24,15 @@ export async function main(event, context) {
 
   try {
     // setTimeout(async () => {
+      console.log('---- >booking id', event.pathParameters.id)
       const booking = await getBookings(event.pathParameters.id);
-      console.log('booking', booking)
+      console.log('----> booking', booking)
       if (booking.bookingState == 'pending') {
         await dynamoDbLib.call('update', params);
-        return success({ status: true });
+        return success({ status: 'updated' });
         // clean availability
       }
+      return success({ status: true });
     //  }, 60000);
      
   } catch (e) {
