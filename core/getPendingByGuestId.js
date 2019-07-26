@@ -5,9 +5,9 @@ export const main = async (event, context) => {
   const params = {
     TableName: process.env.tableName,
     Key: {
+      bookingState: 'pending',
       guestId: event.pathParameters.id,
-      listingId: event.pathParameters.listingId,
-      bookingState: 'pending'
+      listingId: event.pathParameters.listingId
     }
   };
   try {
