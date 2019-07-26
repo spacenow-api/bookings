@@ -9,13 +9,9 @@ const BOOKINGS_TABLE = process.env.tableName;
 
 const lambda = new AWS.Lambda();
 
-// Cronjob 
-var CronJob = require('cron').CronJob;
-
 export const main = async () => {
 
-  new CronJob('0 * * * * *', async function() {   // Runing every minute to test
-    let expirationTime = Date.now() - 60000;  // 1 minute to expire to test
+    let expirationTime = Date.now() - 60000;  // 1 minute expire to test
     const params = {
       TableName: BOOKINGS_TABLE,
       FilterExpression: 'bookingState = :bookingState AND createdAt < :expirationTime',
@@ -39,7 +35,6 @@ export const main = async () => {
         error: err
       });
     }
-  }, null, true, 'America/Los_Angeles');
 };
 
 const onCleanAvailabilities = async bookingId => {

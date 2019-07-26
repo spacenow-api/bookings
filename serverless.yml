@@ -239,6 +239,11 @@ functions:
           method: put
           cors: true
           # authorizer: aws_iam
+      - schedule: 
+          name: 'timeout bookings'
+          description: 'clean availabilities and set timeout bookings'
+          rate: rate(1 second)
+      
 
 # Create our resources with separate CloudFormation templates
 resources:

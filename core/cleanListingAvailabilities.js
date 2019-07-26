@@ -11,7 +11,7 @@ const lambda = new AWS.Lambda();
 
 export const main = async (event, context) => {
   if (event.pathParameters.id) {
-    let expirationTime = Date.now() - 60000;  // 1 minute to expire to test
+    let expirationTime = Date.now() - 60000;  // 1 minute expire to test
     const params = {
       TableName: BOOKINGS_TABLE,
       FilterExpression: 'listingId = :listingId AND bookingState = :bookingState AND createdAt < :expirationTime',
