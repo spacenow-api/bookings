@@ -18,7 +18,7 @@ export const main = async (event, context) => {
       TableName: BOOKINGS_TABLE,
       FilterExpression: 'listingId = :listingId AND bookingState = :bookingState AND createdAt < :expirationTime',
       ExpressionAttributeValues: {
-        ':listingId': event.pathParameters.id,
+        ':listingId': parseInt(event.pathParameters.id),
         ':bookingState': BookingStates.PENDING,
         ':expirationTime': expirationTime
       }
@@ -29,10 +29,10 @@ export const main = async (event, context) => {
       console.log('response', response)
       const bookings = response.Items;
       console.log('bookings', bookings)
-      // for (const item of bookings) {
-      //   await updateBookingState(item.bookingId, BookingStates.TIMEOUT);
-      //   await onCleanAvailabilities(item.bookingId);
-      // }
+      for (const item of bookings) {
+        await updateBookingState(item.bookingId, BookingStates.TIMEOUT);
+        await onCleanAvailabilities(item.bookingId);
+      }
       return success({ status: true, count: bookings.length });
     } catch (err) {
       return failure({
