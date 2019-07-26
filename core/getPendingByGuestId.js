@@ -10,7 +10,7 @@ export const main = async (event, context) => {
       ':guestId': event.pathParameters.id,
       'listingId': event.pathParameters.listingId,
       ':bookingState': 'pending',
-      ':expiredTime': expirationTime
+      ':expirationTime': expirationTime
     }
   };
   try {
