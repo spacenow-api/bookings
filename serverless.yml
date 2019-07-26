@@ -231,13 +231,21 @@ functions:
           method: post
           cors: true
           # authorizer: aws_iam
-      - schedule: rate(1 minute)
+      - schedule: rate(30 minutes)
   cleanListingAvailabilities:
     handler: core/cleanListingAvailabilities.main
     events:
       - http:
           path: bookings/cleanListingAvailabilities/{id}
           method: put
+          cors: true
+          # authorizer: aws_iam
+  getPendingByGuestId:
+    handler: core/getPendingByGuestId.main
+    events:
+      - http:
+          path: bookings/getPendingByGuestId/{id}
+          method: get
           cors: true
           # authorizer: aws_iam
       
