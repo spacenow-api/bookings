@@ -2,21 +2,18 @@ import * as dynamoDbLib from '../libs/dynamodb-lib';
 import { success, failure } from '../libs/response-lib';
 
 export const main = async (event, context) => {
-  console.log('guestId', event.pathParameters.id)
-  console.log('typeof guestId', typeof event.pathParameters.id)
-  console.log('listingId', event.pathParameters.listingId)
-  console.log('typeof listingId', typeof event.pathParameters.listingId)
   const params = {
     TableName: process.env.tableName,
-    Key: {
-      bookingState: 'pending',
-      guestId: event.pathParameters.id,
-      listingId: event.pathParameters.listingId
+    FilterExpression: 'listingId = :listingId AND guestId = :guestId AND bookingState = :bookingState',
+    ExpressionAttributeValues: {
+      ':guestId': event.pathParameters.id,
+      ':listingId': event.pathParameters.listingId,
+      ':bookingState': 'pending'
     }
   };
   try {
-    const result = await dynamoDbLib.call('get', params);
-    return success(result.Item);
+    const result = await dynamoDbLib.call('scan', params);
+    return success({ count: result.Items.length, bookings: result.Items });
   } catch (e) {
     console.error(e);
     return failure({ status: false });
