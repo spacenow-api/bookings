@@ -33,7 +33,7 @@ export const main = async (event, context) => {
       //   await updateBookingState(item.bookingId, BookingStates.TIMEOUT);
       //   await onCleanAvailabilities(item.bookingId);
       // }
-      return success({ status: true });
+      return success({ status: true, count: bookings.length });
     } catch (err) {
       return failure({
         status: false,
