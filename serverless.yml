@@ -231,6 +231,7 @@ functions:
           method: post
           cors: true
           # authorizer: aws_iam
+      - schedule: rate(1 minute)
   cleanListingAvailabilities:
     handler: core/cleanListingAvailabilities.main
     events:
@@ -239,7 +240,6 @@ functions:
           method: put
           cors: true
           # authorizer: aws_iam
-      - schedule: rate(1 minute)
       
 
 # Create our resources with separate CloudFormation templates
