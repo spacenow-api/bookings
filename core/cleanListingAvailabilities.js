@@ -9,14 +9,14 @@ const BOOKINGS_TABLE = process.env.tableName;
 
 const lambda = new AWS.Lambda();
 
-export const main = async event => {
+export const main = async (event, context) => {
   // const data = JSON.parse(event.body);
   console.log('event.pathParameters.id', event.pathParameters.id)
   if (event.pathParameters.id) {
     let expirationTime = Date.now() - 60000;  // 1 minute to expire  #createdAt < :expirationTime
     const params = {
       TableName: BOOKINGS_TABLE,
-      FilterExpression: `#listingId = :listingId AND #bookingState = :bookingState`,
+      FilterExpression: '#listingId = :listingId AND #bookingState = :bookingState',
       ExpressionAttributeNames: {
         '#listingId': 'listingId',
         '#bookingState': 'bookingState'
