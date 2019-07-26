@@ -11,18 +11,19 @@ const lambda = new AWS.Lambda();
 
 export const main = async (event, context) => {
   // const data = JSON.parse(event.body);
-  console.log('event.pathParameters.id', event.pathParameters.id)
+  console.log('event.pathParameters.id', typeof event.pathParameters.id)
   if (event.pathParameters.id) {
     let expirationTime = Date.now() - 60000;  // 1 minute to expire  #createdAt < :expirationTime
     const params = {
       TableName: BOOKINGS_TABLE,
-      FilterExpression: 'listingId = :listingId AND bookingState = :bookingState',
+      FilterExpression: 'listingId = :listingId AND bookingState = :bookingState AND createdAt < :expirationTime',
       ExpressionAttributeValues: {
         ':listingId': event.pathParameters.id,
-        ':bookingState': BookingStates.PENDING
+        ':bookingState': BookingStates.PENDING,
+        ':expirationTime': expirationTime
       }
     };
-    console.log(params)
+
     try {
       const response = await dynamoDbLib.call('scan', params);
       console.log('response', response)
@@ -32,8 +33,7 @@ export const main = async (event, context) => {
       //   await updateBookingState(item.bookingId, BookingStates.TIMEOUT);
       //   await onCleanAvailabilities(item.bookingId);
       // }
-      // return success({ status: true });
-      return success({  status: true, count: response.Items.length, bookings: response.Items });
+      return success({ status: true });
     } catch (err) {
       return failure({
         status: false,
