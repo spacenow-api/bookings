@@ -4,11 +4,10 @@ import { success, failure } from '../libs/response-lib';
 export const main = async (event, context) => {
   const params = {
     TableName: process.env.tableName,
-    FilterExpression: 'listingId = :listingId AND guestId = :guestId AND bookingState = :bookingState',
-    ExpressionAttributeValues: {
-      ':guestId': event.pathParameters.id,
-      ':listingId': event.pathParameters.listingId,
-      ':bookingState': 'pending'
+    Key: {
+      guestId: event.pathParameters.id,
+      listingId: event.pathParameters.listingId,
+      bookingState: 'pending'
     }
   };
   try {
