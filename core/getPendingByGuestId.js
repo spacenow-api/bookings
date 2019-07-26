@@ -7,7 +7,7 @@ export const main = async (event, context) => {
     TableName: process.env.tableName,
     FilterExpression: 'listingId = :listingId AND guestId = :guestId AND bookingState = :bookingState AND createdAt >= :expirationTime',
     ExpressionAttributeValues: {
-      ':guestId': event.pathParameters.guestId,
+      ':guestId': event.pathParameters.id,
       'listingId': event.pathParameters.listingId,
       ':bookingState': 'pending',
       ':expiredTime': expirationTime
