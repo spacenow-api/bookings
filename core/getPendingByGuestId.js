@@ -12,8 +12,8 @@ export const main = async (event, context) => {
     }
   };
   try {
-    const result = await dynamoDbLib.call('scan', params);
-    return success({ count: result.Items.length, bookings: result.Items });
+    const result = await dynamoDbLib.call('get', params);
+    return success(result.Item);
   } catch (e) {
     console.error(e);
     return failure({ status: false });
