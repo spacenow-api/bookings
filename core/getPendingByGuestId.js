@@ -2,15 +2,13 @@ import * as dynamoDbLib from '../libs/dynamodb-lib';
 import { success, failure } from '../libs/response-lib';
 
 export const main = async (event, context) => {
-  let expirationTime = Date.now() - 60000;  // 1 minute expire to test
   const params = {
     TableName: process.env.tableName,
-    FilterExpression: 'listingId = :listingId AND guestId = :guestId AND bookingState = :bookingState AND createdAt >= :expirationTime',
+    FilterExpression: 'listingId = :listingId AND guestId = :guestId AND bookingState = :bookingState',
     ExpressionAttributeValues: {
       ':guestId': event.pathParameters.id,
       ':listingId': event.pathParameters.listingId,
-      ':bookingState': 'pending',
-      ':expirationTime': expirationTime
+      ':bookingState': 'pending'
     }
   };
   try {
