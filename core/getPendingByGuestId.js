@@ -8,7 +8,7 @@ export const main = async (event, context) => {
     FilterExpression: 'listingId = :listingId AND guestId = :guestId AND bookingState = :bookingState AND createdAt >= :expirationTime',
     ExpressionAttributeValues: {
       ':guestId': event.pathParameters.id,
-      'listingId': event.pathParameters.listingId,
+      ':listingId': event.pathParameters.listingId,
       ':bookingState': 'pending',
       ':expirationTime': expirationTime
     }
