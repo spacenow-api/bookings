@@ -5,9 +5,10 @@ export const main = async (event, context) => {
   let expirationTime = Date.now() - 60000;  // 1 minute expire to test
   const params = {
     TableName: process.env.tableName,
-    FilterExpression: 'guestId = :guestId AND bookingState = :bookingState AND createdAt >= :expirationTime',
+    FilterExpression: 'listingId = :listingId AND guestId = :guestId AND bookingState = :bookingState AND createdAt >= :expirationTime',
     ExpressionAttributeValues: {
-      ':guestId': event.pathParameters.id,
+      ':guestId': event.pathParameters.guestId,
+      'listingId': event.pathParameters.listingId,
       ':bookingState': 'pending',
       ':expiredTime': expirationTime
     }
