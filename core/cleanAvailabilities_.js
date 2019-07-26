@@ -2,6 +2,7 @@ import AWS from 'aws-sdk';
 
 import * as dynamoDbLib from '../libs/dynamodb-lib';
 import { success, failure } from '../libs/response-lib';
+import { fetchPreReservationsByBookingId } from './preReservation';
 import updateBookingState from './updateBookingState';
 import { BookingStates } from './../validations';
 
@@ -9,27 +10,30 @@ const BOOKINGS_TABLE = process.env.tableName;
 
 const lambda = new AWS.Lambda();
 
-export const main = async (event, context) => {
-  if (event.pathParameters.id) {
-    let expirationTime = Date.now() - 60000;  // 1 minute to expire to test
-    const params = {
-      TableName: BOOKINGS_TABLE,
-      FilterExpression: 'listingId = :listingId AND bookingState = :bookingState AND createdAt < :expirationTime',
-      ExpressionAttributeValues: {
-        ':listingId': parseInt(event.pathParameters.id),
-        ':bookingState': BookingStates.PENDING,
-        ':expirationTime': expirationTime
-      }
-    };
-
+export const main = async event => {
+  const data = JSON.parse(event.body);
+  if (data.listingId) {
     try {
-      const response = await dynamoDbLib.call('scan', params);
+      const response = await dynamoDbLib.call('scan', {
+        TableName: BOOKINGS_TABLE,
+        FilterExpression: 'listingId = :listingId AND (bookingState = :pending)',
+        ProjectionExpression: 'bookingId',
+        ExpressionAttributeValues: {
+          ':listingId': data.listingId,
+          ':pending': BookingStates.PENDING
+        }
+      });
       const bookings = response.Items;
       for (const item of bookings) {
-        await updateBookingState(item.bookingId, BookingStates.TIMEOUT);
-        await onCleanAvailabilities(item.bookingId);
+        const preReservations = await fetchPreReservationsByBookingId(item.bookingId);
+        for (const pre of preReservations) {
+          if (pre.isExpired) {
+            await updateBookingState(item.bookingId, BookingStates.TIMEOUT);
+            await onCleanAvailabilities(item.bookingId);
+          }
+        }
       }
-      return success({ status: true, count: bookings.length });
+      return success({ status: true });
     } catch (err) {
       return failure({
         status: false,
