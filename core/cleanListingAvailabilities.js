@@ -16,11 +16,7 @@ export const main = async (event, context) => {
     let expirationTime = Date.now() - 60000;  // 1 minute to expire  #createdAt < :expirationTime
     const params = {
       TableName: BOOKINGS_TABLE,
-      FilterExpression: '#listingId = :listingId AND #bookingState = :bookingState',
-      ExpressionAttributeNames: {
-        '#listingId': 'listingId',
-        '#bookingState': 'bookingState'
-      },
+      FilterExpression: 'listingId = :listingId AND bookingState = :bookingState',
       ExpressionAttributeValues: {
         ':listingId': event.pathParameters.id.toString(),
         ':bookingState': BookingStates.PENDING
