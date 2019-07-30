@@ -41,7 +41,7 @@ const onCleanAvailabilities = async bookingId => {
   await lambda.invoke(
     {
       FunctionName: 'spacenow-availabilities-api-sandpit-deleteByBooking',
-      Payload: JSON.stringify({ bookingId })
+      Payload: JSON.stringify({ pathParameters: { id: bookingId }})
     },
     (error) => {
       if (error) {

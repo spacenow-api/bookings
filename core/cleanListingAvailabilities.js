@@ -8,7 +8,7 @@ import { BookingStates } from './../validations';
 const BOOKINGS_TABLE = process.env.tableName;
 
 const lambda = new AWS.Lambda();
-// Timed out booking state change
+// Clean availabilities for timeout booking FOR A LISTING
 export const main = async (event, context) => {
   if (event.pathParameters.id) {
     let expirationTime = Date.now() - 60000;  // 1 minute expire to test
@@ -48,7 +48,7 @@ const onCleanAvailabilities = async bookingId => {
   await lambda.invoke(
     {
       FunctionName: 'spacenow-availabilities-api-sandpit-deleteByBooking',
-      Payload: JSON.stringify({ bookingId })
+      Payload: JSON.stringify({ pathParameters: { id: bookingId }})
     },
     (error) => {
       if (error) {
