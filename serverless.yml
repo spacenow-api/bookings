@@ -223,15 +223,15 @@ functions:
           method: get
           cors: true
           # authorizer: aws_iam
-  cleanAvailabilities:
-    handler: core/cleanAvailabilities.main
-    events:
-      - http:
-          path: bookings/cleanAvailabilities
-          method: put
-          cors: true
-          # authorizer: aws_iam
-      - schedule: rate(15 minutes)
+  # cleanAvailabilities:
+  #   handler: core/cleanAvailabilities.main
+  #   events:
+  #     - http:
+  #         path: bookings/cleanAvailabilities
+  #         method: put
+  #         cors: true
+  #         # authorizer: aws_iam
+  #     - schedule: rate(15 minutes)
   cleanListingAvailabilities:
     handler: core/cleanListingAvailabilities.main
     events:
