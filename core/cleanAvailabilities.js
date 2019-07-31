@@ -26,8 +26,8 @@ export const main = async () => {
       const bookings = response.Items;
       for (const item of bookings) {
         await updateBookingState(item.bookingId, BookingStates.TIMEOUT);
-        console.log(item.bookingId)
         await onCleanAvailabilities(item.bookingId);
+        console.log('booking', bookingId)
       }
       return success({ status: true, count: bookings.length });
     } catch (err) {
@@ -39,7 +39,6 @@ export const main = async () => {
 };
 
 const onCleanAvailabilities = async bookingId => {
-  console.log('bookingId', bookingId)
   await lambda.invoke(
     {
       FunctionName: 'spacenow-availabilities-api-sandpit-deleteByBooking',
