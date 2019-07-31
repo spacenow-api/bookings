@@ -228,7 +228,7 @@ functions:
     events:
       - http:
           path: bookings/cleanAvailabilities
-          method: post
+          method: put
           cors: true
           # authorizer: aws_iam
       - schedule: rate(15 minutes)
