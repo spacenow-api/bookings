@@ -7,13 +7,13 @@ export const main = async (event, context) => {
     FilterExpression: 'listingId = :listingId AND guestId = :guestId AND bookingState = :bookingState',
     ExpressionAttributeValues: {
       ':guestId': event.pathParameters.id,
-      ':listingId': event.pathParameters.listingId,
+      ':listingId': parseInt(event.pathParameters.listingId),
       ':bookingState': 'pending'
     }
   };
   try {
     console.log('params', params)
-    console.log('event.pathParameters.listingId', event.pathParameters.listingId)
+    console.log('event.pathParameters.listingId', typeof event.pathParameters.listingId)
     console.log('event.pathParameters.id', event.pathParameters.id)
     const result = await dynamoDbLib.call('scan', params);
     console.log(result)
