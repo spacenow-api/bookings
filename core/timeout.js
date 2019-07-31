@@ -21,8 +21,8 @@ export async function main(event, context) {
     ReturnValues: 'ALL_NEW'
   };
   try {
-    await dynamoDbLib.call('update', params);
-    return success({ status: true });
+    Attributes = await dynamoDbLib.call('update', params);
+    return success({ status: true,  data: Attributes });
   } catch (e) {
     console.error(e);
     return failure({ status: false });
