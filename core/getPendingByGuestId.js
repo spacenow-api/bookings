@@ -12,11 +12,7 @@ export const main = async (event, context) => {
     }
   };
   try {
-    console.log('params', params)
-    console.log('event.pathParameters.listingId', typeof event.pathParameters.listingId)
-    console.log('event.pathParameters.id', event.pathParameters.id)
     const result = await dynamoDbLib.call('scan', params);
-    console.log(result)
     return success({ count: result.Items.length, bookings: result.Items });
   } catch (e) {
     console.error(e);
