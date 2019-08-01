@@ -28,13 +28,13 @@ export const main = async () => {
         await updateBookingState(item.bookingId, BookingStates.TIMEOUT);
         await onCleanAvailabilities(item.bookingId);
       }
-      return success({ status: true, count: bookings.length });
     } catch (err) {
       return failure({
         status: false,
         error: err
       });
     }
+    return success({ status: true, count: bookings.length });
 };
 
 const onCleanAvailabilities = async bookingId => {
