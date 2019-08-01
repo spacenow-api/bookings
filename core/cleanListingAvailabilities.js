@@ -8,7 +8,8 @@ import { BookingStates } from './../validations';
 const BOOKINGS_TABLE = process.env.tableName;
 
 const lambda = new AWS.Lambda();
-// Clean availabilities for timeout booking FOR A LISTING
+
+// Clean availabilities for timed out bookings FOR A LISTING
 export const main = async (event, context) => {
   if (event.pathParameters.id) {
     let expirationTime = Date.now() - 60000;  // 1 minute expire to test
