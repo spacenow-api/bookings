@@ -26,8 +26,8 @@ export const main = async (event, context) => {
       const response = await dynamoDbLib.call('scan', params);
       const bookings = response.Items;
       for (const item of bookings) {
-        await updateBookingState(item.bookingId, BookingStates.TIMEOUT);
-        await onCleanAvailabilities(item.bookingId);
+        updateBookingState(item.bookingId, BookingStates.TIMEOUT);
+        onCleanAvailabilities(item.bookingId);
       }
       return success({ status: true, count: bookings.length });
     } catch (err) {
@@ -45,7 +45,6 @@ export const main = async (event, context) => {
 };
 
 const onCleanAvailabilities = async bookingId => {
-  console.log('typeof bookingId', typeof item.bookingId)
   await lambda.invoke(
     {
       FunctionName: 'spacenow-availabilities-api-sandpit-deleteByBooking',
