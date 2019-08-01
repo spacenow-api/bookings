@@ -1,15 +1,19 @@
 import * as dynamoDbLib from '../libs/dynamodb-lib';
 import { success, failure } from '../libs/response-lib';
 
+import { BookingStates } from './../validations';
+
 export const main = async (event, context) => {
   const params = {
     TableName: process.env.tableName,
-    FilterExpression: '#gId = :guestId',
+    FilterExpression: '#gId = :guestId AND #bState <> :bookingState',
     ExpressionAttributeNames: {
-      '#gId': 'guestId'
+      '#gId': 'guestId',
+      '#bState': 'bookingState'
     },
     ExpressionAttributeValues: {
-      ':guestId': event.pathParameters.id
+      ':guestId': event.pathParameters.id,
+      ':bookingState': BookingStates.TIMEOUT
     }
   };
   try {
