@@ -27,7 +27,6 @@ export const main = async () => {
       for (const item of bookings) {
         await updateBookingState(item.bookingId, BookingStates.TIMEOUT);
         await onCleanAvailabilities(item.bookingId);
-        console.log('booking', bookingId)
       }
       return success({ status: true, count: bookings.length });
     } catch (err) {
