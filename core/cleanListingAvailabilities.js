@@ -26,8 +26,8 @@ export const main = async (event, context) => {
       const response = await dynamoDbLib.call('scan', params);
       const bookings = response.Items;
       for (const item of bookings) {
-        updateBookingState(item.bookingId, BookingStates.TIMEOUT);
-        onCleanAvailabilities(item.bookingId);
+        await updateBookingState(item.bookingId, BookingStates.TIMEOUT);
+        await onCleanAvailabilities(item.bookingId);
       }
       return success({ status: true, count: bookings.length });
     } catch (err) {
