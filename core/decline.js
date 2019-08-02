@@ -41,7 +41,6 @@ export async function main(event) {
     }
   } else {
     console.warn(`Booking ${bookingId} is not Requested.`)
-    await onCleanAvailabilities(bookingId)
     return success({ status: false })
   }
 }
