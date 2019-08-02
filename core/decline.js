@@ -46,16 +46,13 @@ export async function main(event) {
 }
 
 const onCleanAvailabilities = async bookingId => {
-  console.info(`Delete Availabilities by Booking ${bookingId}`)
-  await lambda.invoke(
+  await lambda.invokeAsync(
     {
       FunctionName: 'spacenow-availabilities-api-sandpit-deleteByBooking',
-      Payload: JSON.stringify({ pathParameters: { id: bookingId } })
+      InvokeArgs: JSON.stringify({ pathParameters: { id: bookingId } })
     },
     error => {
-      if (error) {
-        throw new Error(error)
-      }
+      if (error) throw new Error(error)
       console.info(
         `Availabilities removed with success to booking ${bookingId}`
       )
