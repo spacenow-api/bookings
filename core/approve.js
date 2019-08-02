@@ -10,7 +10,6 @@ export async function main(event) {
       bookingId: bookingId
     }
   })
-  console.log('bookingObj', bookingObj)
   if (BookingStates.REQUESTED === bookingObj.bookingState) {
     const params = {
       TableName: process.env.tableName,
@@ -19,7 +18,7 @@ export async function main(event) {
       },
       ExpressionAttributeValues: {
         ':updatedAt': Date.now(),
-        ':bookingState': 'approved',
+        ':bookingState': BookingStates.APPROVED,
         ':paymentState': 'completed'
       },
       UpdateExpression:

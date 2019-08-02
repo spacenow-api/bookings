@@ -1,28 +1,41 @@
-import * as dynamoDbLib from '../libs/dynamodb-lib';
-import { success, failure } from '../libs/response-lib';
+import * as dynamoDbLib from '../libs/dynamodb-lib'
+import { success, failure } from '../libs/response-lib'
+import { BookingStates } from './../validations'
 
-export async function main(event, context) {
-  const params = {
+export async function main(event) {
+  const bookingId = event.pathParameters.id
+  const { Item: bookingObj } = await dynamoDbLib.call('get', {
     TableName: process.env.tableName,
     Key: {
-      bookingId: event.pathParameters.id
-    },
-    ExpressionAttributeNames: {
-      '#booking_state': 'bookingState'
-    },
-    ExpressionAttributeValues: {
-      ':bookingState': 'declined',
-      ':updatedAt': Date.now() || null
-    },
-    UpdateExpression:
-      'SET #booking_state = :bookingState, updatedAt = :updatedAt',
-    ReturnValues: 'ALL_NEW'
-  };
-  try {
-    const { Attributes } = await dynamoDbLib.call('update', params);
-    return success({ status: true, data: Attributes });
-  } catch (e) {
-    console.error(e);
-    return failure({ status: false });
+      bookingId: bookingId
+    }
+  })
+  if (BookingStates.REQUESTED === bookingObj.bookingState) {
+    const params = {
+      TableName: process.env.tableName,
+      Key: {
+        bookingId: event.pathParameters.id
+      },
+      ExpressionAttributeNames: {
+        '#booking_state': 'bookingState'
+      },
+      ExpressionAttributeValues: {
+        ':bookingState': BookingStates.DECLINED,
+        ':updatedAt': Date.now()
+      },
+      UpdateExpression:
+        'SET #booking_state = :bookingState, updatedAt = :updatedAt',
+      ReturnValues: 'ALL_NEW'
+    }
+    try {
+      const { Attributes } = await dynamoDbLib.call('update', params)
+      return success({ status: true, data: Attributes })
+    } catch (e) {
+      console.error(e)
+      return failure({ status: false })
+    }
+  } else {
+    console.warn(`Booking ${bookingId} is not Requested.`)
+    return success({ status: true, data: {} })
   }
 }
