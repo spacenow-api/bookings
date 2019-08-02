@@ -46,6 +46,7 @@ export async function main(event) {
 }
 
 const onCleanAvailabilities = async bookingId => {
+  console.info(`Delete Availabilities by Booking ${bookingId}`)
   await lambda.invoke(
     {
       FunctionName: 'spacenow-availabilities-api-sandpit-deleteByBooking',
