@@ -12,26 +12,26 @@ export async function main(event) {
   })
   console.log('bookingObj', bookingObj)
   if (BookingStates.REQUESTED === bookingObj.bookingState) {
-    // const params = {
-    //   TableName: process.env.tableName,
-    //   Key: {
-    //     bookingId: bookingId
-    //   },
-    //   ExpressionAttributeValues: {
-    //     ':updatedAt': Date.now(),
-    //     ':bookingState': 'approved',
-    //     ':paymentState': 'completed'
-    //   },
-    //   UpdateExpression:
-    //     'SET bookingState = :bookingState, paymentState = :paymentState, updatedAt = :updatedAt',
-    //   ReturnValues: 'ALL_NEW'
-    // }
-    // try {
-    //   const { Attributes } = await dynamoDbLib.call('update', params)
-    //   return success({ status: true, data: Attributes })
-    // } catch (e) {
-    //   return failure({ status: 'error', error: e })
-    // }
+    const params = {
+      TableName: process.env.tableName,
+      Key: {
+        bookingId: bookingId
+      },
+      ExpressionAttributeValues: {
+        ':updatedAt': Date.now(),
+        ':bookingState': 'approved',
+        ':paymentState': 'completed'
+      },
+      UpdateExpression:
+        'SET bookingState = :bookingState, paymentState = :paymentState, updatedAt = :updatedAt',
+      ReturnValues: 'ALL_NEW'
+    }
+    try {
+      const { Attributes } = await dynamoDbLib.call('update', params)
+      return success({ status: true, data: Attributes })
+    } catch (e) {
+      return failure({ status: 'error', error: e })
+    }
   } else {
     console.warn(`Booking ${bookingId} is not Requested.`)
   }
