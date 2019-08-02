@@ -33,6 +33,6 @@ export async function main(event) {
     }
   } else {
     console.warn(`Booking ${bookingId} is not Requested.`)
-    return success({ status: false })
+    return success({ status: true, data: bookingObj })
   }
 }
