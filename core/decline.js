@@ -29,6 +29,7 @@ export async function main(event) {
     }
     try {
       const { Attributes } = await dynamoDbLib.call('update', params)
+      await onCleanAvailabilities(bookingId)
       return success({ status: true, data: Attributes })
     } catch (e) {
       console.error(e)
@@ -38,4 +39,21 @@ export async function main(event) {
     console.warn(`Booking ${bookingId} is not Requested.`)
     return success({ status: false })
   }
+}
+
+const onCleanAvailabilities = async bookingId => {
+  await lambda.invoke(
+    {
+      FunctionName: 'spacenow-availabilities-api-sandpit-deleteByBooking',
+      Payload: JSON.stringify({ pathParameters: { id: bookingId } })
+    },
+    error => {
+      if (error) {
+        throw new Error(error)
+      }
+      console.info(
+        `Availabilities removed with success to booking ${bookingId}`
+      )
+    }
+  )
 }
