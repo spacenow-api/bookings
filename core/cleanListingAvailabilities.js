@@ -12,7 +12,7 @@ const lambda = new AWS.Lambda()
 // Clean availabilities for timed out bookings FOR A LISTING
 export const main = async (event, context) => {
   if (event.pathParameters.id) {
-    let expirationTime = Date.now() - 60000 // 1 minute expire to test
+    let expirationTime = Date.now() - 1800000 // 30 minutes (ms) expire 
     const params = {
       TableName: BOOKINGS_TABLE,
       FilterExpression:

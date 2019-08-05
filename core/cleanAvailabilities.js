@@ -11,7 +11,7 @@ const lambda = new AWS.Lambda()
 
 // Clean availability for timed out bookings -> cron job
 export const main = async () => {
-  let expirationTime = Date.now() - 60000 // 1 minute expire to test
+  let expirationTime = Date.now() - 1800000 // 30 minutes (ms) expire 
   const params = {
     TableName: BOOKINGS_TABLE,
     FilterExpression:
