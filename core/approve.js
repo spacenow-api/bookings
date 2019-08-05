@@ -10,7 +10,7 @@ export async function main(event) {
       bookingId: bookingId
     }
   })
-  if (BookingStates.REQUESTED === bookingObj.bookingState) {
+  if (BookingStates.REQUESTED === bookingObj.bookingState || BookingStates.PENDING === bookingObj.bookingState) {
     const params = {
       TableName: process.env.tableName,
       Key: {
