@@ -39,10 +39,12 @@ export const main = async () => {
 }
 
 const onCleanAvailabilities = async bookingId => {
+  const environment = process.env.environment;
+  console.log('environment cron', environment)
   await lambda
     .invoke(
       {
-        FunctionName: 'spacenow-availabilities-api-sandpit-deleteByBooking',
+        FunctionName: `spacenow-availabilities-api-${environment}-deleteByBooking`,
         Payload: JSON.stringify({ pathParameters: { id: bookingId } })
       },
       error => {
