@@ -49,7 +49,6 @@ export const main = async (event, context) => {
 
 const onCleanAvailabilities = async bookingId => {
   const environment = process.env.environment;
-  console.log('environment', environment)
   await lambda
     .invoke(
       {

@@ -40,7 +40,6 @@ export const main = async () => {
 
 const onCleanAvailabilities = async bookingId => {
   const environment = process.env.environment;
-  console.log('environment cron', environment)
   await lambda
     .invoke(
       {
