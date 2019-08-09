@@ -4,6 +4,7 @@ import * as dynamoDbLib from '../libs/dynamodb-lib'
 import { success, failure } from '../libs/response-lib'
 import updateBookingState from './updateBookingState'
 import { BookingStates } from './../validations'
+import { CONNREFUSED } from 'dns';
 
 const BOOKINGS_TABLE = process.env.tableName
 
@@ -47,10 +48,12 @@ export const main = async (event, context) => {
 }
 
 const onCleanAvailabilities = async bookingId => {
+  const environment = process.env.environment;
+  console.log('environment', environment)
   await lambda
     .invoke(
       {
-        FunctionName: 'spacenow-availabilities-api-sandpit-deleteByBooking',
+        FunctionName: `spacenow-availabilities-api-${environment}-deleteByBooking`,
         Payload: JSON.stringify({ pathParameters: { id: bookingId } })
       },
       error => {
