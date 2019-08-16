@@ -46,10 +46,11 @@ export async function main(event) {
 }
 
 const onCleanAvailabilities = async bookingId => {
+  const environment = process.env.environment;
   await lambda
     .invoke(
       {
-        FunctionName: 'spacenow-availabilities-api-sandpit-deleteByBooking',
+        FunctionName: `spacenow-availabilities-api-${environment}-deleteByBooking`,
         Payload: JSON.stringify({ pathParameters: { id: bookingId } })
       },
       error => {
