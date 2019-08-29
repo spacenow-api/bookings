@@ -1,7 +1,11 @@
+import AWS from 'aws-sdk'
+
 import * as dynamoDbLib from '../libs/dynamodb-lib';
 import { success, failure } from '../libs/response-lib';
 
 import { BookingStates } from './../validations';
+
+const lambda = new AWS.Lambda()
 
 export async function main(event, context) {
   const params = {
