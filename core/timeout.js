@@ -22,9 +22,30 @@ export async function main(event, context) {
   };
   try {
     const { Attributes } = await dynamoDbLib.call('update', params);
+    await onCleanAvailabilities(event.pathParameters.id)
     return success({ status: true,  data: Attributes });
   } catch (e) {
     console.error(e);
     return failure({ status: false });
   }
+}
+
+const onCleanAvailabilities = async bookingId => {
+  const environment = process.env.environment;
+  await lambda
+    .invoke(
+      {
+        FunctionName: `spacenow-availabilities-api-${environment}-deleteByBooking`,
+        Payload: JSON.stringify({ pathParameters: { id: bookingId } })
+      },
+      error => {
+        if (error) {
+          throw new Error(error)
+        }
+        console.info(
+          `Availabilities removed with success to booking ${bookingId}`
+        )
+      }
+    )
+    .promise()
 }
