@@ -3,8 +3,8 @@ import { success, failure } from '../libs/response-lib';
 import moment from 'moment'
 
 export const main = async (event, context) => {
-  let lessHour = moment().subtract(24, 'hours').subtract(30, 'minutes').unix()*1000;
-  let plusHour = moment().subtract(24, 'hours').add(30, 'minutes').unix()*1000;
+  let lessHour = moment().subtract(24, 'hours').subtract(30, 'minutes').unix() * 1000;
+  let plusHour = moment().subtract(24, 'hours').add(30, 'minutes').unix() * 1000;
 
   const params = {
     TableName: process.env.tableName,
@@ -21,7 +21,7 @@ export const main = async (event, context) => {
   };
   try {
     const result = await dynamoDbLib.call('scan', params);
-    return success({ count: result.Items.length, bookings: result.Items });
+    return success({ count: result.Items.length, items: result.Items });
   } catch (e) {
     console.error(e);
     return failure({ status: false });

@@ -13,7 +13,7 @@ export const main = async (event, context) => {
   };
   try {
     const result = await dynamoDbLib.call('scan', params);
-    return success({ count: result.Items.length, bookings: result.Items });
+    return success({ count: result.Items.length, items: result.Items });
   } catch (e) {
     console.error(e);
     return failure({ status: false });
