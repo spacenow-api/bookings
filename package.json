@@ -28,6 +28,7 @@
     "serverless-dynamodb-local": "~0.2.38",
     "serverless-offline": "~3.25.6",
     "serverless-webpack": "~5.1.0",
+    "serverless-prune-plugin": "~1.4.0",
     "webpack": "~4.16.2",
     "webpack-node-externals": "~1.6.0"
   },

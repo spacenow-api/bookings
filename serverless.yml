@@ -8,6 +8,7 @@ plugins:
   - serverless-domain-manager
   - serverless-dynamodb-local
   - serverless-offline
+  - serverless-prune-plugin
 
 # serverless-webpack configuration
 # Enable auto-packing of external modules
@@ -46,6 +47,9 @@ custom:
   dynamodb:
     stages:
       - ${self:custom.StageName}
+  prune:
+    automatic: true
+    number: 5
 
 provider:
   name: aws
