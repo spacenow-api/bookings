@@ -21,8 +21,7 @@ export async function main(event) {
         ':bookingState': BookingStates.APPROVED,
         ':paymentState': 'completed'
       },
-      UpdateExpression:
-        'SET bookingState = :bookingState, paymentState = :paymentState, updatedAt = :updatedAt',
+      UpdateExpression: 'SET bookingState = :bookingState, paymentState = :paymentState, updatedAt = :updatedAt',
       ReturnValues: 'ALL_NEW'
     }
     try {

@@ -16,13 +16,12 @@ export async function main(event, context) {
       ':paymentState': 'completed',
       ':updatedAt': Date.now() || null
     },
-    UpdateExpression:
-      'SET #booking_state = :bookingState, #paymentState = :paymentState, updatedAt = :updatedAt',
+    UpdateExpression: 'SET #booking_state = :bookingState, #paymentState = :paymentState, updatedAt = :updatedAt',
     ReturnValues: 'ALL_NEW'
   };
   try {
-    await dynamoDbLib.call('update', params);
-    return success({ status: true });
+    const { Attributes } = await dynamoDbLib.call('update', params)
+    return success({ status: true, data: Attributes })
   } catch (e) {
     console.error(e);
     return failure({ status: false });
