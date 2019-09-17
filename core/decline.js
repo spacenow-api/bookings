@@ -66,7 +66,7 @@ const onSendDeclinedEmail = async (bookingId) => {
   const environment = process.env.environment
   await lambda.invoke(
     {
-      FunctionName: `spacenow-api-emails-${environment}-sendEmailByBookingDeclined`,
+      FunctionName: `api-emails-${environment}-sendEmailByBookingDeclined`,
       Payload: JSON.stringify({ pathParameters: { bookingId: bookingId } })
     },
     (error) => {

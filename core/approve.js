@@ -31,8 +31,8 @@ export async function main(event) {
     try {
       const { Attributes } = await dynamoDbLib.call('update', params)
       const environment = process.env.environment
-      await onSendEmail(`spacenow-api-emails-${environment}-sendEmailByBookingInstantHost`, bookingId)
-      await onSendEmail(`spacenow-api-emails-${environment}-sendEmailByBookingInstantGuest`, bookingId)
+      await onSendEmail(`api-emails-${environment}-sendEmailByBookingInstantHost`, bookingId)
+      await onSendEmail(`api-emails-${environment}-sendEmailByBookingInstantGuest`, bookingId)
       return success({ status: true, data: Attributes })
     } catch (e) {
       return failure({ status: 'error', error: e })
