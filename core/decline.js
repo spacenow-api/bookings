@@ -34,6 +34,7 @@ export async function main(event) {
     try {
       const { Attributes } = await dynamoDbLib.call('update', params)
       await onCleanAvailabilities(bookingId)
+      await onSendDeclinedEmail(bookingId)
       return success({ status: true, data: Attributes })
     } catch (e) {
       console.error(e)
@@ -45,21 +46,39 @@ export async function main(event) {
   }
 }
 
-const onCleanAvailabilities = async bookingId => {
-  const environment = process.env.environment;
+const onCleanAvailabilities = async (bookingId) => {
+  const environment = process.env.environment
   await lambda
     .invoke(
       {
         FunctionName: `spacenow-availabilities-api-${environment}-deleteByBooking`,
         Payload: JSON.stringify({ pathParameters: { id: bookingId } })
       },
-      error => {
+      (error) => {
         if (error) {
           throw new Error(error)
         }
         console.info(
           `Availabilities removed with success to booking ${bookingId}`
         )
+      }
+    )
+    .promise()
+}
+
+const onSendDeclinedEmail = async (bookingId) => {
+  const environment = process.env.environment
+  await lambda
+    .invoke(
+      {
+        FunctionName: `spacenow-api-emails-${environment}-sendEmailByBookingDeclined`,
+        Payload: JSON.stringify({ pathParameters: { bookingId: bookingId } })
+      },
+      (error) => {
+        if (error) {
+          throw new Error(error)
+        }
+        console.info(`Declined email sent with success by booking ${bookingId}`)
       }
     )
     .promise()

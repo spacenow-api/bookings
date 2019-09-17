@@ -5,6 +5,7 @@
   "main": "handler.js",
   "scripts": {
     "test": "jest",
+    "dev": "./node_modules/.bin/serverless offline -s dev -P 6007",
     "debug": "export SLS_DEBUG=* && node --inspect ./node_modules/.bin/serverless offline -s dev -P 6007"
   },
   "author": "Lucas Nascimento",
