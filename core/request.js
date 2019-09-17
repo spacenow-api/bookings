@@ -1,11 +1,12 @@
 import * as dynamoDbLib from '../libs/dynamodb-lib';
 import { success, failure } from '../libs/response-lib';
 
-export async function main(event, context) {
+export async function main(event) {
+  const bookingId = event.pathParameters.id
   const params = {
     TableName: process.env.tableName,
     Key: {
-      bookingId: event.pathParameters.id
+      bookingId: bookingId
     },
     ExpressionAttributeNames: {
       '#booking_state': 'bookingState',
