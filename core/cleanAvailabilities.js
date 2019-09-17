@@ -40,7 +40,7 @@ export const main = async () => {
 
 const onCleanAvailabilities = async bookingId => {
   const environment = process.env.environment;
-  await lambda
+  return await lambda
     .invoke(
       {
         FunctionName: `spacenow-availabilities-api-${environment}-deleteByBooking`,

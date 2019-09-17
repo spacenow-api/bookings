@@ -48,7 +48,7 @@ export async function main(event) {
 
 const onCleanAvailabilities = async (bookingId) => {
   const environment = process.env.environment
-  await lambda.invoke(
+  return await lambda.invoke(
     {
       FunctionName: `spacenow-availabilities-api-${environment}-deleteByBooking`,
       Payload: JSON.stringify({ pathParameters: { id: bookingId } })
@@ -64,7 +64,7 @@ const onCleanAvailabilities = async (bookingId) => {
 
 const onSendDeclinedEmail = async (bookingId) => {
   const environment = process.env.environment
-  await lambda.invoke(
+  return await lambda.invoke(
     {
       FunctionName: `api-emails-${environment}-sendEmailByBookingDeclined`,
       Payload: JSON.stringify({ pathParameters: { bookingId: bookingId } })

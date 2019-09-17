@@ -44,7 +44,7 @@ export async function main(event) {
 }
 
 const onSendEmail = async (emailFunctionName, bookingId) => {
-  await lambda.invoke(
+  return await lambda.invoke(
     { 
       FunctionName: emailFunctionName,
       Payload: JSON.stringify({ pathParameters: { bookingId: bookingId } })
