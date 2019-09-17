@@ -45,7 +45,7 @@ const onSendEmail = async (emailFunctionName, bookingId) => {
       if (error) {
         throw new Error(error)
       }
-      console.info(`Approved email sent with success by booking ${bookingId}`)
+      console.info(`Requested email sent with success by booking ${bookingId}`)
     }
   ).promise()
 }
