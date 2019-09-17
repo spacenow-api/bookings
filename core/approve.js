@@ -10,10 +10,7 @@ export async function main(event) {
       bookingId: bookingId
     }
   })
-  if (
-    BookingStates.REQUESTED === bookingObj.bookingState ||
-    BookingStates.PENDING === bookingObj.bookingState
-  ) {
+  if (BookingStates.REQUESTED === bookingObj.bookingState || BookingStates.PENDING === bookingObj.bookingState) {
     const params = {
       TableName: process.env.tableName,
       Key: {
@@ -24,13 +21,14 @@ export async function main(event) {
         ':bookingState': BookingStates.APPROVED,
         ':paymentState': 'completed'
       },
-      UpdateExpression:
-        'SET bookingState = :bookingState, paymentState = :paymentState, updatedAt = :updatedAt',
+      UpdateExpression: 'SET bookingState = :bookingState, paymentState = :paymentState, updatedAt = :updatedAt',
       ReturnValues: 'ALL_NEW'
     }
     try {
       const { Attributes } = await dynamoDbLib.call('update', params)
-      await onSendApprovedEmail(bookingId)
+      const environment = process.env.environment
+      await onSendEmail(`spacenow-api-emails-${environment}-sendEmailByBookingInstantHost`, bookingId)
+      await onSendEmail(`spacenow-api-emails-${environment}-sendEmailByBookingInstantGuest`, bookingId)
       return success({ status: true, data: Attributes })
     } catch (e) {
       return failure({ status: 'error', error: e })
@@ -41,20 +39,16 @@ export async function main(event) {
   }
 }
 
-const onSendApprovedEmail = async (bookingId) => {
-  const environment = process.env.environment
-  await lambda
-    .invoke(
-      {
-        FunctionName: `spacenow-api-emails-${environment}-sendEmailByBookingInstantGuest`,
-        Payload: JSON.stringify({ pathParameters: { bookingId: bookingId } })
-      },
-      (error) => {
-        if (error) {
-          throw new Error(error)
-        }
-        console.info(`Approved email sent with success by booking ${bookingId}`)
+const onSendEmail = async (emailFunctionName, bookingId) => {
+  await lambda.invoke(
+    { 
+      FunctionName: emailFunctionName,
+      Payload: JSON.stringify({ pathParameters: { bookingId: bookingId } })
+    }, (error) => {
+      if (error) {
+        throw new Error(error)
       }
-    )
-    .promise()
+      console.info(`Approved email sent with success by booking ${bookingId}`)
+    }
+  ).promise()
 }
