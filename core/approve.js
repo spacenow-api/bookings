@@ -31,8 +31,8 @@ export async function main(event) {
     try {
       const { Attributes } = await dynamoDbLib.call('update', params)
       const environment = process.env.environment
-      onSendEmail(`api-emails-${environment}-sendEmailByBookingInstantHost`, bookingId)
-      onSendEmail(`api-emails-${environment}-sendEmailByBookingInstantGuest`, bookingId)
+      await onSendEmail(`api-emails-${environment}-sendEmailByBookingInstantHost`, bookingId)
+      await onSendEmail(`api-emails-${environment}-sendEmailByBookingInstantGuest`, bookingId)
       return success({ status: true, data: Attributes })
     } catch (e) {
       return failure({ status: 'error', error: e })
@@ -43,13 +43,16 @@ export async function main(event) {
   }
 }
 
-const onSendEmail = (emailFunctionName, bookingId) => {
-  lambda.invoke({ FunctionName: emailFunctionName, Payload: JSON.stringify({ pathParameters: { bookingId: bookingId } }) },
-    function(error) {
+const onSendEmail = async (emailFunctionName, bookingId) => {
+  return await lambda.invoke(
+    { 
+      FunctionName: emailFunctionName,
+      Payload: JSON.stringify({ pathParameters: { bookingId: bookingId } })
+    }, (error) => {
       if (error) {
-        console.error(error)
-      } else {
-        console.info(`Approved email sent with success by booking ${bookingId}`)
+        throw new Error(error)
       }
-    })
+      console.info(`Approved email sent with success by booking ${bookingId}`)
+    }
+  ).promise()
 }
