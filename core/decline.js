@@ -62,18 +62,22 @@ const onCleanAvailabilities = async (bookingId) => {
   ).promise()
 }
 
-const onSendDeclinedEmail = async (bookingId) => {
-  const environment = process.env.environment
-  return await lambda.invoke(
-    {
-      FunctionName: `api-emails-${environment}-sendEmailByBookingDeclined`,
-      Payload: JSON.stringify({ pathParameters: { bookingId: bookingId } })
-    },
-    (error) => {
-      if (error) {
-        throw new Error(error)
+const onSendDeclinedEmail = (bookingId) => {
+  return new Promise((resolve, reject) => {
+    const environment = process.env.environment
+    lambda.invoke(
+      {
+        FunctionName: `api-emails-${environment}-sendEmailByBookingDeclined`,
+        Payload: JSON.stringify({ pathParameters: { bookingId: bookingId } })
+      },
+      (error) => {
+        if (error) {
+          reject(error)
+        } else {
+          console.info(`Declined email sent with success by booking ${bookingId}`)
+          resolve()
+        }
       }
-      console.info(`Declined email sent with success by booking ${bookingId}`)
-    }
-  ).promise()
+    )
+  })
 }

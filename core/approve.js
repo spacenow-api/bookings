@@ -43,16 +43,20 @@ export async function main(event) {
   }
 }
 
-const onSendEmail = async (emailFunctionName, bookingId) => {
-  return await lambda.invoke(
-    { 
-      FunctionName: emailFunctionName,
-      Payload: JSON.stringify({ pathParameters: { bookingId: bookingId } })
-    }, (error) => {
-      if (error) {
-        throw new Error(error)
+const onSendEmail = (emailFunctionName, bookingId) => {
+  return new Promise((resolve, reject) => {
+    lambda.invoke(
+      { 
+        FunctionName: emailFunctionName,
+        Payload: JSON.stringify({ pathParameters: { bookingId: bookingId } })
+      }, (error) => {
+        if (error) {
+          reject(error)
+        } else {
+          console.info(`Approved email sent with success by booking ${bookingId}`)
+          resolve()
+        }
       }
-      console.info(`Approved email sent with success by booking ${bookingId}`)
-    }
-  ).promise()
+    )
+  })
 }
