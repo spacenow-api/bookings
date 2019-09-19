@@ -11,7 +11,7 @@ const lambda = new AWS.Lambda()
 
 // Clean availability for timed out bookings -> cron job
 export const main = async () => {
-  let expirationTime = Date.now() - 1800000 // 30 minutes (ms) expire 
+  let expirationTime = Date.now() - 1800000 // 30 minutes (ms) expire
   const params = {
     TableName: BOOKINGS_TABLE,
     FilterExpression:
@@ -26,7 +26,7 @@ export const main = async () => {
     const response = await dynamoDbLib.call('scan', params)
     const bookings = response.Items
     for (const item of bookings) {
-      await onCleanAvailabilities(item.bookingId)
+      onCleanAvailabilities(item.bookingId)
       await updateBookingState(item.bookingId, BookingStates.TIMEOUT)
     }
     return success({ status: true, count: bookings.length })
@@ -38,22 +38,19 @@ export const main = async () => {
   }
 }
 
-const onCleanAvailabilities = async bookingId => {
-  const environment = process.env.environment;
-  return await lambda
-    .invoke(
-      {
-        FunctionName: `spacenow-availabilities-api-${environment}-deleteByBooking`,
-        Payload: JSON.stringify({ pathParameters: { id: bookingId } })
-      },
-      error => {
-        if (error) {
-          throw new Error(error)
-        }
-        console.info(
-          `Availabilities removed with success to booking ${bookingId}`
-        )
+const onCleanAvailabilities = (bookingId) => {
+  const environment = process.env.environment
+  lambda.invoke(
+    {
+      FunctionName: `spacenow-availabilities-api-${environment}-deleteByBooking`,
+      Payload: JSON.stringify({ pathParameters: { id: bookingId } })
+    },
+    (error) => {
+      if (error) {
+        console.error(error)
+      } else {
+        console.info(`Availabilities removed with success to booking ${bookingId}`)
       }
-    )
-    .promise()
+    }
+  )
 }
