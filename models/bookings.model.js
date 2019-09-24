@@ -1,0 +1,118 @@
+'use strict'
+
+module.exports = function(sequelize, DataTypes) {
+  return sequelize.define(
+    'Bookings',
+    {
+      bookingId: {
+        type: DataTypes.STRING(36),
+        allowNull: false,
+        primaryKey: true
+      },
+      listingId: {
+        type: DataTypes.INTEGER(11),
+        allowNull: false,
+        references: {
+          model: 'Listing',
+          key: 'id'
+        }
+      },
+      hostId: {
+        type: DataTypes.STRING(36),
+        allowNull: false,
+        references: {
+          model: 'User',
+          key: 'id'
+        }
+      },
+      guestId: {
+        type: DataTypes.STRING(36),
+        allowNull: false,
+        references: {
+          model: 'User',
+          key: 'id'
+        }
+      },
+      confirmationCode: {
+        type: DataTypes.INTEGER(11),
+        allowNull: false
+      },
+      priceType: {
+        type: DataTypes.STRING(10),
+        allowNull: false
+      },
+      quantity: {
+        type: DataTypes.INTEGER(11),
+        allowNull: true,
+        defaultValue: '1'
+      },
+      currency: {
+        type: DataTypes.STRING(36),
+        allowNull: false
+      },
+      period: {
+        type: DataTypes.INTEGER(11),
+        allowNull: false
+      },
+      basePrice: {
+        type: DataTypes.FLOAT,
+        allowNull: false
+      },
+      hostServiceFee: {
+        type: DataTypes.FLOAT,
+        allowNull: false
+      },
+      guestServiceFee: {
+        type: DataTypes.FLOAT,
+        allowNull: false
+      },
+      totalPrice: {
+        type: DataTypes.FLOAT,
+        allowNull: false
+      },
+      bookingType: {
+        type: DataTypes.ENUM('instant', 'request'),
+        allowNull: true,
+        defaultValue: 'instant'
+      },
+      bookingState: {
+        type: DataTypes.ENUM(
+          'pending',
+          'approved',
+          'declined',
+          'completed',
+          'cancelled',
+          'expired',
+          'recurring',
+          'timeout'
+        ),
+        allowNull: true,
+        defaultValue: 'pending'
+      },
+      paymentState: {
+        type: DataTypes.ENUM('pending', 'completed'),
+        allowNull: true,
+        defaultValue: 'pending'
+      },
+      checkIn: {
+        type: DataTypes.DATE,
+        allowNull: false
+      },
+      checkOut: {
+        type: DataTypes.DATE,
+        allowNull: false
+      },
+      createdAt: {
+        type: DataTypes.DATE,
+        allowNull: false
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: false
+      }
+    },
+    {
+      tableName: 'Bookings'
+    }
+  )
+}
