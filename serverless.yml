@@ -275,6 +275,14 @@ functions:
           method: put
           cors: true
           # authorizer: aws_iam
+  databaseMigration:
+    handler: helpers/databaseMigration.function.main
+    events:
+      - http:
+          path: bookings/migration/{token}/database
+          method: post
+          cors: true
+          # authorizer: aws_iam
 
 # Create our resources with separate CloudFormation templates
 resources:
