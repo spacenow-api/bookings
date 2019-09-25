@@ -55,6 +55,7 @@ dotenv:
   path: ./.env
   basePath: ./
   include:
+    - tableName
     - environment
     - DATABASE_SCHEMA
     - DATABASE_HOST

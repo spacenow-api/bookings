@@ -1,6 +1,7 @@
 // import * as dynamoDbLib from '../libs/dynamodb-lib'
 import { success, failure } from '../libs/response-lib'
 import { Bookings } from './../models'
+import { mapReservations } from './../validations'
 
 export const main = async () => {
   try {
@@ -9,10 +10,7 @@ export const main = async () => {
     // })
     // return success(result.Items)
     const result = await Bookings.findAll()
-    result.map((o) => {
-      const reservationsString = o.reservations
-      o.reservations = reservationsString.split(',')
-    })
+    result.map(mapReservations)
     return success(result)
   } catch (err) {
     console.error(err)

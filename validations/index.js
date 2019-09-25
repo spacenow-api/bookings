@@ -46,4 +46,16 @@ const getDates = (startDate, endDate) => {
   return arrDates
 }
 
-export { calcTotal, getDates, getEndDate, BookingStates, BookingStatesArray }
+const mapReservations = (booking) => {
+  const reservationsString = booking.reservations
+  booking.reservations = reservationsString.split(',')
+}
+
+export {
+  calcTotal,
+  getDates,
+  getEndDate,
+  BookingStates,
+  BookingStatesArray,
+  mapReservations
+}
