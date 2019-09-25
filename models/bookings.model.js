@@ -11,30 +11,18 @@ module.exports = function(sequelize, DataTypes) {
       },
       listingId: {
         type: DataTypes.INTEGER(11),
-        allowNull: false,
-        references: {
-          model: 'Listing',
-          key: 'id'
-        }
+        allowNull: false
       },
       hostId: {
         type: DataTypes.STRING(36),
-        allowNull: false,
-        references: {
-          model: 'User',
-          key: 'id'
-        }
+        allowNull: false
       },
       guestId: {
         type: DataTypes.STRING(36),
-        allowNull: false,
-        references: {
-          model: 'User',
-          key: 'id'
-        }
+        allowNull: false
       },
       confirmationCode: {
-        type: DataTypes.INTEGER(11),
+        type: DataTypes.BIGINT,
         allowNull: false
       },
       priceType: {
@@ -78,6 +66,7 @@ module.exports = function(sequelize, DataTypes) {
       bookingState: {
         type: DataTypes.ENUM(
           'pending',
+          'requested',
           'approved',
           'declined',
           'completed',
@@ -100,6 +89,10 @@ module.exports = function(sequelize, DataTypes) {
       },
       checkOut: {
         type: DataTypes.DATE,
+        allowNull: false
+      },
+      reservations: {
+        type: DataTypes.TEXT,
         allowNull: false
       },
       createdAt: {

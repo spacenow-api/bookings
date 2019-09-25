@@ -11,22 +11,14 @@ module.exports = function(sequelize, DataTypes) {
       },
       bookingId: {
         type: DataTypes.STRING(36),
-        allowNull: false,
-        references: {
-          model: 'Bookings',
-          key: 'bookingId'
-        }
+        allowNull: false
       },
       listingId: {
         type: DataTypes.INTEGER(11),
-        allowNull: false,
-        references: {
-          model: 'Listing',
-          key: 'id'
-        }
+        allowNull: false
       },
       blockedDates: {
-        type: DataTypes.STRING(255),
+        type: DataTypes.TEXT,
         allowNull: false
       },
       createdAt: {

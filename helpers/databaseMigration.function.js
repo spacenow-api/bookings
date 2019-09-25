@@ -1,6 +1,8 @@
 import crypto from 'crypto'
 
+import * as dynamoDbLib from './../libs/dynamodb-lib'
 import r from './../helpers/response.utils'
+import { Bookings, Availabilities } from './../models'
 
 const SECRET_KEY = 'S3c73jsu!'
 
@@ -18,13 +20,79 @@ const getToken = () =>
     .digest('hex')
 
 function execute(token) {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
+    var currentRecord
     try {
       const _token = getToken()
-      if (token !== _token) throw new Error('Invalid Security Token.')
+      if (token !== _token) {
+        throw new Error('Invalid Security Token.')
+      }
+
+      // Migrating Bookings...
+      const { Items: dynamoBookings } = await dynamoDbLib.call('scan', {
+        TableName: `${process.env.environment}-bookings`
+      })
+      for (const item of dynamoBookings) {
+        currentRecord = item
+        const count = await Bookings.count({
+          where: { bookingId: item.bookingId }
+        })
+        if (count <= 0) {
+          await Bookings.create({
+            bookingId: item.bookingId,
+            listingId: item.listingId,
+            hostId: item.hostId,
+            guestId: item.guestId,
+            confirmationCode: item.confirmationCode,
+            priceType: item.priceType,
+            quantity: item.quantity,
+            currency: item.currency,
+            period: item.period,
+            basePrice: item.basePrice,
+            hostServiceFee: item.hostServiceFee,
+            guestServiceFee: item.guestServiceFee,
+            totalPrice: item.totalPrice,
+            bookingType: item.bookingType,
+            bookingState: item.bookingState,
+            paymentState: item.paymentState,
+            checkIn: item.checkIn,
+            checkOut: item.checkOut,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
+            reservations: item.reservations.join(',')
+          })
+        }
+      }
+
+      // Migrating Availabilities...
+      const { Items: dynamoAvailabilities } = await dynamoDbLib.call('scan', {
+        TableName: `${process.env.environment}-availabilities`
+      })
+      for (const item of dynamoAvailabilities) {
+        currentRecord = item
+        const count = await Availabilities.count({
+          where: { availabilityId: item.availabilityId }
+        })
+        if (count <= 0) {
+          if (item.bookingId) {
+            await Availabilities.create({
+              availabilityId: item.availabilityId,
+              bookingId: item.bookingId,
+              listingId: item.listingId,
+              blockedDates: item.blockedDates.join(','),
+              createdAt: item.createdAt,
+              updatedAt: item.updatedAt
+            })
+          } else {
+            console.warn(`Availability [ ${item.availabilityId} ] doesn't have Booking ID referenced.`)
+          }
+        }
+      }
+
       resolve()
     } catch (err) {
-      reject(err)
+      console.error('Record with error: ', currentRecord)
+      reject({ err })
     }
   })
 }
