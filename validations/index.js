@@ -9,7 +9,8 @@ const BookingStates = {
   TIMEOUT: 'timeout',
   REQUESTED: 'requested',
   APPROVED: 'approved',
-  DECLINED: 'declined'
+  DECLINED: 'declined',
+  COMPLETED: 'completed'
 }
 const BookingStatesArray = Object.values(BookingStates)
 
