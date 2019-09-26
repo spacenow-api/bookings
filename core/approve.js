@@ -33,11 +33,7 @@ export async function main(event) {
     try {
       // const { Attributes } = await dynamoDbLib.call('update', params)
       await Bookings.update(
-        {
-          updatedAt: Date.now(),
-          bookingState: BookingStates.APPROVED,
-          paymentState: 'completed'
-        },
+        { bookingState: BookingStates.APPROVED, paymentState: 'completed' },
         { where: { bookingId } }
       )
       await onSendEmail(`api-emails-${process.env.environment}-sendEmailByBookingInstantHost`, bookingId)
