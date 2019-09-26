@@ -1,26 +1,34 @@
-import * as dynamoDbLib from '../libs/dynamodb-lib';
-import { success, failure } from '../libs/response-lib';
+import { Op } from 'sequelize'
 
-import { BookingStates } from './../validations';
+import * as dynamoDbLib from '../libs/dynamodb-lib'
+import { success, failure } from '../libs/response-lib'
+import { BookingStates, mapReservations } from './../validations'
+import { Bookings } from './../models'
 
-export const main = async (event, context) => {
-  const params = {
-    TableName: process.env.tableName,
-    FilterExpression: '#hId = :hostId AND #bState <> :bookingState',
-    ExpressionAttributeNames: {
-      '#hId': 'hostId',
-      '#bState': 'bookingState'
-    },
-    ExpressionAttributeValues: {
-      ':hostId': event.pathParameters.id,
-      ':bookingState': BookingStates.TIMEOUT
-    }
-  };
+export const main = async (event) => {
   try {
-    const result = await dynamoDbLib.call('scan', params);
-    return success({ count: result.Items.length, items: result.Items });
-  } catch (e) {
-    console.error(e);
-    return failure({ status: false });
+    // const result = await dynamoDbLib.call('scan', {
+    //   TableName: process.env.tableName,
+    //   FilterExpression: '#hId = :hostId AND #bState <> :bookingState',
+    //   ExpressionAttributeNames: {
+    //     '#hId': 'hostId',
+    //     '#bState': 'bookingState'
+    //   },
+    //   ExpressionAttributeValues: {
+    //     ':hostId': event.pathParameters.id,
+    //     ':bookingState': BookingStates.TIMEOUT
+    //   }
+    // })
+    // return success({ count: result.Items.length, items: result.Items })
+    const bookings = await Bookings.findAll({
+      where: {
+        hostId: event.pathParameters.id,
+        bookingState: { [Op.ne]: BookingStates.TIMEOUT }
+      }
+    })
+    return success({ count: bookings.length, items: bookings.map(mapReservations) })
+  } catch (err) {
+    console.error(err)
+    return failure({ status: false, error: err })
   }
-};
+}

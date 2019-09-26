@@ -2,7 +2,7 @@ import moment from 'moment'
 
 // import * as dynamoDbLib from '../libs/dynamodb-lib'
 import { success, failure } from '../libs/response-lib'
-import { BookingStates } from './../validations'
+import { BookingStates, mapReservations } from './../validations'
 import { Bookings } from './../models'
 
 export const main = async () => {
@@ -30,7 +30,7 @@ export const main = async () => {
         checkOut: nextDay
       }
     })
-    return success({ count: bookings.length, items: bookings })
+    return success({ count: bookings.length, items: bookings.map(mapReservations) })
   } catch (err) {
     console.error(err)
     return failure({ status: false, error: err })
