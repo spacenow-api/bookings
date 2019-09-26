@@ -50,7 +50,9 @@ const getDates = (startDate, endDate) => {
 
 const mapReservations = (booking) => {
   const reservationsString = booking.reservations
-  booking.reservations = reservationsString.split(',')
+  if (reservationsString) {
+    booking.reservations = reservationsString.split(',')
+  }
   return booking
 }
 

@@ -38,29 +38,33 @@ function execute(token) {
           where: { bookingId: item.bookingId }
         })
         if (count <= 0) {
-          await Bookings.create({
-            bookingId: item.bookingId,
-            listingId: item.listingId,
-            hostId: item.hostId,
-            guestId: item.guestId,
-            confirmationCode: item.confirmationCode,
-            priceType: item.priceType,
-            quantity: item.quantity,
-            currency: item.currency,
-            period: item.period,
-            basePrice: item.basePrice,
-            hostServiceFee: item.hostServiceFee,
-            guestServiceFee: item.guestServiceFee,
-            totalPrice: item.totalPrice,
-            bookingType: item.bookingType,
-            bookingState: item.bookingState,
-            paymentState: item.paymentState,
-            checkIn: item.checkIn,
-            checkOut: item.checkOut,
-            createdAt: item.createdAt,
-            updatedAt: item.updatedAt,
-            reservations: item.reservations.join(',')
-          })
+          if (item.listingId && item.hostId && item.guestId && item.confirmationCode) {
+            await Bookings.create({
+              bookingId: item.bookingId,
+              listingId: item.listingId,
+              hostId: item.hostId,
+              guestId: item.guestId,
+              confirmationCode: item.confirmationCode,
+              priceType: item.priceType,
+              quantity: item.quantity,
+              currency: item.currency,
+              period: item.period,
+              basePrice: item.basePrice,
+              hostServiceFee: item.hostServiceFee,
+              guestServiceFee: item.guestServiceFee,
+              totalPrice: item.totalPrice,
+              bookingType: item.bookingType,
+              bookingState: item.bookingState,
+              paymentState: item.paymentState,
+              checkIn: item.checkIn,
+              checkOut: item.checkOut,
+              createdAt: item.createdAt,
+              updatedAt: item.updatedAt,
+              reservations: item.reservations.join(',')
+            })
+          } else {
+            console.warn(`Booking ${item.bookingId} doesn't have enough informations.`)
+          }
         }
       }
 

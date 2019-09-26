@@ -25,6 +25,14 @@ module.exports = function(sequelize, DataTypes) {
         type: DataTypes.BIGINT,
         allowNull: false
       },
+      sourceId: {
+        type: DataTypes.STRING(255),
+        allowNull: true
+      },
+      chargeId: {
+        type: DataTypes.STRING(255),
+        allowNull: true
+      },
       priceType: {
         type: DataTypes.STRING(10),
         allowNull: false
