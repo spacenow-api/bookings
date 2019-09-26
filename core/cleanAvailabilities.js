@@ -1,13 +1,14 @@
-import AWS from 'aws-sdk'
+// import AWS from 'aws-sdk'
 import { Op } from 'sequelize'
 
-import * as dynamoDbLib from '../libs/dynamodb-lib'
+// import * as dynamoDbLib from '../libs/dynamodb-lib'
 import { success, failure } from '../libs/response-lib'
-import updateBookingState from './updateBookingState'
-import { BookingStates, mapReservations } from './../validations'
+import updateBookingState from './../helpers/updateBookingState'
+import { onCleanAvailabilities } from './../helpers/availabilities.function'
+import { BookingStates } from './../validations'
 import { Bookings } from './../models'
 
-const lambda = new AWS.Lambda()
+// const lambda = new AWS.Lambda()
 
 // Clean availability for timed out bookings -> cron job
 export const main = async () => {
@@ -36,21 +37,4 @@ export const main = async () => {
     console.error(err)
     return failure({ status: false, error: err })
   }
-}
-
-const onCleanAvailabilities = (bookingId) => {
-  return new Promise((resolve, reject) => {
-    lambda.invoke({
-      FunctionName: `spacenow-availabilities-api-${process.env.environment}-deleteByBooking`,
-      Payload: JSON.stringify({ pathParameters: { id: bookingId } })
-    },
-    (error) => {
-      if (error) {
-        reject(error)
-      } else {
-        console.info(`Availabilities removed with success to booking ${bookingId}`)
-        resolve()
-      }
-    })
-  })
 }
