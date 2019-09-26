@@ -4,7 +4,6 @@ import moment from 'moment';
 import * as dynamoDbLib from '../libs/dynamodb-lib';
 import * as queueLib from '../libs/queue-lib';
 import { success, failure } from '../libs/response-lib';
-import { createPreReservation } from './preReservation';
 import { calcTotal, getDates, getEndDate } from '../validations';
 
 const QUEUE_ULR = `https://sqs.${process.env.region}.amazonaws.com/${process.env.accountId}/${process.env.queueName}`;
@@ -133,14 +132,6 @@ export const main = async (event, context) => {
       await dynamoDbLib.call('put', params);
     } catch (err) {
       return failure({ status: false, error: err });
-    }
-
-    // Creating record on 'bookings-pre-reservation' table...
-    try {
-      await createPreReservation(bookingId);
-      console.debug('Pre-Reservation created with success.');
-    } catch (err) {
-      console.error('\nProblems to register a pre-reservation record:', err);
     }
 
     // Creating availabilities...
