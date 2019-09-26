@@ -57,6 +57,9 @@ dotenv:
   include:
     - tableName
     - environment
+    - region
+    - accountId
+    - queueName
     - DATABASE_SCHEMA
     - DATABASE_HOST
     - DATABASE_USERNAME
