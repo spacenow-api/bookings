@@ -11,7 +11,8 @@ const BookingStates = {
   APPROVED: 'approved',
   DECLINED: 'declined',
   COMPLETED: 'completed',
-  EXPIRED: 'expired'
+  EXPIRED: 'expired',
+  ACCEPTED: 'accepted'
 }
 const BookingStatesArray = Object.values(BookingStates)
 

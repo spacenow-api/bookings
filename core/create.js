@@ -1,109 +1,157 @@
-import uuid from 'uuid';
-import moment from 'moment';
+import uuid from 'uuid'
+import moment from 'moment'
+import { Op } from 'sequelize'
 
-import * as dynamoDbLib from '../libs/dynamodb-lib';
-import * as queueLib from '../libs/queue-lib';
-import { success, failure } from '../libs/response-lib';
-import { calcTotal, getDates, getEndDate } from '../validations';
+// import * as dynamoDbLib from '../libs/dynamodb-lib'
+import * as queueLib from '../libs/queue-lib'
+import { success, failure } from '../libs/response-lib'
+import { calcTotal, getDates, getEndDate, BookingStates, mapReservations } from '../validations'
+import { Bookings } from './../models'
 
-const QUEUE_ULR = `https://sqs.${process.env.region}.amazonaws.com/${process.env.accountId}/${process.env.queueName}`;
+const QUEUE_ULR = `https://sqs.${process.env.region}.amazonaws.com/${process.env.accountId}/${process.env.queueName}`
 
-const BOOKINGS_TABLE = process.env.tableName;
+// const BOOKINGS_TABLE = process.env.tableName
 
-const IS_ABSORVE = 0.035;
-const NO_ABSORVE = 0.135;
+const IS_ABSORVE = 0.035
+const NO_ABSORVE = 0.135
 
 const hasBlockAvailabilities = async (listingId, reservationDates) => {
   try {
-    const response = await dynamoDbLib.call('scan', {
-      TableName: BOOKINGS_TABLE,
-      FilterExpression: 'listingId = :listingId AND (bookingState = :pending OR bookingState = :requested OR bookingState = :accepted)',
-      ProjectionExpression: 'reservations',
-      ExpressionAttributeValues: {
-        ':listingId': listingId,
-        ':pending': 'pending',
-        ':requested': 'requested',
-        ':accepted': 'accepted'
+    // const response = await dynamoDbLib.call('scan', {
+    //   TableName: BOOKINGS_TABLE,
+    //   FilterExpression: 'listingId = :listingId AND (bookingState = :pending OR bookingState = :requested OR bookingState = :accepted)',
+    //   ProjectionExpression: 'reservations',
+    //   ExpressionAttributeValues: {
+    //     ':listingId': listingId,
+    //     ':pending': 'pending',
+    //     ':requested': 'requested',
+    //     ':accepted': 'accepted'
+    //   }
+    // })
+    const bookings = await Bookings.findAll({
+      where: {
+        listingId: listingId,
+        bookingState: {
+          [Op.in]: [
+            BookingStates.PENDING,
+            BookingStates.REQUESTED,
+            BookingStates.ACCEPTED
+          ]
+        }
       }
-    });
+    })
 
-    let reservationsFromBooking = response.Items.map(o => o.reservations);
-    reservationsFromBooking = [].concat.apply([], reservationsFromBooking);
+    bookings.map(mapReservations)
+    let reservationsFromBooking = bookings.map((o) => o.reservations)
+    reservationsFromBooking = [].concat.apply([], reservationsFromBooking)
 
-    const similars = [];
-    reservationsFromBooking.forEach(fromBooking => {
-      reservationDates.forEach(toCreate => {
+    const similars = []
+    reservationsFromBooking.forEach((fromBooking) => {
+      reservationDates.forEach((toCreate) => {
         if (moment(fromBooking).isSame(toCreate, 'day')) {
           if (similars.indexOf(toCreate) === -1) {
-            similars.push(toCreate);
+            similars.push(toCreate)
           }
         }
-      });
-    });
+      })
+    })
 
-    return similars.length > 0;
+    return similars.length > 0
   } catch (err) {
-    console.error(err);
-    return true; // to block reservations if has a query error...
+    console.error(err)
+    return true // to block reservations if has a query error...
   }
-};
+}
 
-export const main = async (event, context) => {
-  const data = JSON.parse(event.body);
+export const main = async (event) => {
+  const data = JSON.parse(event.body)
 
-  const bookingId = uuid.v1();
-  const confirmationCode = Math.floor((100000 + Math.random()) * 900000);
-  const guestServiceFee = data.isAbsorvedFee ? IS_ABSORVE : NO_ABSORVE;
-  const hostServiceFee = data.isAbsorvedFee ? 0.1 : 0;
+  const bookingId = uuid.v1()
+  const confirmationCode = Math.floor((100000 + Math.random()) * 900000)
+  const guestServiceFee = data.isAbsorvedFee ? IS_ABSORVE : NO_ABSORVE
+  const hostServiceFee = data.isAbsorvedFee ? 0.1 : 0
 
-  let totalPrice;
-  let reservationDates;
+  let totalPrice
+  let reservationDates
   if (data.priceType === 'daily') {
-    reservationDates = data.reservations;
+    reservationDates = data.reservations
     totalPrice = calcTotal(
       data.basePrice,
       data.quantity,
       reservationDates.length,
       guestServiceFee
-    );
+    )
   } else {
     const endDate = getEndDate(
       data.reservations[0],
       data.period,
       data.priceType
-    );
-    reservationDates = getDates(data.reservations[0], endDate);
+    )
+    reservationDates = getDates(data.reservations[0], endDate)
     totalPrice = calcTotal(
       data.basePrice,
       data.quantity,
       data.period,
       guestServiceFee
-    );
+    )
   }
 
   if (await hasBlockAvailabilities(data.listingId, reservationDates)) {
     return failure({
       status: false,
       error: 'The requested dates are not available.'
-    });
+    })
   } else {
     // Defining a sorted reservation list...
-    let sortedReservations = JSON.parse(JSON.stringify(reservationDates));
-    sortedReservations = onSortDates(sortedReservations);
+    let sortedReservations = JSON.parse(JSON.stringify(reservationDates))
+    sortedReservations = onSortDates(sortedReservations)
 
     // Defining checkIn, checkOut booking dates...
-    const checkIn = moment(sortedReservations[0]).format('YYYY-MM-DD').toString();
-    const checkOut = moment(sortedReservations[sortedReservations.length - 1]).format('YYYY-MM-DD').toString();
+    const checkIn = moment(sortedReservations[0]).format('YYYY-MM-DD').toString()
+    const checkOut = moment(sortedReservations[sortedReservations.length - 1]).format('YYYY-MM-DD').toString()
 
-    const params = {
-      TableName: BOOKINGS_TABLE,
-      Item: {
+    // const params = {
+    //   TableName: BOOKINGS_TABLE,
+    //   Item: {
+    //     listingId: data.listingId,
+    //     bookingId: bookingId,
+    //     hostId: data.hostId,
+    //     guestId: data.guestId,
+    //     reservations: sortedReservations,
+    //     quantity: data.quantity || 1,
+    //     basePrice: data.basePrice,
+    //     fees: data.fees,
+    //     period: data.period,
+    //     currency: data.currency,
+    //     guestServiceFee: guestServiceFee,
+    //     hostServiceFee: hostServiceFee,
+    //     totalPrice: totalPrice,
+    //     confirmationCode: confirmationCode,
+    //     paymentState: 'pending',
+    //     payoutId: data.payoutId,
+    //     bookingState: 'pending',
+    //     bookingType: data.bookingType,
+    //     paymentMethodId: data.paymentMethodId,
+    //     subscriptionId: data.subscriptionId,
+    //     sourceId: data.sourceId,
+    //     priceType: data.priceType,
+    //     checkIn,
+    //     checkOut,
+    //     updatedAt: Date.now(),
+    //     createdAt: Date.now()
+    //   }
+    // }
+
+    // Creating record on 'bookings' table...
+    try {
+      // await dynamoDbLib.call('put', params)
+      await Bookings.create({
         listingId: data.listingId,
         bookingId: bookingId,
         hostId: data.hostId,
         guestId: data.guestId,
-        reservations: sortedReservations,
-        quantity: data.quantity || 1,
+        reservations: sortedReservations.join(','),
+        quantity: data.quantity,
         basePrice: data.basePrice,
         fees: data.fees,
         period: data.period,
@@ -112,26 +160,19 @@ export const main = async (event, context) => {
         hostServiceFee: hostServiceFee,
         totalPrice: totalPrice,
         confirmationCode: confirmationCode,
-        paymentState: 'pending',
+        paymentState: BookingStates.PENDING,
         payoutId: data.payoutId,
-        bookingState: 'pending',
+        bookingState: BookingStates.PENDING,
         bookingType: data.bookingType,
         paymentMethodId: data.paymentMethodId,
         subscriptionId: data.subscriptionId,
         sourceId: data.sourceId,
         priceType: data.priceType,
         checkIn,
-        checkOut,
-        updatedAt: Date.now(),
-        createdAt: Date.now()
-      }
-    };
-
-    // Creating record on 'bookings' table...
-    try {
-      await dynamoDbLib.call('put', params);
+        checkOut
+      })
     } catch (err) {
-      return failure({ status: false, error: err });
+      return failure({ status: false, error: err })
     }
 
     // Creating availabilities...
@@ -143,18 +184,20 @@ export const main = async (event, context) => {
           listingId: data.listingId,
           blockedDates: sortedReservations
         })
-      });
+      })
     } catch (err) {
-      console.error('\nProblems to register reservation on Queue:', err);
+      console.error('\nProblems to register reservation on Queue:', err)
     }
-    return success(params.Item);
-  }
-};
 
-const onSortDates = dates => {
+    const bookingCreated = await Bookings.findOne({ where: { bookingId } })
+    return success(mapReservations(bookingCreated))
+  }
+}
+
+const onSortDates = (dates) => {
   return dates.sort((a, b) => {
-    const dateA = new Date(a);
-    const dateB = new Date(b);
-    return dateA.getTime() - dateB.getTime();
-  });
-};
+    const dateA = new Date(a)
+    const dateB = new Date(b)
+    return dateA.getTime() - dateB.getTime()
+  })
+}
