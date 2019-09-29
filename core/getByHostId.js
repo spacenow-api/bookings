@@ -1,25 +1,11 @@
 import { Op } from 'sequelize'
 
-// import * as dynamoDbLib from '../libs/dynamodb-lib'
 import { success, failure } from '../libs/response-lib'
 import { BookingStates, mapReservations } from './../validations'
 import { Bookings } from './../models'
 
 export const main = async (event) => {
   try {
-    // const result = await dynamoDbLib.call('scan', {
-    //   TableName: process.env.tableName,
-    //   FilterExpression: '#hId = :hostId AND #bState <> :bookingState',
-    //   ExpressionAttributeNames: {
-    //     '#hId': 'hostId',
-    //     '#bState': 'bookingState'
-    //   },
-    //   ExpressionAttributeValues: {
-    //     ':hostId': event.pathParameters.id,
-    //     ':bookingState': BookingStates.TIMEOUT
-    //   }
-    // })
-    // return success({ count: result.Items.length, items: result.Items })
     const bookings = await Bookings.findAll({
       where: {
         hostId: event.pathParameters.id,

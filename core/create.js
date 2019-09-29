@@ -2,7 +2,6 @@ import uuid from 'uuid'
 import moment from 'moment'
 import { Op } from 'sequelize'
 
-// import * as dynamoDbLib from '../libs/dynamodb-lib'
 import * as queueLib from '../libs/queue-lib'
 import { success, failure } from '../libs/response-lib'
 import { calcTotal, getDates, getEndDate, BookingStates, mapReservations } from '../validations'
@@ -10,24 +9,11 @@ import { Bookings } from './../models'
 
 const QUEUE_ULR = `https://sqs.${process.env.region}.amazonaws.com/${process.env.accountId}/${process.env.queueName}`
 
-// const BOOKINGS_TABLE = process.env.tableName
-
 const IS_ABSORVE = 0.035
 const NO_ABSORVE = 0.135
 
 const hasBlockAvailabilities = async (listingId, reservationDates) => {
   try {
-    // const response = await dynamoDbLib.call('scan', {
-    //   TableName: BOOKINGS_TABLE,
-    //   FilterExpression: 'listingId = :listingId AND (bookingState = :pending OR bookingState = :requested OR bookingState = :accepted)',
-    //   ProjectionExpression: 'reservations',
-    //   ExpressionAttributeValues: {
-    //     ':listingId': listingId,
-    //     ':pending': 'pending',
-    //     ':requested': 'requested',
-    //     ':accepted': 'accepted'
-    //   }
-    // })
     const bookings = await Bookings.findAll({
       where: {
         listingId: listingId,
@@ -110,41 +96,8 @@ export const main = async (event) => {
     const checkIn = moment(sortedReservations[0]).format('YYYY-MM-DD').toString()
     const checkOut = moment(sortedReservations[sortedReservations.length - 1]).format('YYYY-MM-DD').toString()
 
-    // const params = {
-    //   TableName: BOOKINGS_TABLE,
-    //   Item: {
-    //     listingId: data.listingId,
-    //     bookingId: bookingId,
-    //     hostId: data.hostId,
-    //     guestId: data.guestId,
-    //     reservations: sortedReservations,
-    //     quantity: data.quantity || 1,
-    //     basePrice: data.basePrice,
-    //     fees: data.fees,
-    //     period: data.period,
-    //     currency: data.currency,
-    //     guestServiceFee: guestServiceFee,
-    //     hostServiceFee: hostServiceFee,
-    //     totalPrice: totalPrice,
-    //     confirmationCode: confirmationCode,
-    //     paymentState: 'pending',
-    //     payoutId: data.payoutId,
-    //     bookingState: 'pending',
-    //     bookingType: data.bookingType,
-    //     paymentMethodId: data.paymentMethodId,
-    //     subscriptionId: data.subscriptionId,
-    //     sourceId: data.sourceId,
-    //     priceType: data.priceType,
-    //     checkIn,
-    //     checkOut,
-    //     updatedAt: Date.now(),
-    //     createdAt: Date.now()
-    //   }
-    // }
-
     // Creating record on 'bookings' table...
     try {
-      // await dynamoDbLib.call('put', params)
       await Bookings.create({
         listingId: data.listingId,
         bookingId: bookingId,
@@ -172,6 +125,7 @@ export const main = async (event) => {
         checkOut
       })
     } catch (err) {
+      console.error(err)
       return failure({ status: false, error: err })
     }
 

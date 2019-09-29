@@ -1,14 +1,9 @@
-// import * as dynamoDbLib from '../libs/dynamodb-lib'
 import { success, failure } from '../libs/response-lib'
 import { Bookings } from './../models'
 import { mapReservations } from './../validations'
 
 export const main = async () => {
   try {
-    // const result = await dynamoDbLib.call('scan', {
-    //   TableName: process.env.tableName
-    // })
-    // return success(result.Items)
     const result = await Bookings.findAll()
     result.map(mapReservations)
     return success(result)
