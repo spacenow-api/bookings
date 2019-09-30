@@ -1,7 +1,7 @@
 import AWS from 'aws-sdk'
 
 import { success, failure } from '../libs/response-lib'
-import { BookingStates, mapReservations } from './../validations'
+import { BookingStates, resolveBooking } from './../validations'
 import { Bookings } from './../models'
 
 const lambda = new AWS.Lambda()
@@ -13,10 +13,10 @@ export async function main(event) {
       { bookingState: BookingStates.REQUESTED, paymentState: BookingStates.COMPLETED },
       { where: { bookingId } }
     )
-    const bookingObjUpdated = await Bookings.findOne({ where: { bookingId } })
+    const bookingObjUpdated = await Bookings.findOne({ where: { bookingId }, raw: true })
     await onSendEmail(`api-emails-${process.env.environment}-sendEmailByBookingRequestHost`, bookingId)
     await onSendEmail(`api-emails-${process.env.environment}-sendEmailByBookingRequestGuest`, bookingId)
-    return success({ status: true, data: mapReservations(bookingObjUpdated) })
+    return success({ status: true, data: resolveBooking(bookingObjUpdated) })
   } catch (err) {
     console.error(err)
     return failure({ status: false, error: err })

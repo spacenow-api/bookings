@@ -1,11 +1,11 @@
 import { success, failure } from '../libs/response-lib'
 import { Bookings } from './../models'
-import { mapReservations } from './../validations'
+import { resolveBooking } from './../validations'
 
 export const main = async () => {
   try {
-    const result = await Bookings.findAll()
-    result.map(mapReservations)
+    const result = await Bookings.findAll({ raw: true })
+    result.map(resolveBooking)
     return success(result)
   } catch (err) {
     console.error(err)

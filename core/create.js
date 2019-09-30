@@ -4,7 +4,7 @@ import { Op } from 'sequelize'
 
 import * as queueLib from '../libs/queue-lib'
 import { success, failure } from '../libs/response-lib'
-import { calcTotal, getDates, getEndDate, BookingStates, mapReservations } from '../validations'
+import { calcTotal, getDates, getEndDate, BookingStates, resolveBooking } from '../validations'
 import { Bookings } from './../models'
 
 const QUEUE_ULR = `https://sqs.${process.env.region}.amazonaws.com/${process.env.accountId}/${process.env.queueName}`
@@ -27,7 +27,7 @@ const hasBlockAvailabilities = async (listingId, reservationDates) => {
       }
     })
 
-    bookings.map(mapReservations)
+    bookings.map(resolveBooking)
     let reservationsFromBooking = bookings.map((o) => o.reservations)
     reservationsFromBooking = [].concat.apply([], reservationsFromBooking)
 
@@ -143,8 +143,8 @@ export const main = async (event) => {
       console.error('\nProblems to register reservation on Queue:', err)
     }
 
-    const bookingCreated = await Bookings.findOne({ where: { bookingId } })
-    return success(mapReservations(bookingCreated))
+    const bookingCreated = await Bookings.findOne({ where: { bookingId }, raw: true })
+    return success(resolveBooking(bookingCreated))
   }
 }
 

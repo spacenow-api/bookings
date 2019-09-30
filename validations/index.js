@@ -49,11 +49,13 @@ const getDates = (startDate, endDate) => {
   return arrDates
 }
 
-const mapReservations = (booking) => {
+const resolveBooking = (booking) => {
   const reservationsString = booking.reservations
   if (reservationsString) {
     booking.reservations = reservationsString.split(',')
   }
+  booking.createdAt = new Date(booking.createdAt).getTime()
+  booking.updatedAt = new Date(booking.updatedAt).getTime()
   return booking
 }
 
@@ -63,5 +65,5 @@ export {
   getEndDate,
   BookingStates,
   BookingStatesArray,
-  mapReservations
+  resolveBooking
 }

@@ -92,11 +92,11 @@ module.exports = function(sequelize, DataTypes) {
         defaultValue: 'pending'
       },
       checkIn: {
-        type: DataTypes.DATE,
+        type: DataTypes.STRING(10),
         allowNull: false
       },
       checkOut: {
-        type: DataTypes.DATE,
+        type: DataTypes.STRING(10),
         allowNull: false
       },
       reservations: {
