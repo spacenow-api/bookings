@@ -11,7 +11,7 @@ module.exports = function(sequelize, DataTypes) {
       },
       bookingId: {
         type: DataTypes.STRING(36),
-        allowNull: false
+        allowNull: true
       },
       listingId: {
         type: DataTypes.INTEGER(11),

@@ -78,18 +78,14 @@ function execute(token) {
           where: { availabilityId: item.availabilityId }
         })
         if (count <= 0) {
-          if (item.bookingId) {
-            await Availabilities.create({
-              availabilityId: item.availabilityId,
-              bookingId: item.bookingId,
-              listingId: item.listingId,
-              blockedDates: item.blockedDates.join(','),
-              createdAt: item.createdAt,
-              updatedAt: item.updatedAt
-            })
-          } else {
-            console.warn(`Availability [ ${item.availabilityId} ] doesn't have Booking ID referenced.`)
-          }
+          await Availabilities.create({
+            availabilityId: item.availabilityId,
+            bookingId: item.bookingId,
+            listingId: item.listingId,
+            blockedDates: item.blockedDates.join(','),
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt
+          })
         }
       }
 
