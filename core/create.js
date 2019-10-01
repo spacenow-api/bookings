@@ -121,8 +121,10 @@ export const main = async (event) => {
         subscriptionId: data.subscriptionId,
         sourceId: data.sourceId,
         priceType: data.priceType,
-        checkIn,
-        checkOut
+        checkIn: checkIn,
+        checkOut: checkOut,
+        createdAt: Date.now(),
+        updatedAt: Date.now()
       })
     } catch (err) {
       console.error(err)
