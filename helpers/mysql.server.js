@@ -16,7 +16,6 @@ function initInstance() {
         password: process.env.DATABASE_PASSWORD,
         logging: process.env.DEBUG ? console.debug : false
       })
-      console.log('Sequelize instance ->', sequelize)
     } catch (err) {
       console.error(err)
     }
