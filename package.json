@@ -29,7 +29,6 @@
     "serverless-domain-manager": "~3.3.0",
     "serverless-prune-plugin": "~1.4.0",
     "serverless-webpack": "~5.1.0",
-    "serverless-dynamodb-local": "~0.2.38",
     "webpack-node-externals": "~1.6.0",
     "webpack": "~4.16.2"
   },
@@ -43,6 +42,6 @@
   },
   "resolutions": {
     "graceful-fs": "4.2.2",
-    "fsevents": "1.2.9"
+    "fsevents": "*"
   }
 }

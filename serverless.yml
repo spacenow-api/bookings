@@ -1,12 +1,11 @@
 service: ${self:custom.SubdomainName}-${self:custom.ServiceName}-api
 
 plugins:
-  - serverless-dotenv-plugin
-  - serverless-webpack
-  - serverless-domain-manager
-  - serverless-dynamodb-local
   - serverless-offline
+  - serverless-dotenv-plugin
+  - serverless-domain-manager
   - serverless-prune-plugin
+  - serverless-webpack
 
 custom:
   ServiceName: 'bookings'
@@ -250,10 +249,7 @@ functions:
           method: post
           cors: true
 
-# Create our resources with separate CloudFormation templates
 resources:
-  # API Gateway Errors
   - ${file(resources/api-gateway-errors.yml)}
-  # DynamoDB
   - ${file(resources/dynamodb-table.yml)}
   - ${file(resources/dynamodb-pre-reservation-table.yml)}
