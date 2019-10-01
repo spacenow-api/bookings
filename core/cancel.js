@@ -5,10 +5,7 @@ import { Bookings } from './../models'
 export async function main(event) {
   try {
     await Bookings.update(
-      {
-        updatedAt: Date.now(),
-        bookingState: BookingStates.CANCELLED
-      },
+      { bookingState: BookingStates.CANCELLED, updatedAt: Date.now() },
       { where: { bookingId: event.pathParameters.id } }
     )
     return success({ status: true })

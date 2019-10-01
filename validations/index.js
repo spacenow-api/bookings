@@ -54,8 +54,6 @@ const resolveBooking = (booking) => {
   if (reservationsString) {
     booking.reservations = reservationsString.split(',')
   }
-  booking.createdAt = new Date(booking.createdAt).getTime()
-  booking.updatedAt = new Date(booking.updatedAt).getTime()
   return booking
 }
 

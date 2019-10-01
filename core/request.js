@@ -10,7 +10,7 @@ export async function main(event) {
   try {
     const bookingId = event.pathParameters.id
     await Bookings.update(
-      { bookingState: BookingStates.REQUESTED, paymentState: BookingStates.COMPLETED },
+      { bookingState: BookingStates.REQUESTED, paymentState: BookingStates.COMPLETED, updatedAt: Date.now() },
       { where: { bookingId } }
     )
     const bookingObjUpdated = await Bookings.findOne({ where: { bookingId }, raw: true })

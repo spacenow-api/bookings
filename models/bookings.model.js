@@ -104,16 +104,17 @@ module.exports = function(sequelize, DataTypes) {
         allowNull: false
       },
       createdAt: {
-        type: DataTypes.DATE,
+        type: DataTypes.BIGINT,
         allowNull: false
       },
       updatedAt: {
-        type: DataTypes.DATE,
+        type: DataTypes.BIGINT,
         allowNull: false
       }
     },
     {
-      tableName: 'Bookings'
+      tableName: 'Bookings',
+      timestamps: false
     }
   )
 }

@@ -12,7 +12,7 @@ export async function main(event) {
   if (BookingStates.REQUESTED === bookingObj.bookingState || BookingStates.PENDING === bookingObj.bookingState) {
     try {
       await Bookings.update(
-        { bookingState: BookingStates.APPROVED, paymentState: 'completed' },
+        { bookingState: BookingStates.APPROVED, paymentState: 'completed', updatedAt: Date.now() },
         { where: { bookingId } }
       )
       await onSendEmail(`api-emails-${process.env.environment}-sendEmailByBookingInstantHost`, bookingId)

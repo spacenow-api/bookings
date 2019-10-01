@@ -58,8 +58,8 @@ function execute(token) {
               paymentState: item.paymentState,
               checkIn: item.checkIn,
               checkOut: item.checkOut,
-              createdAt: new Date(item.createdAt),
-              updatedAt: new Date(item.updatedAt),
+              createdAt: item.createdAt,
+              updatedAt: item.updatedAt,
               reservations: item.reservations.join(',')
             })
           } else {

@@ -6,7 +6,7 @@ export const main = async (event) => {
   try {
     const data = JSON.parse(event.body)
     await Bookings.update(
-      { sourceId: data.sourceId, chargeId: data.chargeId },
+      { sourceId: data.sourceId, chargeId: data.chargeId, updatedAt: Date.now() },
       { where: { bookingId: event.pathParameters.id } }
     )
     const bookingObjUpdated = await Bookings.findOne({ where: { bookingId: event.pathParameters.id }, raw: true })
