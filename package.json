@@ -40,8 +40,5 @@
     "uuid": "~3.3.2",
     "mysql2": "~1.6.5",
     "sequelize": "~5.17.0"
-  },
-  "resolutions": {
-    "graceful-fs": "4.2.2"
   }
 }
