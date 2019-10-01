@@ -41,7 +41,6 @@
     "sequelize": "~5.17.0"
   },
   "resolutions": {
-    "graceful-fs": "4.2.2",
-    "fsevents": "*"
+    "graceful-fs": "4.2.2"
   }
 }
