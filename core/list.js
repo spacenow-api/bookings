@@ -7,6 +7,7 @@ export const main = async () => {
   try {
     const result = await Bookings.findAll({ raw: true })
     console.log('Bookings found: ', result)
+    /// ....
     result.map(resolveBooking)
     return success(result)
   } catch (err) {
