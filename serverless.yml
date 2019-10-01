@@ -84,11 +84,11 @@ provider:
   region: ${opt:region, 'ap-southeast-2'}
   vpc:
     securityGroupIds:
-      - ${self:custom.securityGroup.${opt:stage, 'sandpit'}}
+      - ${self:custom.securityGroup.${self:custom.StageName, 'sandpit'}}
     subnetIds:
-      - ${self:custom.subnet.${opt:stage, 'sandpit'}.privateA}
-      - ${self:custom.subnet.${opt:stage, 'sandpit'}.privateB}
-      - ${self:custom.subnet.${opt:stage, 'sandpit'}.privateC}
+      - ${self:custom.subnet.${self:custom.StageName, 'sandpit'}.privateA}
+      - ${self:custom.subnet.${self:custom.StageName, 'sandpit'}.privateB}
+      - ${self:custom.subnet.${self:custom.StageName, 'sandpit'}.privateC}
   environment:
     tableName: ${self:custom.TableName}
     preReservationTableName: ${self:custom.PreReservationTableName}
