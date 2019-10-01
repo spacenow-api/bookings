@@ -242,7 +242,7 @@ functions:
           method: put
           cors: true
   databaseMigration:
-    handler: helpers/databaseMigration.function.main
+    handler: core/databaseMigration.main
     events:
       - http:
           path: bookings/migration/{token}/database
