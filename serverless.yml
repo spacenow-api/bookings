@@ -69,7 +69,7 @@ dotenv:
 
 provider:
   name: aws
-  runtime: nodejs10.x
+  runtime: nodejs8.10
   stage: ${self:custom.StageName, 'sandpit'}
   region: ${opt:region, 'ap-southeast-2'}
   iamRoleStatements:
