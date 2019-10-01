@@ -1,7 +1,5 @@
-# NOTE: update this with your service name
 service: ${self:custom.SubdomainName}-${self:custom.ServiceName}-api
 
-# Use the serverless-webpack plugin to transpile ES6
 plugins:
   - serverless-dotenv-plugin
   - serverless-webpack
@@ -10,26 +8,19 @@ plugins:
   - serverless-offline
   - serverless-prune-plugin
 
-# serverless-webpack configuration
-# Enable auto-packing of external modules
 custom:
-  # Our stage is based on what is passed in when running serverless
-  # commands. Or fallsback to what we have set in the provider section.
   ServiceName: 'bookings'
-  StageName: ${opt:stage, 'dev'}
+  StageName: ${opt:stage, 'sandpit'}
   StageNameCert: ${opt:stageCert, ''}
   SubdomainName: 'spacenow'
   FirstAttributeName: 'bookingId'
-  # Set the table name here so we can use it while testing locally
   TableName: ${self:custom.StageName}-${self:custom.ServiceName}
   PreReservationTableName: ${self:custom.StageName}-${self:custom.ServiceName}-pre-reservation
-  # Set our DynamoDB throughput for prod and all other non-prod stages.
   TableThroughputs:
     nonprod: 2
     prod: 3
     default: 1
   TableThroughput: ${self:custom.TableThroughputs.${self:custom.StageName}, self:custom.TableThroughputs.default}
-  # Load our webpack config
   webpack:
     webpackConfig: ./webpack.config.js
     includeModules: true
@@ -53,7 +44,6 @@ custom:
     basePath: ''
     stage: ${self:custom.StageName}
     certificateArn: ${ssm:/${self:custom.StageNameCert, ''}/ACM_CERTIFICATE, ''}
-    # certificateArn: arn:aws:acm:ap-southeast-2:159220020591:certificate/ec3b5931-c71d-4ddd-8157-d59964d168f2
     createRoute53Record: true
     endpointType: 'regional'
   dynamodb:
@@ -80,29 +70,8 @@ dotenv:
 provider:
   name: aws
   runtime: nodejs8.10
-  stage: ${self:custom.StageName}
+  stage: ${self:custom.StageName, 'sandpit'}
   region: ${opt:region, 'ap-southeast-2'}
-  vpc:
-    securityGroupIds:
-      - ${self:custom.securityGroup.${self:custom.StageName, 'sandpit'}}
-    subnetIds:
-      - ${self:custom.subnet.${self:custom.StageName, 'sandpit'}.privateA}
-      - ${self:custom.subnet.${self:custom.StageName, 'sandpit'}.privateB}
-      - ${self:custom.subnet.${self:custom.StageName, 'sandpit'}.privateC}
-  environment:
-    tableName: ${self:custom.TableName}
-    preReservationTableName: ${self:custom.PreReservationTableName}
-    accountId: ${opt:accountId, ''}
-    region: ${opt:region, 'ap-southeast-2'}
-    queueName: ${self:custom.SubdomainName}-${self:custom.TableName}
-    environment: ${self:custom.StageName}
-    DATABASE_SCHEMA: ${ssm:/${opt:stageCert, 'SANDPIT'}/SPACENOW/DATABASE_SCHEMA~true}
-    DATABASE_HOST: ${ssm:/${opt:stageCert, 'SANDPIT'}/SPACENOW/DATABASE_HOST~true}
-    DATABASE_USERNAME: ${ssm:/${opt:stageCert, 'SANDPIT'}/SPACENOW/DATABASE_USER~true}
-    DATABASE_PASSWORD: ${ssm:/${opt:stageCert, 'SANDPIT'}/SPACENOW/DATABASE_PASSWORD~true}
-
-  # 'iamRoleStatements' defines the permission policy for the Lambda function.
-  # In this case Lambda functions are granted with permissions to access DynamoDB.
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -126,6 +95,24 @@ provider:
         - lambda:InvokeFunction
         - lambda:InvokeAsync
       Resource: '*'
+  vpc:
+    securityGroupIds:
+      - ${self:custom.securityGroup.${self:custom.StageName, 'sandpit'}}
+    subnetIds:
+      - ${self:custom.subnet.${self:custom.StageName, 'sandpit'}.privateA}
+      - ${self:custom.subnet.${self:custom.StageName, 'sandpit'}.privateB}
+      - ${self:custom.subnet.${self:custom.StageName, 'sandpit'}.privateC}
+  environment:
+    tableName: ${self:custom.TableName}
+    preReservationTableName: ${self:custom.PreReservationTableName}
+    accountId: ${opt:accountId, ''}
+    region: ${opt:region, 'ap-southeast-2'}
+    queueName: ${self:custom.SubdomainName}-${self:custom.TableName}
+    environment: ${self:custom.StageName}
+    DATABASE_SCHEMA: ${ssm:/${opt:stageCert, 'SANDPIT'}/SPACENOW/DATABASE_SCHEMA~true}
+    DATABASE_HOST: ${ssm:/${opt:stageCert, 'SANDPIT'}/SPACENOW/DATABASE_HOST~true}
+    DATABASE_USERNAME: ${ssm:/${opt:stageCert, 'SANDPIT'}/SPACENOW/DATABASE_USER~true}
+    DATABASE_PASSWORD: ${ssm:/${opt:stageCert, 'SANDPIT'}/SPACENOW/DATABASE_PASSWORD~true}
 
 functions:
   create:
@@ -135,7 +122,6 @@ functions:
           path: bookings
           method: post
           cors: true
-          # authorizer: aws_iam
   update:
     handler: core/update.main
     events:
@@ -143,7 +129,6 @@ functions:
           path: bookings/{id}
           method: put
           cors: true
-          # authorizer: aws_iam
   get:
     handler: core/get.main
     events:
@@ -151,7 +136,6 @@ functions:
           path: bookings/{id}
           method: get
           cors: true
-          # authorizer: aws_iam
   getByHostId:
     handler: core/getByHostId.main
     events:
@@ -159,7 +143,6 @@ functions:
           path: bookings/byHostId/{id}
           method: get
           cors: true
-          # authorizer: aws_iam
   getByGuestId:
     handler: core/getByGuestId.main
     events:
@@ -167,7 +150,6 @@ functions:
           path: bookings/byGuestId/{id}
           method: get
           cors: true
-          # authorizer: aws_iam
   list:
     handler: core/list.main
     events:
@@ -175,7 +157,6 @@ functions:
           path: bookings
           method: get
           cors: true
-          # authorizer: aws_iam
   approve:
     handler: core/approve.main
     events:
@@ -183,7 +164,6 @@ functions:
           path: bookings/approve/{id}
           method: put
           cors: true
-          # authorizer: aws_iam
   request:
     handler: core/request.main
     events:
@@ -191,7 +171,6 @@ functions:
           path: bookings/request/{id}
           method: put
           cors: true
-          # authorizer: aws_iam
   cancel:
     handler: core/cancel.main
     events:
@@ -199,7 +178,6 @@ functions:
           path: bookings/cancel/{id}
           method: put
           cors: true
-          # authorizer: aws_iam
   complete:
     handler: core/complete.main
     events:
@@ -207,7 +185,6 @@ functions:
           path: bookings/complete/{id}
           method: put
           cors: true
-          # authorizer: aws_iam
   decline:
     handler: core/decline.main
     events:
@@ -215,7 +192,6 @@ functions:
           path: bookings/decline/{id}
           method: put
           cors: true
-          # authorizer: aws_iam
   expire:
     handler: core/expire.main
     events:
@@ -223,7 +199,6 @@ functions:
           path: bookings/expire/{id}
           method: put
           cors: true
-          # authorizer: aws_iam
   getByCompleted:
     handler: core/getByCompleted.main
     events:
@@ -231,7 +206,6 @@ functions:
           path: bookings/getByCompleted
           method: get
           cors: true
-          # authorizer: aws_iam
   getByExpired:
     handler: core/getByExpired.main
     events:
@@ -239,7 +213,6 @@ functions:
           path: bookings/getByExpired
           method: get
           cors: true
-          # authorizer: aws_iam
   cleanAvailabilities:
     handler: core/cleanAvailabilities.main
     events:
@@ -247,7 +220,6 @@ functions:
           path: bookings/cleanAvailabilities
           method: put
           cors: true
-          # authorizer: aws_iam
       - schedule: rate(15 minutes)
   cleanListingAvailabilities:
     handler: core/cleanListingAvailabilities.main
@@ -256,7 +228,6 @@ functions:
           path: bookings/cleanListingAvailabilities/{id}
           method: put
           cors: true
-          # authorizer: aws_iam
   getPendingByGuestId:
     handler: core/getPendingByGuestId.main
     events:
@@ -264,7 +235,6 @@ functions:
           path: bookings/getPendingByGuestId/{id}/{listingId}
           method: get
           cors: true
-          # authorizer: aws_iam
   timeout:
     handler: core/timeout.main
     events:
@@ -272,7 +242,6 @@ functions:
           path: bookings/timeout/{id}
           method: put
           cors: true
-          # authorizer: aws_iam
   databaseMigration:
     handler: helpers/databaseMigration.function.main
     events:
@@ -280,7 +249,6 @@ functions:
           path: bookings/migration/{token}/database
           method: post
           cors: true
-          # authorizer: aws_iam
 
 # Create our resources with separate CloudFormation templates
 resources:
