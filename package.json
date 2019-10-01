@@ -31,14 +31,14 @@
     "serverless-webpack": "~5.1.0",
     "serverless-dynamodb-local": "~0.2.38",
     "webpack": "~4.16.2",
-    "webpack-node-externals": "~1.6.0"
+    "webpack-node-externals": "~1.6.0",
+    "mysql2": "~1.6.5"
   },
   "dependencies": {
     "babel-runtime": "~6.26.0",
     "moment": "~2.24.0",
     "source-map-support": "~0.4.18",
     "uuid": "~3.3.2",
-    "mysql2": "~1.6.5",
     "sequelize": "~5.17.0"
   },
   "resolutions": {
