@@ -1,4 +1,4 @@
-import { DataTypes } from 'sequelize'
+import DataTypes from 'sequelize'
 
 import { getInstance } from './../helpers/mysql.server'
 const sequelize = getInstance()
