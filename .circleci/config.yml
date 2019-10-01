@@ -2,7 +2,7 @@ version: 2
 jobs:
   deploy-dev:
     docker:
-      - image: circleci/node:8.10
+      - image: circleci/node:8.16
 
     environment: 
         TARGET_ENV: sandpit
