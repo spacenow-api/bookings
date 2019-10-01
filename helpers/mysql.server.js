@@ -1,3 +1,4 @@
+import mysql2 from 'mysql2'
 import Sequelize from 'sequelize'
 
 let sequelize = null
@@ -8,6 +9,7 @@ function initInstance() {
     try {
       sequelize = new Sequelize({
         dialect: 'mysql',
+        dialectModule: mysql2,
         host: process.env.DATABASE_HOST,
         database: process.env.DATABASE_SCHEMA,
         username: process.env.DATABASE_USERNAME,
