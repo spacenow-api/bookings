@@ -1,6 +1,4 @@
-'use strict'
-
-const Sequelize = require('sequelize')
+import { Sequelize } from 'sequelize'
 
 let sequelize = null
 
@@ -25,4 +23,4 @@ function getInstance() {
   return sequelize
 }
 
-module.exports = { initInstance, getInstance }
+export { initInstance, getInstance }

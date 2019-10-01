@@ -1,15 +1,12 @@
-'use strict'
+import { DataTypes } from 'sequelize'
 
-const { DataTypes } = require('sequelize')
-
-const { getInstance } = require('./../helpers/mysql.server')
-
+import { getInstance } from './../helpers/mysql.server'
 const sequelize = getInstance()
 
-const Bookings = require('./../models/bookings.model')(sequelize, DataTypes)
-const Availabilities = require('./../models/availabilities.model')(sequelize, DataTypes)
+import BookingsModel from './../models/bookings.model'
+const Bookings = BookingsModel(sequelize, DataTypes)
 
-module.exports = {
-  Bookings,
-  Availabilities
-}
+import AvailabilitiesModel from './../models/availabilities.model'
+const Availabilities = AvailabilitiesModel(sequelize, DataTypes)
+
+export { Bookings, Availabilities }

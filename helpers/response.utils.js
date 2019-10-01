@@ -1,12 +1,10 @@
-'use strict'
-
 const headers = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Credentials': true,
   'Access-Control-Allow-Headers': 'x-requested-with'
 }
 
-module.exports = {
+export default {
   success: (data) => {
     return {
       headers,
