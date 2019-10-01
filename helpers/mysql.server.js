@@ -1,10 +1,11 @@
-import { Sequelize } from 'sequelize'
+import Sequelize from 'sequelize'
 
 let sequelize = null
 
 function initInstance() {
   if (!sequelize) {
     console.info('Initializing Sequelize connection.')
+    console.log('Sequelize instance ->', Sequelize)
     sequelize = new Sequelize({
       dialect: 'mysql',
       host: process.env.DATABASE_HOST,
