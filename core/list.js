@@ -1,15 +1,14 @@
-import * as dynamoDbLib from '../libs/dynamodb-lib';
-import { success, failure } from '../libs/response-lib';
+import { success, failure } from '../libs/response-lib'
+import { Bookings } from './../models'
+import { resolveBooking } from './../validations'
 
-export const main = async (event, context) => {
-  const params = {
-    TableName: process.env.tableName
-  };
+export const main = async () => {
   try {
-    const result = await dynamoDbLib.call('scan', params);
-    return success(result.Items);
-  } catch (e) {
-    console.error(e);
-    return failure({ status: false });
+    const result = await Bookings.findAll({ raw: true })
+    result.map(resolveBooking)
+    return success(result)
+  } catch (err) {
+    console.error(err)
+    return failure({ status: false })
   }
-};
+}

@@ -1,27 +1,18 @@
-import * as dynamoDbLib from '../libs/dynamodb-lib';
-import { success, failure } from '../libs/response-lib';
+import { success, failure } from '../libs/response-lib'
+import { resolveBooking } from './../validations'
+import { Bookings } from './../models'
 
-export const main = async event => {
-  const data = JSON.parse(event.body);
-  const params = {
-    TableName: process.env.tableName,
-    Key: {
-      bookingId: event.pathParameters.id
-    },
-    ExpressionAttributeValues: {
-      ':updatedAt': Date.now(),
-      ':sourceId': data.sourceId,
-      ':chargeId': data.chargeId
-    },
-    UpdateExpression:
-      'SET updatedAt = :updatedAt, sourceId = :sourceId, chargeId = :chargeId',
-    ReturnValues: 'ALL_NEW'
-  };
+export const main = async (event) => {
   try {
-    const { Attributes } = await dynamoDbLib.call('update', params);
-    return success({ status: 'updated', data: Attributes });
-  } catch (e) {
-    console.error(e);
-    return failure({ status: 'error', error: e });
+    const data = JSON.parse(event.body)
+    await Bookings.update(
+      { sourceId: data.sourceId, chargeId: data.chargeId, updatedAt: Date.now() },
+      { where: { bookingId: event.pathParameters.id } }
+    )
+    const bookingObjUpdated = await Bookings.findOne({ where: { bookingId: event.pathParameters.id }, raw: true })
+    return success({ status: 'updated', data: resolveBooking(bookingObjUpdated) })
+  } catch (err) {
+    console.error(err)
+    return failure({ status: 'error', error: err })
   }
-};
+}

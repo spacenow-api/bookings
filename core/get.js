@@ -1,19 +1,21 @@
-import * as dynamoDbLib from '../libs/dynamodb-lib';
-import { success, failure } from '../libs/response-lib';
+import { success, failure } from '../libs/response-lib'
+import { resolveBooking } from './../validations'
+import { Bookings } from './../models'
 
-export const main = async (event, context) => {
-  const params = {
-    TableName: process.env.tableName,
-    Key: {
-      bookingId: event.pathParameters.id
-    }
-  };
+export const main = async (event) => {
   try {
-    const result = await dynamoDbLib.call('get', params);
-    if (result.Item) return success(result.Item);
-    else return failure({ status: false, error: 'Booking not found.' });
-  } catch (e) {
-    console.error(e);
-    return failure({ status: false });
+    const result = await Bookings.findOne({
+      where: { bookingId: event.pathParameters.id },
+      raw: true
+    })
+    if (result) {
+      resolveBooking(result)
+      return success(result)
+    } else {
+      return failure({ status: false, error: 'Booking not found.' })
+    }
+  } catch (err) {
+    console.error(err)
+    return failure({ status: false })
   }
-};
+}

@@ -51,6 +51,20 @@ custom:
     automatic: true
     number: 5
 
+dotenv:
+  path: ./.env
+  basePath: ./
+  include:
+    - tableName
+    - environment
+    - region
+    - accountId
+    - queueName
+    - DATABASE_SCHEMA
+    - DATABASE_HOST
+    - DATABASE_USERNAME
+    - DATABASE_PASSWORD
+
 provider:
   name: aws
   runtime: nodejs8.10
@@ -72,6 +86,10 @@ provider:
     region: ${opt:region, 'ap-southeast-2'}
     queueName: ${self:custom.SubdomainName}-${self:custom.TableName}
     environment: ${self:custom.StageName}
+    DATABASE_SCHEMA: ${ssm:/${opt:stageCert, 'SANDPIT'}/SPACENOW/DATABASE_SCHEMA~true}
+    DATABASE_HOST: ${ssm:/${opt:stageCert, 'SANDPIT'}/SPACENOW/DATABASE_HOST~true}
+    DATABASE_USERNAME: ${ssm:/${opt:stageCert, 'SANDPIT'}/SPACENOW/DATABASE_USER~true}
+    DATABASE_PASSWORD: ${ssm:/${opt:stageCert, 'SANDPIT'}/SPACENOW/DATABASE_PASSWORD~true}
 
   # 'iamRoleStatements' defines the permission policy for the Lambda function.
   # In this case Lambda functions are granted with permissions to access DynamoDB.
@@ -97,7 +115,7 @@ provider:
       Action:
         - lambda:InvokeFunction
         - lambda:InvokeAsync
-      Resource: "*"
+      Resource: '*'
 
 functions:
   create:
@@ -212,22 +230,6 @@ functions:
           method: get
           cors: true
           # authorizer: aws_iam
-  fetchAllPreReservations:
-    handler: core/preReservation.fetchAllPreReservations
-    events:
-      - http:
-          path: bookings/preReservations
-          method: get
-          cors: true
-          # authorizer: aws_iam
-  getPreReservationsByBookingId:
-    handler: core/preReservation.getPreReservationsByBookingId
-    events:
-      - http:
-          path: bookings/preReservation/{id}
-          method: get
-          cors: true
-          # authorizer: aws_iam
   cleanAvailabilities:
     handler: core/cleanAvailabilities.main
     events:
@@ -261,7 +263,14 @@ functions:
           method: put
           cors: true
           # authorizer: aws_iam
-      
+  databaseMigration:
+    handler: helpers/databaseMigration.function.main
+    events:
+      - http:
+          path: bookings/migration/{token}/database
+          method: post
+          cors: true
+          # authorizer: aws_iam
 
 # Create our resources with separate CloudFormation templates
 resources:

@@ -1,26 +1,20 @@
-import * as dynamoDbLib from '../libs/dynamodb-lib';
-import { success, failure } from '../libs/response-lib';
+import { Op } from 'sequelize'
 
-import { BookingStates } from './../validations';
+import { success, failure } from '../libs/response-lib'
+import { BookingStates, resolveBooking } from './../validations'
+import { Bookings } from './../models'
 
-export const main = async (event, context) => {
-  const params = {
-    TableName: process.env.tableName,
-    FilterExpression: '#gId = :guestId AND #bState <> :bookingState',
-    ExpressionAttributeNames: {
-      '#gId': 'guestId',
-      '#bState': 'bookingState'
-    },
-    ExpressionAttributeValues: {
-      ':guestId': event.pathParameters.id,
-      ':bookingState': BookingStates.TIMEOUT
-    }
-  };
+export const main = async (event) => {
   try {
-    const result = await dynamoDbLib.call('scan', params);
-    return success({ count: result.Items.length, items: result.Items });
-  } catch (e) {
-    console.error(e);
-    return failure({ status: false });
+    const bookings = await Bookings.findAll({
+      where: {
+        guestId: event.pathParameters.id,
+        bookingState: { [Op.ne]: BookingStates.TIMEOUT }
+      }, raw: true
+    })
+    return success({ count: bookings.length, items: bookings.map(resolveBooking) })
+  } catch (err) {
+    console.error(err)
+    return failure({ status: false, error: err })
   }
-};
+}

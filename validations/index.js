@@ -9,7 +9,10 @@ const BookingStates = {
   TIMEOUT: 'timeout',
   REQUESTED: 'requested',
   APPROVED: 'approved',
-  DECLINED: 'declined'
+  DECLINED: 'declined',
+  COMPLETED: 'completed',
+  EXPIRED: 'expired',
+  ACCEPTED: 'accepted'
 }
 const BookingStatesArray = Object.values(BookingStates)
 
@@ -46,4 +49,19 @@ const getDates = (startDate, endDate) => {
   return arrDates
 }
 
-export { calcTotal, getDates, getEndDate, BookingStates, BookingStatesArray }
+const resolveBooking = (booking) => {
+  const reservationsString = booking.reservations
+  if (reservationsString) {
+    booking.reservations = reservationsString.split(',')
+  }
+  return booking
+}
+
+export {
+  calcTotal,
+  getDates,
+  getEndDate,
+  BookingStates,
+  BookingStatesArray,
+  resolveBooking
+}
