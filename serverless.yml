@@ -36,6 +36,18 @@ custom:
   domains:
     default: api-${self:custom.ServiceName}.${self:custom.StageName}.cloud.spacenow.com
     prod: api-${self:custom.ServiceName}.spacenow.com
+  subnet:
+    sandpit:
+      privateA: subnet-0c75bbd1ea60481d4
+      privateB: subnet-070ac699acd775765
+      privateC: subnet-0eca793083726120c
+    prod:
+      privateA: subnet-04d5af2458ebdabbf
+      privateB: subnet-010ee1d571a9ca82c
+      privateC: subnet-069abf1da82eb3acc
+  securityGroup:
+    sandpit: sg-0dbf2b9d996f4c91e
+    prod: sg-00b4a2172f7e29276
   customDomain:
     domainName: ${self:custom.domains.${self:custom.StageName}, self:custom.domains.default}
     basePath: ''
@@ -70,15 +82,13 @@ provider:
   runtime: nodejs8.10
   stage: ${self:custom.StageName}
   region: ${opt:region, 'ap-southeast-2'}
-  # To load environment variables externally
-  # rename env.example to env.yml and uncomment
-  # the following line. Also, make sure to not
-  # commit your env.yml.
-  #
-  #environment: ${file(env.yml):${self:provider.stage}}
-
-  # These environment variables are made available to our functions
-  # under process.env.
+  vpc:
+    securityGroupIds:
+      - ${self:custom.securityGroup.${opt:stage, 'sandpit'}}
+    subnetIds:
+      - ${self:custom.subnet.${opt:stage, 'sandpit'}.privateA}
+      - ${self:custom.subnet.${opt:stage, 'sandpit'}.privateB}
+      - ${self:custom.subnet.${opt:stage, 'sandpit'}.privateC}
   environment:
     tableName: ${self:custom.TableName}
     preReservationTableName: ${self:custom.PreReservationTableName}
