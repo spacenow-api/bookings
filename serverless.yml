@@ -70,6 +70,7 @@ provider:
   name: aws
   runtime: nodejs10.x
   timeout: 20
+  versionFunctions: false
   stage: ${self:custom.StageName, 'sandpit'}
   region: ${opt:region, 'ap-southeast-2'}
   iamRoleStatements:
@@ -115,6 +116,7 @@ provider:
 functions:
   create:
     handler: core/create.main
+    memorySize: 1024
     events:
       - http:
           path: bookings
@@ -122,6 +124,7 @@ functions:
           cors: true
   update:
     handler: core/update.main
+    memorySize: 1024
     events:
       - http:
           path: bookings/{id}
@@ -129,6 +132,7 @@ functions:
           cors: true
   get:
     handler: core/get.main
+    memorySize: 1024
     events:
       - http:
           path: bookings/{id}
@@ -136,6 +140,7 @@ functions:
           cors: true
   getByHostId:
     handler: core/getByHostId.main
+    memorySize: 1024
     events:
       - http:
           path: bookings/byHostId/{id}
@@ -143,6 +148,7 @@ functions:
           cors: true
   getByGuestId:
     handler: core/getByGuestId.main
+    memorySize: 1024
     events:
       - http:
           path: bookings/byGuestId/{id}
@@ -150,6 +156,7 @@ functions:
           cors: true
   list:
     handler: core/list.main
+    memorySize: 1024
     events:
       - http:
           path: bookings
@@ -157,6 +164,7 @@ functions:
           cors: true
   approve:
     handler: core/approve.main
+    memorySize: 1024
     events:
       - http:
           path: bookings/approve/{id}
@@ -164,6 +172,7 @@ functions:
           cors: true
   request:
     handler: core/request.main
+    memorySize: 1024
     events:
       - http:
           path: bookings/request/{id}
@@ -171,6 +180,7 @@ functions:
           cors: true
   cancel:
     handler: core/cancel.main
+    memorySize: 1024
     events:
       - http:
           path: bookings/cancel/{id}
@@ -178,6 +188,7 @@ functions:
           cors: true
   complete:
     handler: core/complete.main
+    memorySize: 1024
     events:
       - http:
           path: bookings/complete/{id}
@@ -185,6 +196,7 @@ functions:
           cors: true
   decline:
     handler: core/decline.main
+    memorySize: 1024
     events:
       - http:
           path: bookings/decline/{id}
@@ -192,6 +204,7 @@ functions:
           cors: true
   expire:
     handler: core/expire.main
+    memorySize: 1024
     events:
       - http:
           path: bookings/expire/{id}
@@ -199,6 +212,7 @@ functions:
           cors: true
   getByCompleted:
     handler: core/getByCompleted.main
+    memorySize: 1024
     events:
       - http:
           path: bookings/getByCompleted
@@ -206,6 +220,7 @@ functions:
           cors: true
   getByExpired:
     handler: core/getByExpired.main
+    memorySize: 1024
     events:
       - http:
           path: bookings/getByExpired
@@ -213,6 +228,7 @@ functions:
           cors: true
   cleanAvailabilities:
     handler: core/cleanAvailabilities.main
+    memorySize: 1024
     events:
       - http:
           path: bookings/cleanAvailabilities
@@ -221,6 +237,7 @@ functions:
       - schedule: rate(15 minutes)
   cleanListingAvailabilities:
     handler: core/cleanListingAvailabilities.main
+    memorySize: 1024
     events:
       - http:
           path: bookings/cleanListingAvailabilities/{id}
@@ -228,6 +245,7 @@ functions:
           cors: true
   getPendingByGuestId:
     handler: core/getPendingByGuestId.main
+    memorySize: 1024
     events:
       - http:
           path: bookings/getPendingByGuestId/{id}/{listingId}
@@ -235,6 +253,7 @@ functions:
           cors: true
   timeout:
     handler: core/timeout.main
+    memorySize: 1024
     events:
       - http:
           path: bookings/timeout/{id}
@@ -242,6 +261,7 @@ functions:
           cors: true
   databaseMigration:
     handler: core/databaseMigration.main
+    memorySize: 1024
     events:
       - http:
           path: bookings/migration/{token}/database
