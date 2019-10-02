@@ -91,11 +91,11 @@ export default function(sequelize, DataTypes) {
       },
       checkIn: {
         type: DataTypes.STRING(10),
-        allowNull: false
+        allowNull: true
       },
       checkOut: {
         type: DataTypes.STRING(10),
-        allowNull: false
+        allowNull: true
       },
       reservations: {
         type: DataTypes.TEXT,
