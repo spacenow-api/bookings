@@ -51,6 +51,7 @@ const getDates = (startDate, endDate) => {
 
 const resolveBooking = (booking) => {
   const reservationsString = booking.reservations
+  booking.reservations = []
   if (reservationsString) {
     booking.reservations = reservationsString.split(',')
   }
