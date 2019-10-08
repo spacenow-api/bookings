@@ -42,5 +42,8 @@
   },
   "resolutions": {
     "graceful-fs": "4.2.2"
+  },
+  "jest": {
+    "testEnvironment": "node"
   }
 }
