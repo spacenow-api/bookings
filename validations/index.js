@@ -59,14 +59,14 @@ const resolveBooking = (booking) => {
 }
 
 const getHourlyPeriod = (startTime, endTime) => {
-  if (!startTime && !endTime) throw new Error('Time not found.')
+  if (!startTime && !endTime) throw Error('Time not found.')
   if (!startTime || !endTime) return 0
   const startMoment = moment(startTime, 'HH:mm:ss')
   const endMoment = moment(endTime, 'HH:mm:ss')
   const hourDiff = endMoment.diff(startMoment, 'hours')
   const minDiff = moment.utc(endMoment.diff(startMoment)).format('mm')
   if (parseInt(minDiff, 10) > 0) {
-    throw new Error('It is not possible to book a space with a half or less minutes of diference.')
+    throw Error('It is not possible to book a space with a half or less minutes of diference.')
   }
   return hourDiff
 }

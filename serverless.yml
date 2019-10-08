@@ -267,6 +267,14 @@ functions:
           path: bookings/migration/{token}/database
           method: post
           cors: true
+  getHourlyPeriod:
+    handler: core/getHourlyPeriod.main
+    memorySize: 1024
+    events:
+      - http:
+          path: bookings/getHourlyPeriod
+          method: post
+          cors: true
 
 resources:
   - ${file(resources/api-gateway-errors.yml)}
