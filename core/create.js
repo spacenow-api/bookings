@@ -4,7 +4,7 @@ import { Op } from 'sequelize'
 
 import * as queueLib from '../libs/queue-lib'
 import { success, failure } from '../libs/response-lib'
-import { calcTotal, getDates, getEndDate, BookingStates, resolveBooking } from '../validations'
+import { calcTotal, getDates, getEndDate, BookingStates, resolveBooking, getHourlyPeriod, hasBlockAvailabilities, hasBlockTime } from '../validations'
 import { Bookings } from './../models'
 
 const QUEUE_ULR = `https://sqs.${process.env.region}.amazonaws.com/${process.env.accountId}/${process.env.queueName}`
@@ -12,41 +12,20 @@ const QUEUE_ULR = `https://sqs.${process.env.region}.amazonaws.com/${process.env
 const IS_ABSORVE = 0.035
 const NO_ABSORVE = 0.135
 
-const hasBlockAvailabilities = async (listingId, reservationDates) => {
-  try {
-    const bookings = await Bookings.findAll({
-      where: {
-        listingId: listingId,
-        bookingState: {
-          [Op.in]: [
-            BookingStates.PENDING,
-            BookingStates.REQUESTED,
-            BookingStates.ACCEPTED
-          ]
-        }
+const getValidateBookings = async (listingId) => {
+  const bookings = await Bookings.findAll({
+    where: {
+      listingId: listingId,
+      bookingState: {
+        [Op.in]: [
+          BookingStates.PENDING,
+          BookingStates.REQUESTED,
+          BookingStates.ACCEPTED
+        ]
       }
-    })
-
-    bookings.map(resolveBooking)
-    let reservationsFromBooking = bookings.map((o) => o.reservations)
-    reservationsFromBooking = [].concat.apply([], reservationsFromBooking)
-
-    const similars = []
-    reservationsFromBooking.forEach((fromBooking) => {
-      reservationDates.forEach((toCreate) => {
-        if (moment(fromBooking).isSame(toCreate, 'day')) {
-          if (similars.indexOf(toCreate) === -1) {
-            similars.push(toCreate)
-          }
-        }
-      })
-    })
-
-    return similars.length > 0
-  } catch (err) {
-    console.error(err)
-    return true // to block reservations if has a query error...
-  }
+    }
+  })
+  return bookings.map(resolveBooking)
 }
 
 export const main = async (event) => {
@@ -59,7 +38,11 @@ export const main = async (event) => {
 
   let totalPrice
   let reservationDates
-  if (data.priceType === 'daily') {
+  if (data.priceType === 'houly') {
+    const hourlyPeriod = getHourlyPeriod(data.checkInHour, data.checkOutHour)
+    totalPrice = calcTotal(data.basePrice, data.quantity, hourlyPeriod, guestServiceFee)
+    reservationDates = data.reservations
+  } else if (data.priceType === 'daily') {
     reservationDates = data.reservations
     totalPrice = calcTotal(
       data.basePrice,
@@ -82,10 +65,19 @@ export const main = async (event) => {
     )
   }
 
-  if (await hasBlockAvailabilities(data.listingId, reservationDates)) {
+  // Getting pending bookings...
+  let isBlocked = false
+  const bookings = await getValidateBookings(data.listingId)
+  if (data.priceType === 'hourly') {
+    isBlocked = hasBlockTime(bookings, data.checkInHour, data.checkOutHour)
+  } else {
+    isBlocked = hasBlockAvailabilities(bookings, reservationDates)
+  }
+
+  if (isBlocked) {
     return failure({
       status: false,
-      error: 'The requested dates are not available.'
+      error: 'The requested dates/time are not available.'
     })
   } else {
     // Defining a sorted reservation list...
@@ -123,6 +115,8 @@ export const main = async (event) => {
         priceType: data.priceType,
         checkIn: checkIn,
         checkOut: checkOut,
+        checkInHour: data.checkInHour,
+        checkOutHour: data.checkOutHour,
         createdAt: Date.now(),
         updatedAt: Date.now()
       })

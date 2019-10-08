@@ -71,6 +71,49 @@ const getHourlyPeriod = (startTime, endTime) => {
   return hourDiff
 }
 
+const hasBlockAvailabilities = (bookings, reservationDates) => {
+  try {
+    let reservationsFromBooking = bookings.map((o) => o.reservations)
+    reservationsFromBooking = [].concat.apply([], reservationsFromBooking)
+    const similars = []
+    reservationsFromBooking.forEach((fromBooking) => {
+      reservationDates.forEach((toCreate) => {
+        if (moment(fromBooking).isSame(toCreate, 'day')) {
+          if (similars.indexOf(toCreate) === -1) {
+            similars.push(toCreate)
+          }
+        }
+      })
+    })
+    return similars.length > 0
+  } catch (err) {
+    console.error(err)
+    return true // to block reservations if has a error...
+  }
+}
+
+const hasBlockTime = (bookings, checkInHour, checkOutHour) => {
+  const hourlyFormat = 'HH:mm:ss'
+  try {
+    const inMoment = moment(checkInHour, hourlyFormat)
+    const outMoment = moment(checkOutHour, hourlyFormat)
+    const blockedBookings = bookings.filter((o) => {
+      const startMoment = moment(o.checkInHour, hourlyFormat)
+      const endMoment = moment(o.checkOutHour, hourlyFormat)
+      if (
+        inMoment.isBetween(startMoment, endMoment) ||
+        outMoment.isBetween(startMoment, endMoment)
+      ) {
+        return o
+      }
+    })
+    return blockedBookings.length > 0
+  } catch (err) {
+    console.error(err)
+    return true // to block reservations if has a error...
+  }
+}
+
 export {
   calcTotal,
   getDates,
@@ -78,5 +121,7 @@ export {
   BookingStates,
   BookingStatesArray,
   resolveBooking,
-  getHourlyPeriod
+  getHourlyPeriod,
+  hasBlockAvailabilities,
+  hasBlockTime
 }
