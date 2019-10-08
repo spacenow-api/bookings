@@ -61,8 +61,8 @@ const resolveBooking = (booking) => {
 const getHourlyPeriod = (startTime, endTime) => {
   if (!startTime && !endTime) throw Error('Time not found.')
   if (!startTime || !endTime) return 0
-  const startMoment = moment(startTime, 'HH:mm:ss')
-  const endMoment = moment(endTime, 'HH:mm:ss')
+  const startMoment = moment(startTime, 'HH:mm')
+  const endMoment = moment(endTime, 'HH:mm')
   const hourDiff = endMoment.diff(startMoment, 'hours')
   const minDiff = moment.utc(endMoment.diff(startMoment)).format('mm')
   if (parseInt(minDiff, 10) > 0) {
@@ -93,7 +93,7 @@ const hasBlockAvailabilities = (bookings, reservationDates) => {
 }
 
 const hasBlockTime = (bookings, checkInHour, checkOutHour) => {
-  const hourlyFormat = 'HH:mm:ss'
+  const hourlyFormat = 'HH:mm'
   try {
     const inMoment = moment(checkInHour, hourlyFormat)
     const outMoment = moment(checkOutHour, hourlyFormat)
