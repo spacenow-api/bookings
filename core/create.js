@@ -38,7 +38,7 @@ export const main = async (event) => {
 
   let totalPrice
   let reservationDates
-  if (data.priceType === 'houly') {
+  if (data.priceType === 'hourly') {
     const hourlyPeriod = getHourlyPeriod(data.checkInHour, data.checkOutHour)
     totalPrice = calcTotal(data.basePrice, data.quantity, hourlyPeriod, guestServiceFee)
     reservationDates = data.reservations
