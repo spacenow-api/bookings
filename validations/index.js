@@ -65,6 +65,9 @@ const getHourlyPeriod = (startTime, endTime) => {
   const endMoment = moment(endTime, 'HH:mm')
   const hourDiff = endMoment.diff(startMoment, 'hours')
   const minDiff = moment.utc(endMoment.diff(startMoment)).format('mm')
+  if (parseInt(hourDiff, 10) < 0) {
+    throw Error('End time is bigger than Start time.')
+  }
   if (parseInt(minDiff, 10) > 0) {
     throw Error('It is not possible to book a space with a half or less minutes of diference.')
   }
