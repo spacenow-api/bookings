@@ -37,30 +37,33 @@ export const main = async (event) => {
   const hostServiceFee = data.isAbsorvedFee ? 0.1 : 0
 
   let totalPrice
+  let bookingPeriod
   let reservationDates
   if (data.priceType === 'hourly') {
-    const hourlyPeriod = getHourlyPeriod(data.checkInHour, data.checkOutHour)
-    totalPrice = calcTotal(data.basePrice, data.quantity, hourlyPeriod, guestServiceFee)
+    bookingPeriod = getHourlyPeriod(data.checkInHour, data.checkOutHour)
+    totalPrice = calcTotal(data.basePrice, data.quantity, bookingPeriod, guestServiceFee)
     reservationDates = data.reservations
   } else if (data.priceType === 'daily') {
+    bookingPeriod = reservationDates.length
     reservationDates = data.reservations
     totalPrice = calcTotal(
       data.basePrice,
       data.quantity,
-      reservationDates.length,
+      bookingPeriod,
       guestServiceFee
     )
   } else {
+    bookingPeriod = data.period
     const endDate = getEndDate(
       data.reservations[0],
-      data.period,
+      bookingPeriod,
       data.priceType
     )
     reservationDates = getDates(data.reservations[0], endDate)
     totalPrice = calcTotal(
       data.basePrice,
       data.quantity,
-      data.period,
+      bookingPeriod,
       guestServiceFee
     )
   }
@@ -99,7 +102,7 @@ export const main = async (event) => {
         quantity: data.quantity,
         basePrice: data.basePrice,
         fees: data.fees,
-        period: data.period,
+        period: bookingPeriod,
         currency: data.currency,
         guestServiceFee: guestServiceFee,
         hostServiceFee: hostServiceFee,
