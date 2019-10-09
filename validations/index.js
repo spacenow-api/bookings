@@ -1,5 +1,7 @@
 import moment from 'moment'
 
+import { ListingAccessDays, ListingAccessHours } from './../models'
+
 /**
  * Possible Spacenow bookings States;
  */
@@ -69,7 +71,9 @@ const getHourlyPeriod = (startTime, endTime) => {
     throw Error('End time is bigger than Start time.')
   }
   if (parseInt(minDiff, 10) > 0) {
-    throw Error('It is not possible to book a space with a half or less minutes of diference.')
+    throw Error(
+      'It is not possible to book a space with a half or less minutes of diference.'
+    )
   }
   return hourDiff
 }
@@ -117,6 +121,43 @@ const hasBlockTime = (bookings, checkInHour, checkOutHour) => {
   }
 }
 
+const minutesOf = (momentTime) => momentTime.minutes() + momentTime.hours() * 60
+
+const isAvailableThisDay = async (
+  listingId,
+  date,
+  checkInHour,
+  checkOutHour
+) => {
+  const hourlyFormat = 'HH:mm'
+  try {
+    const weekDay = moment(date).day()
+    const accessDay = await ListingAccessDays.findOne({ where: { listingId } })
+    const accessHours = await ListingAccessHours.findOne({
+      where: {
+        listingAccessDaysId: accessDay.id,
+        weekday: `${weekDay}`
+      }
+    })
+    if (!accessHours) return false
+    if (accessHours.allday == 1) return true
+    const checkInMin = minutesOf(moment(checkInHour, hourlyFormat))
+    const checkOutMin = minutesOf(moment(checkOutHour, hourlyFormat))
+    const openMin = minutesOf(moment(accessHours.openHour, hourlyFormat))
+    const closeMin = minutesOf(moment(accessHours.closeHour, hourlyFormat))
+    if (
+      (checkInMin >= openMin && checkInMin <= closeMin) &&
+      (checkOutMin >= openMin && checkOutMin <= closeMin)
+    ) {
+      return true
+    }
+    return false
+  } catch (err) {
+    console.error('Error to validate Week Availability: ', err)
+    throw err
+  }
+}
+
 export {
   calcTotal,
   getDates,
@@ -126,5 +167,6 @@ export {
   resolveBooking,
   getHourlyPeriod,
   hasBlockAvailabilities,
-  hasBlockTime
+  hasBlockTime,
+  isAvailableThisDay
 }

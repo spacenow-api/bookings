@@ -267,12 +267,12 @@ functions:
           path: bookings/migration/{token}/database
           method: post
           cors: true
-  getHourlyPeriod:
-    handler: core/getHourlyPeriod.main
+  getHourlyAvailability:
+    handler: core/getHourlyAvailability.main
     memorySize: 1024
     events:
       - http:
-          path: bookings/getHourlyPeriod
+          path: bookings/getHourlyAvailability
           method: post
           cors: true
 
