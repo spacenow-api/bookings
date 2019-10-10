@@ -132,13 +132,13 @@ const isAvailableThisDay = (
   const minutesOfTime = (date) => {
     const hour = date.split(':')[0]
     const minute = date.split(':')[1]
-    const instance = moment()
+    const instance = moment().utcOffset('+1100')
     instance.set({ hour, minute })
-    instance.utcOffset('+1100')
     console.log('minutesOfTime: ', instance.toString())
     return instance.minutes() + instance.hours() * 60
   }
   try {
+    console.log('Access Hours: ', availableAccessHours)
     if (!availableAccessHours) return false
     if (availableAccessHours.allday == 1) return true
     
