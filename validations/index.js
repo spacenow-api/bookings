@@ -125,7 +125,7 @@ const isAvailableThisDay = (
   availableAccessHours
 ) => {
   const minutesOfDate = (date) => {
-    const instance = moment(date).utcOffset(1100)
+    const instance = moment(date).utcOffset(11)
     console.log('minutesOfDate: ', instance.toString())
     return instance.minutes() + instance.hours() * 60
   }
@@ -134,7 +134,7 @@ const isAvailableThisDay = (
     const minute = date.split(':')[1]
     const instance = moment()
     instance.set({ hour, minute })
-    instance.utcOffset(1100)
+    instance.utcOffset(11)
     console.log('minutesOfTime: ', instance.toString())
     return instance.minutes() + instance.hours() * 60
   }
