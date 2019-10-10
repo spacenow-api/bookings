@@ -141,10 +141,15 @@ const isAvailableThisDay = async (
     })
     if (!accessHours) return false
     if (accessHours.allday == 1) return true
+    
     const checkInMin = minutesOf(moment(checkInHour, hourlyFormat))
     const checkOutMin = minutesOf(moment(checkOutHour, hourlyFormat))
+    console.log('Check Hours: ', checkInHour, checkInMin, checkOutHour, checkOutMin)
+    
     const openMin = minutesOf(moment(accessHours.openHour, hourlyFormat))
     const closeMin = minutesOf(moment(accessHours.closeHour, hourlyFormat))
+    console.log('Open/Close Hours: ', accessHours.openHour, openMin, accessHours.closeHour, closeMin)
+
     if (
       (checkInMin >= openMin && checkInMin <= closeMin) &&
       (checkOutMin >= openMin && checkOutMin <= closeMin)
