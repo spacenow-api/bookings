@@ -108,6 +108,14 @@ export default function(sequelize, DataTypes) {
       updatedAt: {
         type: DataTypes.BIGINT,
         allowNull: false
+      },
+      checkInHour: {
+        type: DataTypes.STRING(10),
+        allowNull: true
+      },
+      checkOutHour: {
+        type: DataTypes.STRING(10),
+        allowNull: true
       }
     },
     {
