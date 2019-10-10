@@ -1,7 +1,5 @@
 import moment from 'moment'
 
-import { ListingAccessDays, ListingAccessHours } from './../models'
-
 /**
  * Possible Spacenow bookings States;
  */
@@ -121,35 +119,32 @@ const hasBlockTime = (bookings, checkInHour, checkOutHour) => {
   }
 }
 
-const minutesOf = (momentTime) => momentTime.minutes() + momentTime.hours() * 60
-
-const isAvailableThisDay = async (
-  listingId,
-  date,
+const isAvailableThisDay = (
   checkInHour,
-  checkOutHour
+  checkOutHour,
+  availableAccessHours
 ) => {
-  const hourlyFormat = 'HH:mm'
+  const minutesOfDate = (date) => {
+    const instance = moment(date)
+    return instance.minutes() + instance.hours() * 60
+  }
+  const minutesOfTime = (date) => {
+    const hour = date.split(':')[0]
+    const minute = date.split(':')[1]
+    const instance = moment()
+    instance.set({ hour, minute })
+    return instance.minutes() + instance.hours() * 60
+  }
   try {
-    const weekDay = moment(date).day()
-    const accessDay = await ListingAccessDays.findOne({ where: { listingId } })
-    const accessHours = await ListingAccessHours.findOne({
-      where: {
-        listingAccessDaysId: accessDay.id,
-        weekday: `${weekDay}`
-      }
-    })
-    if (!accessHours) return false
-    if (accessHours.allday == 1) return true
-    
-    const checkInMin = minutesOf(moment(checkInHour, hourlyFormat))
-    const checkOutMin = minutesOf(moment(checkOutHour, hourlyFormat))
-    console.log('Check Hours: ', checkInHour, checkInMin, checkOutHour, checkOutMin)
-    
-    const openMin = minutesOf(moment(accessHours.openHour, hourlyFormat))
-    const closeMin = minutesOf(moment(accessHours.closeHour, hourlyFormat))
-    console.log('Open/Close Hours: ', accessHours.openHour, openMin, accessHours.closeHour, closeMin)
+    if (!availableAccessHours) return false
+    if (availableAccessHours.allday == 1) return true
 
+    const checkInMin = minutesOfTime(checkInHour)
+    const checkOutMin = minutesOfTime(checkOutHour)
+    
+    const openMin = minutesOfDate(availableAccessHours.openHour)
+    const closeMin = minutesOfDate(availableAccessHours.closeHour)
+    
     if (
       (checkInMin >= openMin && checkInMin <= closeMin) &&
       (checkOutMin >= openMin && checkOutMin <= closeMin)
@@ -158,7 +153,7 @@ const isAvailableThisDay = async (
     }
     return false
   } catch (err) {
-    console.error('Error to validate Week Availability: ', err)
+    console.error('Error to validate Availability: ', err)
     throw err
   }
 }

@@ -1,4 +1,8 @@
-import { getHourlyPeriod, hasBlockTime } from './../validations'
+import {
+  getHourlyPeriod,
+  hasBlockTime,
+  isAvailableThisDay
+} from './../validations'
 
 test('Throwing exception when not have start and end time.', () => {
   expect(() => getHourlyPeriod()).toThrow()
@@ -50,4 +54,31 @@ test('Expecting true to an unvailable time table with half hour.', () => {
     }
   ]
   expect(hasBlockTime(bookings, '11:30', '17:30')).toBe(true)
+})
+
+test('Expect a false availability when access hours does not exist.', () => {
+  expect(isAvailableThisDay('11:00', '14:00', null)).toBe(false)
+})
+
+test('Expect a true availability for a 24/7 listing.', () => {
+  const availableAccessHours = { allday: 1 }
+  expect(isAvailableThisDay('11:00', '14:00', availableAccessHours)).toBe(true)
+})
+
+test('Expect a true availability for open days.', () => {
+  const availableAccessHours = {
+    allday: 0,
+    openHour: '2019-10-09T23:00:57.000Z',
+    closeHour: '2019-10-10T04:00:55.000Z'
+  }
+  expect(isAvailableThisDay('11:00', '14:00', availableAccessHours)).toBe(true)
+})
+
+test('Expect a false availability for open days.', () => {
+  const availableAccessHours = {
+    allday: 0,
+    openHour: '2019-10-09T23:00:57.000Z',
+    closeHour: '2019-10-10T04:00:55.000Z'
+  }
+  expect(isAvailableThisDay('08:00', '14:00', availableAccessHours)).toBe(false)
 })
