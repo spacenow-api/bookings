@@ -126,6 +126,7 @@ const isAvailableThisDay = (
 ) => {
   const minutesOfDate = (date) => {
     const instance = moment(date).utcOffset(1100)
+    console.log('minutesOfDate: ', instance.toString())
     return instance.minutes() + instance.hours() * 60
   }
   const minutesOfTime = (date) => {
@@ -134,18 +135,21 @@ const isAvailableThisDay = (
     const instance = moment()
     instance.set({ hour, minute })
     instance.utcOffset(1100)
+    console.log('minutesOfTime: ', instance.toString())
     return instance.minutes() + instance.hours() * 60
   }
   try {
     if (!availableAccessHours) return false
     if (availableAccessHours.allday == 1) return true
-
+    
     const checkInMin = minutesOfTime(checkInHour)
     const checkOutMin = minutesOfTime(checkOutHour)
+    console.log('Check Hours: ', checkInHour, checkInMin, checkOutHour, checkOutMin)
     
     const openMin = minutesOfDate(availableAccessHours.openHour)
     const closeMin = minutesOfDate(availableAccessHours.closeHour)
-    
+    console.log('Open/Close Hours: ', availableAccessHours.openHour, openMin, availableAccessHours.closeHour, closeMin)
+
     if (
       (checkInMin >= openMin && checkInMin <= closeMin) &&
       (checkOutMin >= openMin && checkOutMin <= closeMin)
