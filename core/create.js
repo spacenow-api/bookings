@@ -44,8 +44,8 @@ export const main = async (event) => {
     totalPrice = calcTotal(data.basePrice, data.quantity, bookingPeriod, guestServiceFee)
     reservationDates = data.reservations
   } else if (data.priceType === 'daily') {
-    bookingPeriod = reservationDates.length
     reservationDates = data.reservations
+    bookingPeriod = reservationDates.length
     totalPrice = calcTotal(
       data.basePrice,
       data.quantity,
