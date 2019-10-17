@@ -275,6 +275,15 @@ functions:
           path: bookings/getHourlyAvailability
           method: post
           cors: true
+  checkOutTrigger:
+    handler: core/checkOutTrigger.main
+    memorySize: 1024
+    events:
+      - http:
+          path: bookings/checkOutTrigger
+          method: post
+          cors: true
+      - schedule: rate(2 hours)
 
 resources:
   - ${file(resources/api-gateway-errors.yml)}
