@@ -141,9 +141,11 @@ const isAvailableThisDay = (
     
     const checkInMin = minutesOfTime(checkInHour)
     const checkOutMin = minutesOfTime(checkOutHour)
+    console.log('check in/out hour: ', checkInMin, checkOutMin)
     
     const openMin = minutesOfDate(availableAccessHours.openHour)
     const closeMin = minutesOfDate(availableAccessHours.closeHour)
+    console.log('open in/out hour: ', openMin, closeMin)
     
     if (
       (checkInMin >= openMin && checkInMin <= closeMin) &&
