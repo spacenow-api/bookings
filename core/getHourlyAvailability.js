@@ -11,8 +11,6 @@ export async function main(event) {
 
     // Getting Listing Access Hours...
     const weekDay = moment(data.date).day()
-    console.log('Week Day: ', moment(data.date).toString())
-    console.log('Week Day: ', moment(data.date).utcOffset('+1100').toString())
     const accessDay = await ListingAccessDays.findOne({
       where: { listingId: data.listingId }
     })

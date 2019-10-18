@@ -129,12 +129,10 @@ const isAvailableThisDay = (
     const minute = date.split(':')[1]
     const instance = moment().utcOffset('+1100')
     instance.set({ hour, minute })
-    console.log('minutesOfTime: ', instance.toString())
     return instance.minutes() + instance.hours() * 60
   }
   const minutesOfDate = (date) => {
     const instance = moment(date).utcOffset('+1100')
-    console.log('minutesOfDate: ', instance.toString())
     return instance.minutes() + instance.hours() * 60
   }
   try {
@@ -143,11 +141,9 @@ const isAvailableThisDay = (
     
     const checkInMin = minutesOfTime(checkInHour)
     const checkOutMin = minutesOfTime(checkOutHour)
-    console.log('check in/out hour: ', checkInMin, checkOutMin)
     
     const openMin = minutesOfDate(availableAccessHours.openHour)
     const closeMin = minutesOfDate(availableAccessHours.closeHour)
-    console.log('open in/out hour: ', openMin, closeMin)
     
     if (
       (checkInMin >= openMin && checkInMin <= closeMin) &&
