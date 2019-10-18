@@ -1,10 +1,7 @@
-import AWS from 'aws-sdk'
-
 import { success, failure } from '../libs/response-lib'
+import { onSendEmail } from './../helpers/email.function'
 import { BookingStates, resolveBooking } from './../validations'
 import { Bookings } from './../models'
-
-const lambda = new AWS.Lambda()
 
 export async function main(event) {
   const bookingId = event.pathParameters.id
@@ -26,22 +23,4 @@ export async function main(event) {
     console.warn(`Booking ${bookingId} is not Requested.`)
     return success({ status: true, data: resolveBooking(bookingObj), blockEmails: true })
   }
-}
-
-const onSendEmail = (emailFunctionName, bookingId) => {
-  return new Promise((resolve, reject) => {
-    lambda.invoke(
-      { 
-        FunctionName: emailFunctionName,
-        Payload: JSON.stringify({ pathParameters: { bookingId: bookingId } })
-      }, (error) => {
-        if (error) {
-          reject(error)
-        } else {
-          console.info(`Approved email sent with success by booking ${bookingId}`)
-          resolve()
-        }
-      }
-    )
-  })
 }
