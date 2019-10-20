@@ -12,7 +12,7 @@ export const main = async () => {
       where: { bookingState: BookingStates.APPROVED }
     })
     const bookingsCompleted = []
-    const currentDate = moment().utcOffset('+1100').format('YYYY-MM-DD')
+    const currentDate = moment(new Date(), 'YYYY-MM-DD').utcOffset('+1100')
     for (const item of bookings) {
       let checkOutDate = moment(item.checkOut, 'YYYY-MM-DD')
       checkOutDate = checkOutDate.utcOffset('+1100')
