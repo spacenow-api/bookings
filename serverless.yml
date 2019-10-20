@@ -278,6 +278,7 @@ functions:
   checkOutTrigger:
     handler: core/checkOutTrigger.main
     memorySize: 1024
+    timeout: 120
     events:
       - http:
           path: bookings/checkOutTrigger
