@@ -9,8 +9,8 @@ import { Bookings } from './../models'
 
 const QUEUE_ULR = `https://sqs.${process.env.region}.amazonaws.com/${process.env.accountId}/${process.env.queueName}`
 
-const IS_ABSORVE = 0.035
-const NO_ABSORVE = 0.135
+const IS_ABSORVE = 0.035 // Guest Fee
+const NO_ABSORVE = 0.135 // Host Fee
 
 const getValidateBookings = async (listingId) => {
   const bookings = await Bookings.findAll({
