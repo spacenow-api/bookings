@@ -8,11 +8,11 @@ plugins:
   - serverless-webpack
 
 custom:
-  ServiceName: 'bookings'
+  ServiceName: "bookings"
   StageName: ${opt:stage, 'sandpit'}
   StageNameCert: ${opt:stageCert, ''}
-  SubdomainName: 'spacenow'
-  FirstAttributeName: 'bookingId'
+  SubdomainName: "spacenow"
+  FirstAttributeName: "bookingId"
   TableName: ${self:custom.StageName}-${self:custom.ServiceName}
   PreReservationTableName: ${self:custom.StageName}-${self:custom.ServiceName}-pre-reservation
   TableThroughputs:
@@ -40,11 +40,11 @@ custom:
     prod: sg-00b4a2172f7e29276
   customDomain:
     domainName: ${self:custom.domains.${self:custom.StageName}, self:custom.domains.default}
-    basePath: ''
+    basePath: ""
     stage: ${self:custom.StageName}
     certificateArn: ${ssm:/${self:custom.StageNameCert, ''}/ACM_CERTIFICATE, ''}
     createRoute53Record: true
-    endpointType: 'regional'
+    endpointType: "regional"
   dynamodb:
     stages:
       - ${self:custom.StageName}
@@ -83,17 +83,17 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource: '*'
-    - Effect: 'Allow'
+      Resource: "*"
+    - Effect: "Allow"
       Action:
-        - 'sqs:SendMessage'
-        - 'sqs:GetQueueUrl'
+        - "sqs:SendMessage"
+        - "sqs:GetQueueUrl"
       Resource: "arn:aws:sqs:${opt:region, 'ap-southeast-2'}:${opt:accountId, ''}:${self:custom.SubdomainName}-${self:custom.TableName}"
     - Effect: Allow
       Action:
         - lambda:InvokeFunction
         - lambda:InvokeAsync
-      Resource: '*'
+      Resource: "*"
   vpc:
     securityGroupIds:
       - ${self:custom.securityGroup.${self:custom.StageName, 'sandpit'}}
@@ -226,6 +226,7 @@ functions:
           path: bookings/getByExpired
           method: get
           cors: true
+      - schedule: rate(2 minutes)
   cleanAvailabilities:
     handler: core/cleanAvailabilities.main
     memorySize: 1024
