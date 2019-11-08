@@ -162,6 +162,14 @@ functions:
           path: bookings
           method: get
           cors: true
+  count:
+    handler: core/count.main
+    memorySize: 1024
+    events:
+      - http:
+          path: bookings/date
+          method: get
+          cors: true
   approve:
     handler: core/approve.main
     memorySize: 1024
