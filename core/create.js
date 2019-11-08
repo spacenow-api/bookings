@@ -29,6 +29,7 @@ const getValidateBookings = async (listingId) => {
 }
 
 export const main = async (event) => {
+
   const data = JSON.parse(event.body)
 
   const bookingId = uuid.v1()
@@ -120,6 +121,7 @@ export const main = async (event) => {
         checkOut: checkOut,
         checkInHour: data.checkInHour,
         checkOutHour: data.checkOutHour,
+        message: data.message,
         createdAt: Date.now(),
         updatedAt: Date.now()
       })
