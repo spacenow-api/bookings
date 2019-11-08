@@ -116,6 +116,10 @@ export default function(sequelize, DataTypes) {
       checkOutHour: {
         type: DataTypes.STRING(10),
         allowNull: true
+      },
+      message: {
+        type: DataTypes.STRING(255),
+        allowNull: true
       }
     },
     {
