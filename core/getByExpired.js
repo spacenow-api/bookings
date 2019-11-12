@@ -33,8 +33,6 @@ export const main = async () => {
       await onCleanAvailabilities(item.bookingId)
       await onSendEmail(`api-emails-${process.env.environment}-sendEmailExpiredBooking`, item.bookingId)
     }
-    console.log('bookings', bookings)
-    console.log('bookings', bookings.map(resolveBooking))
     return success({ count: bookings.length, items: bookings.map(resolveBooking) })
   } catch (err) {
     console.error(err)
