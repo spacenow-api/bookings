@@ -53,11 +53,16 @@ async function doDeclineBooking(bookingId) {
   }
 }
 
-async function doPaymentConfirmation(bookingId) {
+async function doPaymentConfirmation(bookingId, sourceId, chargeId) {
   try {
     const bookingObj = await Bookings.findOne({ where: { bookingId } })
     if (BookingStates.APPROVED === bookingObj.bookingState) {
-      await Bookings.update({ paymentState: 'completed', updatedAt: Date.now() }, { where: { bookingId } })
+      await Bookings.update({
+        sourceId: sourceId,
+        chargeId: chargeId,
+        paymentState: 'completed',
+        updatedAt: Date.now()
+      }, { where: { bookingId } })
       await onSendEmail(`api-emails-${process.env.environment}-sendEmailByBookingInstantHost`, bookingId)
       await onSendEmail(`api-emails-${process.env.environment}-sendEmailByBookingInstantGuest`, bookingId)
       const bookingObjUpdated = await Bookings.findOne({ where: { bookingId }, raw: true })

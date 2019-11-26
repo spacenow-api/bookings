@@ -178,6 +178,14 @@ functions:
           path: bookings/approve/{id}
           method: put
           cors: true
+  paymentConfirmation:
+    handler: core/paymentConfirmation.main
+    memorySize: 1024
+    events:
+      - http:
+          path: bookings/paymentConfirmation
+          method: post
+          cors: true
   request:
     handler: core/request.main
     memorySize: 1024
