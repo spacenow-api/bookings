@@ -18,4 +18,26 @@ async function doRequestedBooking(bookingId) {
   }
 }
 
-export { doRequestedBooking }
+async function doApproveBooking(bookingId) {
+  const bookingObj = await Bookings.findOne({ where: { bookingId }, raw: true })
+  if (BookingStates.REQUESTED === bookingObj.bookingState || BookingStates.PENDING === bookingObj.bookingState) {
+    try {
+      await Bookings.update(
+        { bookingState: BookingStates.APPROVED, updatedAt: Date.now() },
+        { where: { bookingId } }
+      )
+      await onSendEmail(`api-emails-${process.env.environment}-sendEmailByBookingInstantHost`, bookingId)
+      await onSendEmail(`api-emails-${process.env.environment}-sendEmailByBookingInstantGuest`, bookingId)
+      const bookingObjUpdated = await Bookings.findOne({ where: { bookingId }, raw: true })
+      return resolveBooking(bookingObjUpdated)
+    } catch (err) {
+      console.error(`Problems to update booking ${bookingId} to Approved:`, err)
+      throw err
+    }
+  } else {
+    console.warn(`Booking ${bookingId} is not Requested.`)
+    return resolveBooking(bookingObj)
+  }
+}
+
+export { doRequestedBooking, doApproveBooking }
