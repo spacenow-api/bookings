@@ -23,8 +23,7 @@ async function doApproveBooking(bookingId) {
     const bookingObj = await Bookings.findOne({ where: { bookingId }, raw: true })
     if (BookingStates.REQUESTED === bookingObj.bookingState || BookingStates.PENDING === bookingObj.bookingState) {
       const bookingObjUpdated = await updateBookingState(bookingId, BookingStates.APPROVED)
-      await onSendEmail(`api-emails-${process.env.environment}-sendEmailByBookingInstantHost`, bookingId)
-      await onSendEmail(`api-emails-${process.env.environment}-sendEmailByBookingInstantGuest`, bookingId)
+      // Sending email to inviting guest to confirm payment...
       return bookingObjUpdated
     } else {
       console.warn(`Booking ${bookingId} is not Requested.`)
@@ -54,4 +53,23 @@ async function doDeclineBooking(bookingId) {
   }
 }
 
-export { doRequestedBooking, doApproveBooking, doDeclineBooking }
+async function doPaymentConfirmation(bookingId) {
+  try {
+    const bookingObj = await Bookings.findOne({ where: { bookingId } })
+    if (BookingStates.APPROVED === bookingObj.bookingState) {
+      await Bookings.update({ paymentState: 'completed', updatedAt: Date.now() }, { where: { bookingId } })
+      await onSendEmail(`api-emails-${process.env.environment}-sendEmailByBookingInstantHost`, bookingId)
+      await onSendEmail(`api-emails-${process.env.environment}-sendEmailByBookingInstantGuest`, bookingId)
+      const bookingObjUpdated = await Bookings.findOne({ where: { bookingId }, raw: true })
+      return resolveBooking(bookingObjUpdated)
+    } else {
+      console.warn(`Booking ${bookingId} is not Approved.`)
+      return resolveBooking(bookingObj)
+    }
+  } catch (err) {
+    console.error(`Problems to decline booking ${bookingId}:`, err)
+    throw err
+  }
+}
+
+export { doRequestedBooking, doApproveBooking, doDeclineBooking, doPaymentConfirmation }
