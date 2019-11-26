@@ -3,11 +3,11 @@ import { success, failure } from '../libs/response-lib'
 import * as bookingService from './../services/booking.service'
 
 export async function main(event) {
-  const bookingId = event.pathParameters.id
+  const { bookingId, sourceId, chargeId } = JSON.parse(event.body)
   try {
-    const bookingObjUpdated = await bookingService.doRequestedBooking(bookingId)
+    const bookingObjUpdated = await bookingService.doPaymentConfirmation(bookingId, sourceId, chargeId)
     return success({ status: true, data: bookingObjUpdated })
   } catch (err) {
-    return failure({ status: false, error: err })
+    return failure({ status: 'error', error: err })
   }
 }
