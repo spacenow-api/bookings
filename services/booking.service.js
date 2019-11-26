@@ -23,7 +23,7 @@ async function doApproveBooking(bookingId) {
     const bookingObj = await Bookings.findOne({ where: { bookingId }, raw: true })
     if (BookingStates.REQUESTED === bookingObj.bookingState || BookingStates.PENDING === bookingObj.bookingState) {
       const bookingObjUpdated = await updateBookingState(bookingId, BookingStates.APPROVED)
-      // Sending email to inviting guest to confirm payment...
+      await onSendEmail(`api-emails-${process.env.environment}-sendEmailByBookingReadyToPay`, bookingId)
       return bookingObjUpdated
     } else {
       console.warn(`Booking ${bookingId} is not Requested.`)
