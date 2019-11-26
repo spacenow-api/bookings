@@ -7,6 +7,8 @@ import { success, failure } from '../libs/response-lib'
 import { calcTotal, getDates, getEndDate, BookingStates, resolveBooking, getHourlyPeriod, hasBlockAvailabilities, hasBlockTime } from '../validations'
 import { Bookings } from './../models'
 
+import * as bookingService from './../services/booking.service'
+
 const QUEUE_ULR = `https://sqs.${process.env.region}.amazonaws.com/${process.env.accountId}/${process.env.queueName}`
 
 const IS_ABSORVE = 0.035 // Guest Fee
@@ -144,8 +146,14 @@ export const main = async (event) => {
       console.error('\nProblems to register reservation on Queue:', err)
     }
 
-    const bookingCreated = await Bookings.findOne({ where: { bookingId }, raw: true })
-    return success(resolveBooking(bookingCreated))
+    // Updating booking state and finishing...
+    let bookingObjUpdated
+    if ('request' === data.bookingType) {
+      bookingObjUpdated = await bookingService.doRequestedBooking(bookingId)
+    } else {
+      bookingObjUpdated = await bookingService.doApproveBooking(bookingId)
+    }
+    return success(bookingObjUpdated)
   }
 }
 
