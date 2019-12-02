@@ -15,4 +15,13 @@ const ListingAccessDays = ListingAccessDaysModel(sequelize, DataTypes)
 import ListingAccessHoursModel from './../models/listingAccessHours.model'
 const ListingAccessHours = ListingAccessHoursModel(sequelize, DataTypes)
 
-export { Bookings, Availabilities, ListingAccessDays, ListingAccessHours }
+import VouchersModel from './../models/vouchers.model'
+const Vouchers = VouchersModel(sequelize, DataTypes)
+
+export {
+  Bookings,
+  Availabilities,
+  ListingAccessDays,
+  ListingAccessHours,
+  Vouchers
+}
