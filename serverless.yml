@@ -292,54 +292,6 @@ functions:
           path: bookings/getHourlyAvailability
           method: post
           cors: true
-  voucherCreate:
-    handler: core/voucherCreate.main
-    memorySize: 1024
-    events:
-      - http:
-          path: bookings/voucher
-          method: post
-          cors: true
-  voucherUpdateUsage:
-    handler: core/voucherUpdateUsage.main
-    memorySize: 1024
-    events:
-      - http:
-          path: bookings/voucher/{voucherCode}/usage
-          method: put
-          cors: true
-  voucherDesactive:
-    handler: core/voucherDesactive.main
-    memorySize: 1024
-    events:
-      - http:
-          path: bookings/voucher/{voucherCode}
-          method: delete
-          cors: true
-  voucherValidate:
-    handler: core/voucherValidate.main
-    memorySize: 1024
-    events:
-      - http:
-          path: bookings/voucher/{voucherCode}/validate
-          method: get
-          cors: true
-  voucherBookingInsert:
-    handler: core/voucherBookingInsert.main
-    memorySize: 1024
-    events:
-      - http:
-          path: bookings/voucher/{voucherCode}/booking/{bookingId}/insert
-          method: put
-          cors: true
-  voucherBookingRemove:
-    handler: core/voucherBookingRemove.main
-    memorySize: 1024
-    events:
-      - http:
-          path: bookings/voucher/{voucherCode}/booking/{bookingId}/remove
-          method: put
-          cors: true
   checkOutTrigger:
     handler: core/checkOutTrigger.main
     memorySize: 1024
@@ -350,6 +302,54 @@ functions:
           method: post
           cors: true
       - schedule: rate(2 hours)
+  voucherCreate:
+    handler: core/voucherCreate.main
+    memorySize: 1024
+    events:
+      - http:
+          path: voucher
+          method: post
+          cors: true
+  voucherUpdateUsage:
+    handler: core/voucherUpdateUsage.main
+    memorySize: 1024
+    events:
+      - http:
+          path: voucher/{voucherCode}/usage
+          method: put
+          cors: true
+  voucherDesactive:
+    handler: core/voucherDesactive.main
+    memorySize: 1024
+    events:
+      - http:
+          path: voucher/{voucherCode}
+          method: delete
+          cors: true
+  voucherValidate:
+    handler: core/voucherValidate.main
+    memorySize: 1024
+    events:
+      - http:
+          path: voucher/{voucherCode}/validate
+          method: get
+          cors: true
+  voucherBookingInsert:
+    handler: core/voucherBookingInsert.main
+    memorySize: 1024
+    events:
+      - http:
+          path: voucher/{voucherCode}/booking/{bookingId}/insert
+          method: put
+          cors: true
+  voucherBookingRemove:
+    handler: core/voucherBookingRemove.main
+    memorySize: 1024
+    events:
+      - http:
+          path: voucher/{voucherCode}/booking/{bookingId}/remove
+          method: put
+          cors: true
 
 resources:
   - ${file(resources/api-gateway-errors.yml)}
