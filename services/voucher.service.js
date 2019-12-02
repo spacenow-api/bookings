@@ -2,10 +2,8 @@ import moment from 'moment'
 
 import { Bookings, Vouchers } from './../models'
 
-const CODE_LIMIT = 999999
-
 async function getNewCode() {
-  const code = Math.floor(100000 + Math.random() * CODE_LIMIT)
+  const code = Math.floor(100000 + Math.random() * 999999)
   const existing = await Vouchers.findOne({ where: { code } })
   if (existing) {
     return getNewCode()
@@ -21,7 +19,7 @@ async function getVoucherByCode(voucherCode) {
   return voucherObj
 }
 
-async function create({ type, isUnique, expireAt }) {
+async function create({ type, value, isUnique, expireAt }) {
   const newCode = await getNewCode()
   const expireAtUtc = moment(expireAt)
     .utc()
@@ -29,6 +27,7 @@ async function create({ type, isUnique, expireAt }) {
   const voucherCreated = await Vouchers.create({
     code: newCode,
     type: type,
+    value: value,
     unique: isUnique,
     expireAt: expireAtUtc
   })
@@ -68,6 +67,13 @@ async function validateExpireTime(voucherCode) {
     const expireTime = moment(voucherObj.expireAt).utc()
     if (currentTime.isAfter(expireTime)) {
       return { status: 'EXPIRED' }
+    }
+    // Check if voucher has already be used...
+    const bookingReturn = await Bookings.findOne({
+      where: { voucherId: voucherObj.id }
+    })
+    if (bookingReturn) {
+      return { status: 'USED' }
     }
     return { status: 'VALID' }
   } catch (err) {
