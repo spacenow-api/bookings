@@ -3,7 +3,8 @@ export default function(sequelize, DataTypes) {
     'Vouchers',
     {
       id: {
-        type: DataTypes.STRING(36),
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
         allowNull: false,
         primaryKey: true
       },
