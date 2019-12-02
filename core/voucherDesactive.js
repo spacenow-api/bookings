@@ -3,10 +3,10 @@ import { success, failure } from '../libs/response-lib'
 import * as voucherService from './../services/voucher.service'
 
 export async function main(event) {
-  const data = JSON.parse(event.body)
+  const { voucherCode } = event.pathParameters
   try {
-    const voucherObjCreated = await voucherService.create(data)
-    return success(voucherObjCreated)
+    const voucherObjUpdated = await voucherService.desactive(voucherCode)
+    return success(voucherObjUpdated)
   } catch (err) {
     return failure({ error: err })
   }

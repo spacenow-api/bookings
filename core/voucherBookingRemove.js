@@ -3,10 +3,13 @@ import { success, failure } from '../libs/response-lib'
 import * as voucherService from './../services/voucher.service'
 
 export async function main(event) {
-  const data = JSON.parse(event.body)
+  const { voucherCode, bookingId } = event.pathParameters
   try {
-    const voucherObjCreated = await voucherService.create(data)
-    return success(voucherObjCreated)
+    const bookingObjUpdated = await voucherService.removeVoucher(
+      voucherCode,
+      bookingId
+    )
+    return success(bookingObjUpdated)
   } catch (err) {
     return failure({ error: err })
   }

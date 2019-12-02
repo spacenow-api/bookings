@@ -75,7 +75,7 @@ async function validateExpireTime(voucherCode) {
   }
 }
 
-async function addVoucher(voucherCode, bookingId) {
+async function insertVoucher(voucherCode, bookingId) {
   try {
     const bookingObj = await Bookings.findOne({ where: { bookingId } })
     if (!bookingObj) throw new Error(`Booking ${bookingId} not found.`)
@@ -117,7 +117,7 @@ async function addVoucher(voucherCode, bookingId) {
   }
 }
 
-async function removeVoucher(bookingId, voucherCode) {
+async function removeVoucher(voucherCode, bookingId) {
   try {
     const bookingObj = await Bookings.findOne({ where: { bookingId } })
     if (!bookingObj) throw new Error(`Booking ${bookingId} not found.`)
@@ -164,6 +164,6 @@ export {
   updateUsage,
   desactive,
   validateExpireTime,
-  addVoucher,
+  insertVoucher,
   removeVoucher
 }
