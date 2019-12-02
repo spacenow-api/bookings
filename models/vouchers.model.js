@@ -3,8 +3,7 @@ export default function(sequelize, DataTypes) {
     'Vouchers',
     {
       id: {
-        type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
+        type: DataTypes.STRING(36),
         allowNull: false,
         primaryKey: true
       },
@@ -17,12 +16,17 @@ export default function(sequelize, DataTypes) {
         allowNull: false,
         defaultValue: 'value'
       },
+      value: {
+        type: DataTypes.FLOAT,
+        allowNull: false,
+        defaultValue: '0'
+      },
       unique: {
         type: DataTypes.INTEGER(1),
         allowNull: false,
         defaultValue: '0'
       },
-      expireTime: {
+      expireAt: {
         type: DataTypes.DATE,
         allowNull: false
       },
@@ -32,7 +36,7 @@ export default function(sequelize, DataTypes) {
         defaultValue: '0'
       },
       status: {
-        type: DataTypes.ENUM('active', 'desactive'),
+        type: DataTypes.ENUM('active', 'disabled'),
         allowNull: false,
         defaultValue: 'active'
       },
