@@ -124,7 +124,7 @@ async function removeVoucher(bookingId, voucherCode) {
     const voucherObj = await getVoucherByCode(voucherCode)
     const voucherType = voucherObj.type
     if (voucherType === 'percentual') {
-      // Removing percentual...
+      // Adding percentual...
       const plusPercentual = bookingObj.totalPrice * (voucherObj.value / 100)
       const bookingAmount = bookingObj.totalPrice + plusPercentual
       await Bookings.update(
