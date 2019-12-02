@@ -36,12 +36,16 @@ async function create({ type, value, isUnique, expireAt }) {
 
 async function updateUsage(voucherCode) {
   try {
-    const voucherObj = await getVoucherByCode(voucherCode)
-    await Vouchers.update(
-      { usageCount: voucherObj.usageCount + 1 },
-      { where: { id: voucherObj.id } }
-    )
-    return Vouchers.findOne({ where: { id: voucherObj.id }, raw: true })
+    const { status } = await validateExpireTime(voucherCode)
+    if (status === 'VALID') {
+      const voucherObj = await getVoucherByCode(voucherCode)
+      await Vouchers.update(
+        { usageCount: voucherObj.usageCount + 1 },
+        { where: { id: voucherObj.id } }
+      )
+      return Vouchers.findOne({ where: { id: voucherObj.id }, raw: true })
+    }
+    throw new Error(`Voucher ${voucherCode} has been expired.`)
   } catch (err) {
     throw err
   }

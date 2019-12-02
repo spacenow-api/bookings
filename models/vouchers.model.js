@@ -20,12 +20,12 @@ export default function(sequelize, DataTypes) {
       value: {
         type: DataTypes.FLOAT,
         allowNull: false,
-        defaultValue: '0'
+        defaultValue: 0
       },
       unique: {
-        type: DataTypes.INTEGER(1),
+        type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: '0'
+        defaultValue: false
       },
       expireAt: {
         type: DataTypes.DATE,
@@ -34,7 +34,7 @@ export default function(sequelize, DataTypes) {
       usageCount: {
         type: DataTypes.INTEGER(11),
         allowNull: false,
-        defaultValue: '0'
+        defaultValue: 0
       },
       status: {
         type: DataTypes.ENUM('active', 'disabled'),
