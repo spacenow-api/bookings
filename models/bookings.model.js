@@ -97,6 +97,10 @@ export default function(sequelize, DataTypes) {
         type: DataTypes.STRING(10),
         allowNull: true
       },
+      message: {
+        type: DataTypes.STRING(255),
+        allowNull: true
+      },
       reservations: {
         type: DataTypes.TEXT,
         allowNull: false
@@ -117,14 +121,17 @@ export default function(sequelize, DataTypes) {
         type: DataTypes.STRING(10),
         allowNull: true
       },
-      message: {
-        type: DataTypes.STRING(255),
-        allowNull: true
+      voucherId: {
+        type: DataTypes.STRING(36),
+        allowNull: true,
+        references: {
+          model: 'Vouchers',
+          key: 'id'
+        }
       }
     },
     {
-      tableName: 'Bookings',
-      timestamps: false
+      tableName: 'Bookings'
     }
   )
 }
