@@ -1,6 +1,7 @@
 const moment = require('moment')
 
 const { Bookings, Vouchers } = require('./../models')
+const { resolveBooking } = require('./../validations')
 
 async function getNewCode() {
   const code = Math.floor(100000 + Math.random() * 999999)
@@ -93,8 +94,10 @@ async function insertVoucher(voucherCode, bookingId) {
   try {
     const bookingObj = await Bookings.findOne({ where: { bookingId } })
     if (!bookingObj) throw new Error(`Booking ${bookingId} not found.`)
-    if (bookingObj.voucherId)
-      throw new Error(`Booking ${bookingId} has already have a Voucher.`)
+    if (bookingObj.voucherId) {
+      console.warn(`Booking ${bookingId} has already a Voucher code.`)
+      return resolveBooking(bookingObj)
+    }
     const voucherObj = await getVoucherByCode(voucherCode)
     const voucherType = voucherObj.type
     if (voucherType === 'percentual') {
@@ -105,7 +108,7 @@ async function insertVoucher(voucherCode, bookingId) {
         { totalPrice: bookingAmount, voucherId: voucherObj.id },
         { where: { bookingId } }
       )
-      return Bookings.findOne({ where: { bookingId } })
+      return resolveBooking(await Bookings.findOne({ where: { bookingId } }))
     } else if (voucherType === 'zerofee') {
       // Removing Fee by Voucher...
       const lessFee = bookingObj.totalPrice * bookingObj.guestServiceFee
@@ -117,7 +120,7 @@ async function insertVoucher(voucherCode, bookingId) {
         },
         { where: { bookingId } }
       )
-      return Bookings.findOne({ where: { bookingId } })
+      return resolveBooking(await Bookings.findOne({ where: { bookingId } }))
     }
     // Value Type...
     await Bookings.update(
@@ -127,7 +130,7 @@ async function insertVoucher(voucherCode, bookingId) {
       },
       { where: { bookingId } }
     )
-    return Bookings.findOne({ where: { bookingId } })
+    return resolveBooking(await Bookings.findOne({ where: { bookingId } }))
   } catch (err) {
     throw err
   }
@@ -137,8 +140,10 @@ async function removeVoucher(voucherCode, bookingId) {
   try {
     const bookingObj = await Bookings.findOne({ where: { bookingId } })
     if (!bookingObj) throw new Error(`Booking ${bookingId} not found.`)
-    if (!bookingObj.voucherId)
-      throw new Error(`Booking ${bookingId} does not have Voucher.`)
+    if (!bookingObj.voucherId) {
+      console.warn(`Booking ${bookingId} does not have a Voucher.`)
+      return resolveBooking(bookingObj)
+    }
     const voucherObj = await getVoucherByCode(voucherCode)
     const voucherType = voucherObj.type
     if (voucherType === 'percentual') {
@@ -149,7 +154,7 @@ async function removeVoucher(voucherCode, bookingId) {
         { totalPrice: bookingAmount, voucherId: null },
         { where: { bookingId } }
       )
-      return Bookings.findOne({ where: { bookingId } })
+      return resolveBooking(await Bookings.findOne({ where: { bookingId } }))
     } else if (voucherType === 'zerofee') {
       // Adding Fee by Voucher...
       const plusFee = bookingObj.totalPrice * bookingObj.guestServiceFee
@@ -161,7 +166,7 @@ async function removeVoucher(voucherCode, bookingId) {
         },
         { where: { bookingId } }
       )
-      return Bookings.findOne({ where: { bookingId } })
+      return resolveBooking(await Bookings.findOne({ where: { bookingId } }))
     }
     // Value Type...
     await Bookings.update(
@@ -171,7 +176,7 @@ async function removeVoucher(voucherCode, bookingId) {
       },
       { where: { bookingId } }
     )
-    return Bookings.findOne({ where: { bookingId } })
+    return resolveBooking(await Bookings.findOne({ where: { bookingId } }))
   } catch (err) {
     throw err
   }
