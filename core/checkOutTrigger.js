@@ -1,12 +1,12 @@
-import moment from 'moment'
+const moment = require('moment')
 
-import { success, failure } from '../libs/response-lib'
-import { onSendEmail } from './../helpers/email.function'
-import updateBookingState from './../helpers/updateBookingState'
-import { BookingStates, resolveBooking } from './../validations'
-import { Bookings } from './../models'
+const { success, failure } = require('../libs/response-lib');
+const { onSendEmail } = require('./../helpers/email.function')
+const updateBookingState = require('./../helpers/updateBookingState')
+const { BookingStates, resolveBooking } = require('./../validations')
+const { Bookings } = require('./../models')
 
-export const main = async () => {
+module.exports.main = async (event, context, callback) => {
   try {
     const bookings = await Bookings.findAll({
       where: { bookingState: BookingStates.APPROVED }

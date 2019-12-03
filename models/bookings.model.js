@@ -1,4 +1,4 @@
-export default function(sequelize, DataTypes) {
+module.exports = function(sequelize, DataTypes) {
   return sequelize.define(
     'Bookings',
     {
@@ -131,7 +131,8 @@ export default function(sequelize, DataTypes) {
       }
     },
     {
-      tableName: 'Bookings'
+      tableName: 'Bookings',
+      timestamps: false
     }
   )
 }

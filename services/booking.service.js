@@ -1,10 +1,10 @@
-import { onSendEmail } from './../helpers/email.function'
-import { onCleanAvailabilities } from './../helpers/availabilities.function'
-import updateBookingState from './../helpers/updateBookingState'
+const { onSendEmail } = require('./../helpers/email.function')
+const { onCleanAvailabilities } = require('./../helpers/availabilities.function')
+const updateBookingState = require('./../helpers/updateBookingState')
 
-import { BookingStates, resolveBooking } from './../validations'
+const { BookingStates, resolveBooking } = require('./../validations')
 
-import { Bookings } from './../models'
+const { Bookings } = require('./../models')
 
 async function doRequestedBooking(bookingId) {
   try {
@@ -80,4 +80,4 @@ async function doPaymentConfirmation(bookingId, sourceId, chargeId) {
   }
 }
 
-export { doRequestedBooking, doApproveBooking, doDeclineBooking, doPaymentConfirmation }
+module.exports = { doRequestedBooking, doApproveBooking, doDeclineBooking, doPaymentConfirmation }

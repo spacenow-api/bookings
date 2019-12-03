@@ -1,9 +1,9 @@
-import { success, failure } from '../libs/response-lib'
-import updateBookingState from './../helpers/updateBookingState'
-import { onCleanAvailabilities } from './../helpers/availabilities.function'
-import { BookingStates } from './../validations'
+const { success, failure } = require('../libs/response-lib');
+const updateBookingState = require('./../helpers/updateBookingState')
+const { onCleanAvailabilities } = require('./../helpers/availabilities.function')
+const { BookingStates } = require('./../validations')
 
-export async function main(event) {
+module.exports.main = async (event, context, callback) => {
   try {
     const bookingUpdated = await updateBookingState(event.pathParameters.id, BookingStates.TIMEOUT)
     await onCleanAvailabilities(event.pathParameters.id)

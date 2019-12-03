@@ -1,7 +1,3 @@
-export const success = body => buildResponse(200, body)
-
-export const failure = body => buildResponse(500, body)
-
 const buildResponse = (statusCode, body) => {
   return {
     statusCode: statusCode,
@@ -10,5 +6,10 @@ const buildResponse = (statusCode, body) => {
       'Access-Control-Allow-Credentials': true
     },
     body: body && JSON.stringify(body)
-  }
-}
+  };
+};
+
+module.exports = {
+  success: (body) => buildResponse(200, body),
+  failure: (body) => buildResponse(500, body)
+};

@@ -1,12 +1,12 @@
-import crypto from 'crypto'
+const crypto = require('crypto')
 
-import * as dynamoDbLib from './../libs/dynamodb-lib'
-import r from './../helpers/response.utils'
-import { Bookings, Availabilities } from './../models'
+const dynamoDbLib = require('./../libs/dynamodb-lib')
+const r = require('./../helpers/response.utils')
+const { Bookings, Availabilities } = require('./../models')
 
 const SECRET_KEY = 'S3c73jsu!'
 
-export const main = (event, context, callback) => {
+module.exports = main = (event, context, callback) => {
   context.callbackWaitsForEmptyEventLoop = false
   execute(event.pathParameters.token)
     .then((data) => callback(null, r.success(data)))

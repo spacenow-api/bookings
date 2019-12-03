@@ -5,7 +5,6 @@ plugins:
   - serverless-dotenv-plugin
   - serverless-domain-manager
   - serverless-prune-plugin
-  - serverless-webpack
 
 custom:
   ServiceName: 'bookings'
@@ -20,9 +19,6 @@ custom:
     prod: 3
     default: 1
   TableThroughput: ${self:custom.TableThroughputs.${self:custom.StageName}, self:custom.TableThroughputs.default}
-  webpack:
-    webpackConfig: ./webpack.config.js
-    includeModules: true
   domains:
     default: api-${self:custom.ServiceName}.${self:custom.StageName}.cloud.spacenow.com
     prod: api-${self:custom.ServiceName}.spacenow.com

@@ -1,8 +1,8 @@
-import { success, failure } from '../libs/response-lib'
-import { resolveBooking } from './../validations'
-import { Bookings } from './../models'
+const { success, failure } = require('../libs/response-lib');
+const { resolveBooking } = require('./../validations')
+const { Bookings } = require('./../models')
 
-export const main = async (event) => {
+module.exports.main = async (event, context, callback) => {
   try {
     const data = JSON.parse(event.body)
     await Bookings.update(

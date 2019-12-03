@@ -1,4 +1,4 @@
-import moment from 'moment'
+const moment = require('moment')
 
 /**
  * Possible Spacenow bookings States;
@@ -158,7 +158,7 @@ const isAvailableThisDay = (
   }
 }
 
-export {
+module.exports = {
   calcTotal,
   getDates,
   getEndDate,

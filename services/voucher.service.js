@@ -1,6 +1,6 @@
-import moment from 'moment'
+const moment = require('moment')
 
-import { Bookings, Vouchers } from './../models'
+const { Bookings, Vouchers } = require('./../models')
 
 async function getNewCode() {
   const code = Math.floor(100000 + Math.random() * 999999)
@@ -169,7 +169,7 @@ async function removeVoucher(voucherCode, bookingId) {
   }
 }
 
-export {
+module.exports = {
   create,
   updateUsage,
   desactive,

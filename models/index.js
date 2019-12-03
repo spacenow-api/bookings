@@ -1,27 +1,18 @@
-import DataTypes from 'sequelize'
+const DataTypes = require('sequelize');
 
-import { getInstance } from './../helpers/mysql.server'
-const sequelize = getInstance()
+const { getInstance } = require('./../helpers/mysql.server');
+const sequelize = getInstance();
 
-import BookingsModel from './../models/bookings.model'
-const Bookings = BookingsModel(sequelize, DataTypes)
+const Bookings = require('./../models/bookings.model')(sequelize, DataTypes);
+const Availabilities = require('./../models/availabilities.model')(sequelize, DataTypes);
+const ListingAccessDays = require('./../models/listingAccessDays.model')(sequelize, DataTypes);
+const ListingAccessHours = require('./../models/listingAccessHours.model')(sequelize, DataTypes);
+const Vouchers = require('./../models/vouchers.model')(sequelize, DataTypes);
 
-import AvailabilitiesModel from './../models/availabilities.model'
-const Availabilities = AvailabilitiesModel(sequelize, DataTypes)
-
-import ListingAccessDaysModel from './../models/listingAccessDays.model'
-const ListingAccessDays = ListingAccessDaysModel(sequelize, DataTypes)
-
-import ListingAccessHoursModel from './../models/listingAccessHours.model'
-const ListingAccessHours = ListingAccessHoursModel(sequelize, DataTypes)
-
-import VouchersModel from './../models/vouchers.model'
-const Vouchers = VouchersModel(sequelize, DataTypes)
-
-export {
+module.exports = {
   Bookings,
   Availabilities,
   ListingAccessDays,
   ListingAccessHours,
   Vouchers
-}
+};

@@ -1,13 +1,13 @@
-import uuid from 'uuid'
-import moment from 'moment'
-import { Op } from 'sequelize'
+const uuid = require('uuid')
+const moment = require('moment')
+const { Op } = require('sequelize')
 
-import * as queueLib from '../libs/queue-lib'
-import { success, failure } from '../libs/response-lib'
-import { calcTotal, getDates, getEndDate, BookingStates, resolveBooking, getHourlyPeriod, hasBlockAvailabilities, hasBlockTime } from '../validations'
-import { Bookings } from './../models'
+const queueLib = require('../libs/queue-lib')
+const { success, failure } = require('../libs/response-lib');
+const { calcTotal, getDates, getEndDate, BookingStates, resolveBooking, getHourlyPeriod, hasBlockAvailabilities, hasBlockTime } = require('../validations')
+const { Bookings } = require('./../models')
 
-import * as bookingService from './../services/booking.service'
+const bookingService = require('./../services/booking.service')
 
 const QUEUE_ULR = `https://sqs.${process.env.region}.amazonaws.com/${process.env.accountId}/${process.env.queueName}`
 
@@ -30,7 +30,7 @@ const getValidateBookings = async (listingId) => {
   return bookings.map(resolveBooking)
 }
 
-export const main = async (event) => {
+module.exports.main = async (event, context, callback) => {
 
   const data = JSON.parse(event.body)
 

@@ -1,15 +1,15 @@
-import moment from 'moment'
-import { Op } from 'sequelize'
+const moment = require('moment')
+const { Op } = require('sequelize')
 
-import { success, failure } from '../libs/response-lib'
-import { BookingStates, resolveBooking } from './../validations'
-import { Bookings } from './../models'
-import { onSendEmail } from './../helpers/email.function'
+const { success, failure } = require('../libs/response-lib');
+const { BookingStates, resolveBooking } = require('./../validations')
+const { Bookings } = require('./../models')
+const { onSendEmail } = require('./../helpers/email.function')
 
-import updateBookingState from './../helpers/updateBookingState'
-import { onCleanAvailabilities } from './../helpers/availabilities.function'
+const updateBookingState = require('./../helpers/updateBookingState')
+const { onCleanAvailabilities } = require('./../helpers/availabilities.function')
 
-export const main = async () => {
+module.exports.main = async (event, context, callback) => {
   try {
     const lessHour =
       moment()

@@ -4,7 +4,7 @@ const headers = {
   'Access-Control-Allow-Headers': 'x-requested-with'
 }
 
-export default {
+module.exports = {
   success: (data) => {
     return {
       headers,

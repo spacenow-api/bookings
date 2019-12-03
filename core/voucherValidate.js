@@ -1,8 +1,8 @@
-import { success, failure } from '../libs/response-lib'
+const { success, failure } = require('../libs/response-lib');
 
-import * as voucherService from './../services/voucher.service'
+const voucherService = require('./../services/voucher.service')
 
-export async function main(event) {
+module.exports.main = async (event, context, callback) => {
   const { voucherCode } = event.pathParameters
   try {
     const validation = await voucherService.validateExpireTime(voucherCode)

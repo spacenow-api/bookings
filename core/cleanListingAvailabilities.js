@@ -1,12 +1,12 @@
-import { Op } from 'sequelize'
+const { Op } = require('sequelize')
 
-import { success, failure } from '../libs/response-lib'
-import updateBookingState from './../helpers/updateBookingState'
-import { onCleanAvailabilities } from './../helpers/availabilities.function'
-import { BookingStates } from './../validations'
-import { Bookings } from './../models'
+const { success, failure } = require('../libs/response-lib');
+const updateBookingState = require('./../helpers/updateBookingState')
+const { onCleanAvailabilities } = require('./../helpers/availabilities.function')
+const { BookingStates } = require('./../validations')
+const { Bookings } = require('./../models')
 
-export const main = async (event, context) => {
+module.exports.main = async (event, context) => { 
   if (event.pathParameters.id) {
     try {
       const bookings = await Bookings.findAll({

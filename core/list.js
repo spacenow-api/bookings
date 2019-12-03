@@ -1,8 +1,8 @@
-import { success, failure } from '../libs/response-lib'
-import { Bookings } from './../models'
-import { resolveBooking } from './../validations'
+const { success, failure } = require('../libs/response-lib');
+const { Bookings } = require('./../models')
+const { resolveBooking } = require('./../validations')
 
-export const main = async () => {
+module.exports.main = async (event, context, callback) => {
   try {
     const result = await Bookings.findAll({ raw: true })
     result.map(resolveBooking)
