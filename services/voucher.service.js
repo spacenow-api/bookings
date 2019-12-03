@@ -45,7 +45,7 @@ async function updateUsage(voucherCode) {
       )
       return Vouchers.findOne({ where: { id: voucherObj.id }, raw: true })
     }
-    throw new Error(`Voucher ${voucherCode} has been expired.`)
+    throw new Error(`Voucher ${voucherCode} has been expired or disabled.`)
   } catch (err) {
     throw err
   }
@@ -72,6 +72,10 @@ async function validateExpireTime(voucherCode) {
     if (currentTime.isAfter(expireTime)) {
       return { status: 'EXPIRED' }
     }
+    // Check if voucher has been disabled...
+    if (voucherObj.status === 'disabled') {
+      return { status: 'DISABLED' }
+    }
     // Check if voucher has already be used...
     const bookingReturn = await Bookings.findOne({
       where: { voucherId: voucherObj.id }
@@ -89,6 +93,8 @@ async function insertVoucher(voucherCode, bookingId) {
   try {
     const bookingObj = await Bookings.findOne({ where: { bookingId } })
     if (!bookingObj) throw new Error(`Booking ${bookingId} not found.`)
+    if (bookingObj.voucherId)
+      throw new Error(`Booking ${bookingId} has already have a Voucher.`)
     const voucherObj = await getVoucherByCode(voucherCode)
     const voucherType = voucherObj.type
     if (voucherType === 'percentual') {
@@ -131,6 +137,8 @@ async function removeVoucher(voucherCode, bookingId) {
   try {
     const bookingObj = await Bookings.findOne({ where: { bookingId } })
     if (!bookingObj) throw new Error(`Booking ${bookingId} not found.`)
+    if (!bookingObj.voucherId)
+      throw new Error(`Booking ${bookingId} does not have Voucher.`)
     const voucherObj = await getVoucherByCode(voucherCode)
     const voucherType = voucherObj.type
     if (voucherType === 'percentual') {
@@ -138,7 +146,7 @@ async function removeVoucher(voucherCode, bookingId) {
       const plusPercentual = bookingObj.totalPrice * (voucherObj.value / 100)
       const bookingAmount = bookingObj.totalPrice + plusPercentual
       await Bookings.update(
-        { totalPrice: bookingAmount, voucherId: voucherObj.id },
+        { totalPrice: bookingAmount, voucherId: null },
         { where: { bookingId } }
       )
       return Bookings.findOne({ where: { bookingId } })
@@ -149,7 +157,7 @@ async function removeVoucher(voucherCode, bookingId) {
       await Bookings.update(
         {
           totalPrice: bookingAmount,
-          voucherId: voucherObj.id
+          voucherId: null
         },
         { where: { bookingId } }
       )
@@ -159,7 +167,7 @@ async function removeVoucher(voucherCode, bookingId) {
     await Bookings.update(
       {
         totalPrice: bookingObj.totalPrice + voucherObj.value,
-        voucherId: voucherObj.id
+        voucherId: null
       },
       { where: { bookingId } }
     )
