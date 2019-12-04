@@ -303,7 +303,7 @@ functions:
     memorySize: 1024
     events:
       - http:
-          path: voucher
+          path: bookings/voucher
           method: post
           cors: true
   voucherUpdateUsage:
@@ -311,7 +311,7 @@ functions:
     memorySize: 1024
     events:
       - http:
-          path: voucher/{voucherCode}/usage
+          path: bookings/voucher/{voucherCode}/usage
           method: put
           cors: true
   voucherDesactive:
@@ -319,7 +319,7 @@ functions:
     memorySize: 1024
     events:
       - http:
-          path: voucher/{voucherCode}
+          path: bookings/voucher/{voucherCode}
           method: delete
           cors: true
   voucherValidate:
@@ -327,7 +327,7 @@ functions:
     memorySize: 1024
     events:
       - http:
-          path: voucher/{voucherCode}/validate
+          path: bookings/voucher/{voucherCode}/validate
           method: get
           cors: true
   voucherBookingInsert:
@@ -335,7 +335,7 @@ functions:
     memorySize: 1024
     events:
       - http:
-          path: voucher/{voucherCode}/booking/{bookingId}/insert
+          path: bookings/voucher/{voucherCode}/booking/{bookingId}/insert
           method: put
           cors: true
   voucherBookingRemove:
@@ -343,7 +343,7 @@ functions:
     memorySize: 1024
     events:
       - http:
-          path: voucher/{voucherCode}/booking/{bookingId}/remove
+          path: bookings/voucher/{voucherCode}/booking/{bookingId}/remove
           method: put
           cors: true
 
