@@ -80,4 +80,48 @@ async function doPaymentConfirmation(bookingId, sourceId, chargeId) {
   }
 }
 
-module.exports = { doRequestedBooking, doApproveBooking, doDeclineBooking, doPaymentConfirmation }
+function getHourlyPeriod(startTime, endTime) {
+  if (!startTime && !endTime) throw Error('Time not found.')
+  if (!startTime || !endTime) return 0
+  const startMoment = moment(startTime, 'HH:mm')
+  const endMoment = moment(endTime, 'HH:mm')
+  const hourDiff = endMoment.diff(startMoment, 'hours')
+  const minDiff = moment.utc(endMoment.diff(startMoment)).format('mm')
+  if (parseInt(hourDiff, 10) < 0) {
+    throw Error('End time is bigger than Start time.')
+  }
+  if (parseInt(minDiff, 10) > 0) {
+    throw Error(
+      'It is not possible to book a space with a half or less minutes of diference.'
+    )
+  }
+  return hourDiff
+}
+
+function getBookingPeriod(bookingObject) {
+  const booking = resolveBooking(bookingObject)
+  switch (booking.priceType) {
+    case 'hourly':
+      return getHourlyPeriod(booking.checkInHour, booking.checkOutHour)
+    case 'daily':
+      return booking.reservations.length
+    default:
+      return booking.period
+  }
+}
+
+function getCalcTotalValue(bookingObject) {
+  const bookingPeriod = getBookingPeriod(bookingObject)
+  let total = bookingObject.basePrice * bookingPeriod
+  total += total * bookingObject.guestServiceFee
+  return total
+}
+
+module.exports = {
+  doRequestedBooking,
+  doApproveBooking,
+  doDeclineBooking,
+  doPaymentConfirmation,
+  getBookingPeriod,
+  getCalcTotalValue
+}

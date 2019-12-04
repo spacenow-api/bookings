@@ -22,19 +22,19 @@ module.exports = function(sequelize, DataTypes) {
         allowNull: false,
         defaultValue: 0
       },
-      unique: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false
-      },
-      expireAt: {
-        type: DataTypes.DATE,
-        allowNull: false
-      },
       usageCount: {
         type: DataTypes.INTEGER(11),
         allowNull: false,
         defaultValue: 0
+      },
+      usageLimit: {
+        type: DataTypes.INTEGER(11),
+        allowNull: false,
+        defaultValue: 1
+      },
+      expireAt: {
+        type: DataTypes.DATE,
+        allowNull: false
       },
       status: {
         type: DataTypes.ENUM('active', 'disabled'),

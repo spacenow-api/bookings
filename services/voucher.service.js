@@ -2,6 +2,7 @@ const moment = require('moment')
 
 const { Bookings, Vouchers } = require('./../models')
 const { resolveBooking } = require('./../validations')
+const bookingService = require('./booking.service')
 
 async function getNewCode() {
   const code = Math.floor(100000 + Math.random() * 999999)
@@ -20,7 +21,7 @@ async function getVoucherByCode(voucherCode) {
   return voucherObj
 }
 
-async function create({ type, value, isUnique, expireAt }) {
+async function create({ type, value, limit, expireAt }) {
   const newCode = await getNewCode()
   const expireAtUtc = moment(expireAt)
     .utc()
@@ -29,24 +30,21 @@ async function create({ type, value, isUnique, expireAt }) {
     code: newCode,
     type: type,
     value: value,
-    unique: isUnique,
+    usageLimit: limit,
     expireAt: expireAtUtc
   })
   return voucherCreated
 }
 
-async function updateUsage(voucherCode) {
+async function doUpdateUsage(voucherObject, degrade = false) {
   try {
-    const { status } = await validateExpireTime(voucherCode)
-    if (status === 'VALID') {
-      const voucherObj = await getVoucherByCode(voucherCode)
-      await Vouchers.update(
-        { usageCount: voucherObj.usageCount + 1 },
-        { where: { id: voucherObj.id } }
-      )
-      return Vouchers.findOne({ where: { id: voucherObj.id }, raw: true })
-    }
-    throw new Error(`Voucher ${voucherCode} has been expired or disabled.`)
+    const count = degrade
+      ? voucherObject.usageCount - 1
+      : voucherObject.usageCount + 1
+    await Vouchers.update(
+      { usageCount: count },
+      { where: { id: voucherObject.id } }
+    )
   } catch (err) {
     throw err
   }
@@ -68,23 +66,39 @@ async function desactive(voucherCode) {
 async function validateExpireTime(voucherCode) {
   try {
     const voucherObj = await getVoucherByCode(voucherCode)
+    // Check if voucher has been disabled...
+    if (voucherObj.status === 'disabled') {
+      return { status: 'DISABLED' }
+    }
+    // Check if voucher has already been used...
+    if (voucherObj.usageCount == voucherObj.usageLimit) {
+      return { status: 'USED' }
+    }
+    // Check if voucher is already expired...
     const currentTime = moment().utc()
     const expireTime = moment(voucherObj.expireAt).utc()
     if (currentTime.isAfter(expireTime)) {
       return { status: 'EXPIRED' }
     }
-    // Check if voucher has been disabled...
-    if (voucherObj.status === 'disabled') {
-      return { status: 'DISABLED' }
+    return { status: 'VALID', data: voucherObj }
+  } catch (err) {
+    throw err
+  }
+}
+
+async function getOrThrowVoucher(voucherCode) {
+  try {
+    const validation = await validateExpireTime(voucherCode)
+    switch (validation.status) {
+      case 'EXPIRED':
+        throw new Error(`Voucher ${voucherCode} has been expired.`)
+      case 'DISABLED':
+        throw new Error(`Voucher ${voucherCode} was disabled.`)
+      case 'USED':
+        throw new Error(`Voucher ${voucherCode} has already been used.`)
+      default:
+        return validation.data
     }
-    // Check if voucher has already be used...
-    const bookingReturn = await Bookings.findOne({
-      where: { voucherId: voucherObj.id }
-    })
-    if (bookingReturn) {
-      return { status: 'USED' }
-    }
-    return { status: 'VALID' }
   } catch (err) {
     throw err
   }
@@ -98,21 +112,24 @@ async function insertVoucher(voucherCode, bookingId) {
       console.warn(`Booking ${bookingId} has already a Voucher code.`)
       return resolveBooking(bookingObj)
     }
-    const voucherObj = await getVoucherByCode(voucherCode)
+    if (bookingObj.paymentState !== 'pending') {
+      throw new Error(`Booking ${bookingId} has already been paid.`)
+    }
+    const voucherObj = await getOrThrowVoucher(voucherCode)
     const voucherType = voucherObj.type
+    const bookingTotalValue = bookingService.getCalcTotalValue(bookingObj)
     if (voucherType === 'percentual') {
       // Removing percentual...
-      const lessPercentual = bookingObj.totalPrice * (voucherObj.value / 100)
-      const bookingAmount = bookingObj.totalPrice - lessPercentual
+      const lessPercentual = bookingTotalValue * (voucherObj.value / 100)
+      const bookingAmount = bookingTotalValue - lessPercentual
       await Bookings.update(
         { totalPrice: bookingAmount, voucherId: voucherObj.id },
         { where: { bookingId } }
       )
-      return resolveBooking(await Bookings.findOne({ where: { bookingId } }))
     } else if (voucherType === 'zerofee') {
       // Removing Fee by Voucher...
-      const lessFee = bookingObj.totalPrice * bookingObj.guestServiceFee
-      const bookingAmount = bookingObj.totalPrice - lessFee
+      const lessFee = bookingTotalValue * bookingObj.guestServiceFee
+      const bookingAmount = bookingTotalValue - lessFee
       await Bookings.update(
         {
           totalPrice: bookingAmount,
@@ -120,16 +137,17 @@ async function insertVoucher(voucherCode, bookingId) {
         },
         { where: { bookingId } }
       )
-      return resolveBooking(await Bookings.findOne({ where: { bookingId } }))
+    } else {
+      // Value Type...
+      await Bookings.update(
+        {
+          totalPrice: bookingTotalValue - voucherObj.value,
+          voucherId: voucherObj.id
+        },
+        { where: { bookingId } }
+      )
     }
-    // Value Type...
-    await Bookings.update(
-      {
-        totalPrice: bookingObj.totalPrice - voucherObj.value,
-        voucherId: voucherObj.id
-      },
-      { where: { bookingId } }
-    )
+    await doUpdateUsage(voucherObj)
     return resolveBooking(await Bookings.findOne({ where: { bookingId } }))
   } catch (err) {
     throw err
@@ -144,38 +162,16 @@ async function removeVoucher(voucherCode, bookingId) {
       console.warn(`Booking ${bookingId} does not have a Voucher.`)
       return resolveBooking(bookingObj)
     }
-    const voucherObj = await getVoucherByCode(voucherCode)
-    const voucherType = voucherObj.type
-    if (voucherType === 'percentual') {
-      // Adding percentual...
-      const plusPercentual = bookingObj.totalPrice * (voucherObj.value / 100)
-      const bookingAmount = bookingObj.totalPrice + plusPercentual
-      await Bookings.update(
-        { totalPrice: bookingAmount, voucherId: null },
-        { where: { bookingId } }
-      )
-      return resolveBooking(await Bookings.findOne({ where: { bookingId } }))
-    } else if (voucherType === 'zerofee') {
-      // Adding Fee by Voucher...
-      const plusFee = bookingObj.totalPrice * bookingObj.guestServiceFee
-      const bookingAmount = bookingObj.totalPrice + plusFee
-      await Bookings.update(
-        {
-          totalPrice: bookingAmount,
-          voucherId: null
-        },
-        { where: { bookingId } }
-      )
-      return resolveBooking(await Bookings.findOne({ where: { bookingId } }))
+    if (bookingObj.paymentState !== 'pending') {
+      throw new Error(`Booking ${bookingId} has already been paid.`)
     }
-    // Value Type...
+    const bookingAmount = bookingService.getCalcTotalValue(bookingObj)
     await Bookings.update(
-      {
-        totalPrice: bookingObj.totalPrice + voucherObj.value,
-        voucherId: null
-      },
+      { totalPrice: bookingAmount, voucherId: null },
       { where: { bookingId } }
     )
+    const voucherObj = await getVoucherByCode(voucherCode)
+    await doUpdateUsage(voucherObj, true)
     return resolveBooking(await Bookings.findOne({ where: { bookingId } }))
   } catch (err) {
     throw err
@@ -184,7 +180,6 @@ async function removeVoucher(voucherCode, bookingId) {
 
 module.exports = {
   create,
-  updateUsage,
   desactive,
   validateExpireTime,
   insertVoucher,
