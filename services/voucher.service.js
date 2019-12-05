@@ -25,7 +25,7 @@ async function list() {
   return Vouchers.findAll({ order: [['createdAt', 'DESC']] })
 }
 
-async function create({ type, value, limit, expireAt }) {
+async function create({ type, value, usageLimit, expireAt }) {
   const newCode = await getNewCode()
   const expireAtUtc = moment(expireAt)
     .utc()
@@ -34,7 +34,7 @@ async function create({ type, value, limit, expireAt }) {
     code: newCode,
     type: type,
     value: value,
-    usageLimit: limit,
+    usageLimit: usageLimit,
     expireAt: expireAtUtc
   })
   return voucherCreated
