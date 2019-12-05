@@ -298,6 +298,14 @@ functions:
           method: post
           cors: true
       - schedule: rate(2 hours)
+  voucherList:
+    handler: core/voucherList.main
+    memorySize: 1024
+    events:
+      - http:
+          path: bookings/voucher
+          method: get
+          cors: true
   voucherCreate:
     handler: core/voucherCreate.main
     memorySize: 1024

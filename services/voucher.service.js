@@ -21,6 +21,10 @@ async function getVoucherByCode(voucherCode) {
   return voucherObj
 }
 
+async function list() {
+  return Vouchers.findAll({ order: [['createdAt', 'DESC']] })
+}
+
 async function create({ type, value, limit, expireAt }) {
   const newCode = await getNewCode()
   const expireAtUtc = moment(expireAt)
@@ -179,6 +183,7 @@ async function removeVoucher(voucherCode, bookingId) {
 }
 
 module.exports = {
+  list,
   create,
   desactive,
   validateExpireTime,
