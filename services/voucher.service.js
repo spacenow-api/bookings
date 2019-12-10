@@ -4,8 +4,11 @@ const { Bookings, Vouchers } = require('./../models')
 const { resolveBooking } = require('./../validations')
 const bookingService = require('./booking.service')
 
+const MIN_CODE = 100000
+const MAX_CODE = 999999
+
 async function getNewCode() {
-  const code = Math.floor(100000 + Math.random() * 999999)
+  const code = Math.floor(Math.random() * (MAX_CODE - MIN_CODE + 1)) + MIN_CODE
   const existing = await Vouchers.findOne({ where: { code } })
   if (existing) {
     return getNewCode()
