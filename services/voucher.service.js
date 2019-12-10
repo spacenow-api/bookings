@@ -25,17 +25,13 @@ async function list() {
   return Vouchers.findAll({ order: [['createdAt', 'DESC']] })
 }
 
-async function create({ type, value, usageLimit, expireAt }) {
+async function create({ type, value, usageLimit }) {
   const newCode = await getNewCode()
-  const expireAtUtc = moment(expireAt)
-    .utc()
-    .toString()
   const voucherCreated = await Vouchers.create({
     code: newCode,
     type: type,
     value: value,
-    usageLimit: usageLimit,
-    expireAt: expireAtUtc
+    usageLimit: usageLimit
   })
   return voucherCreated
 }
@@ -67,7 +63,7 @@ async function desactive(voucherCode) {
   }
 }
 
-async function validateExpireTime(voucherCode) {
+async function validate(voucherCode) {
   try {
     const voucherObj = await getVoucherByCode(voucherCode)
     // Check if voucher has been disabled...
@@ -78,12 +74,6 @@ async function validateExpireTime(voucherCode) {
     if (voucherObj.usageCount == voucherObj.usageLimit) {
       return { status: 'USED' }
     }
-    // Check if voucher is already expired...
-    const currentTime = moment().utc()
-    const expireTime = moment(voucherObj.expireAt).utc()
-    if (currentTime.isAfter(expireTime)) {
-      return { status: 'EXPIRED' }
-    }
     return { status: 'VALID', data: voucherObj }
   } catch (err) {
     throw err
@@ -92,10 +82,8 @@ async function validateExpireTime(voucherCode) {
 
 async function getOrThrowVoucher(voucherCode) {
   try {
-    const validation = await validateExpireTime(voucherCode)
+    const validation = await validate(voucherCode)
     switch (validation.status) {
-      case 'EXPIRED':
-        throw new Error(`Voucher ${voucherCode} has been expired.`)
       case 'DISABLED':
         throw new Error(`Voucher ${voucherCode} was disabled.`)
       case 'USED':
@@ -186,7 +174,7 @@ module.exports = {
   list,
   create,
   desactive,
-  validateExpireTime,
+  validate,
   insertVoucher,
   removeVoucher
 }
