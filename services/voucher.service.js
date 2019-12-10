@@ -107,6 +107,9 @@ async function insertVoucher(voucherCode, bookingId) {
       console.warn(`Booking ${bookingId} has already a Voucher code.`)
       return resolveBooking(bookingObj)
     }
+    if (bookingObj.bookingState !== 'pending') {
+      throw new Error(`Booking ${bookingId} is not pending or ready to be paid.`)
+    }
     if (bookingObj.paymentState !== 'pending') {
       throw new Error(`Booking ${bookingId} has already been paid.`)
     }
