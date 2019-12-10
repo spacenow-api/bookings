@@ -20,21 +20,17 @@ module.exports = function(sequelize, DataTypes) {
       value: {
         type: DataTypes.FLOAT,
         allowNull: false,
-        defaultValue: 0
+        defaultValue: '0'
       },
       usageCount: {
         type: DataTypes.INTEGER(11),
         allowNull: false,
-        defaultValue: 0
+        defaultValue: '0'
       },
       usageLimit: {
         type: DataTypes.INTEGER(11),
         allowNull: false,
-        defaultValue: 1
-      },
-      expireAt: {
-        type: DataTypes.DATE,
-        allowNull: false
+        defaultValue: '1'
       },
       status: {
         type: DataTypes.ENUM('active', 'disabled'),
