@@ -1,8 +1,8 @@
-import { success, failure } from '../libs/response-lib'
+const { success, failure } = require('../libs/response-lib');
 
-import * as bookingService from './../services/booking.service'
+const bookingService = require('./../services/booking.service')
 
-export async function main(event) {
+module.exports.main = async (event, context, callback) => {
   const bookingId = event.pathParameters.id
   try {
     const bookingObjUpdated = await bookingService.doRequestedBooking(bookingId)

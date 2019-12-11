@@ -1,7 +1,7 @@
-import { resolveBooking } from './../validations'
-import { Bookings } from './../models'
+const { resolveBooking } = require('./../validations')
+const { Bookings } = require('./../models')
 
-export default async (bookingId, state) => {
+module.exports = async (bookingId, state) => {
   try {
     await Bookings.update({ bookingState: state, updatedAt: Date.now() }, { where: { bookingId } })
     const bookingObj = await Bookings.findOne({ where: { bookingId }, raw: true })

@@ -1,13 +1,13 @@
-import { success, failure } from '../libs/response-lib'
+const { success, failure } = require('../libs/response-lib');
 
-import * as bookingService from './../services/booking.service'
+const bookingService = require('./../services/booking.service');
 
-export async function main(event) {
-  const bookingId = event.pathParameters.id
+module.exports.main = async (event, context, callback) => {
+  const bookingId = event.pathParameters.id;
   try {
-    const bookingObjUpdated = await bookingService.doApproveBooking(bookingId)
-    return success({ status: true, data: bookingObjUpdated })
+    const bookingObjUpdated = await bookingService.doApproveBooking(bookingId);
+    return success({ status: true, data: bookingObjUpdated });
   } catch (err) {
-    return failure({ status: 'error', error: err })
+    return failure({ status: 'error', error: err });
   }
-}
+};

@@ -1,10 +1,10 @@
-import moment from 'moment'
+const moment = require('moment')
 
-import { success, failure } from '../libs/response-lib'
-import { getHourlyPeriod, isAvailableThisDay } from './../validations'
-import { ListingAccessDays, ListingAccessHours } from './../models'
+const { success, failure } = require('../libs/response-lib');
+const { getHourlyPeriod, isAvailableThisDay } = require('./../validations')
+const { ListingAccessDays, ListingAccessHours } = require('./../models')
 
-export async function main(event) {
+module.exports.main = async (event, context, callback) => {
   try {
     const data = JSON.parse(event.body)
     const hours = getHourlyPeriod(data.checkInHour, data.checkOutHour)

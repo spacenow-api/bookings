@@ -1,8 +1,8 @@
-import {
+const {
   getHourlyPeriod,
   hasBlockTime,
   isAvailableThisDay
-} from './../validations'
+} = require('./../validations')
 
 test('Throwing exception when not have start and end time.', () => {
   expect(() => getHourlyPeriod()).toThrow()

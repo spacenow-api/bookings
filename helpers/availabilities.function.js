@@ -1,8 +1,8 @@
-import AWS from 'aws-sdk'
+const AWS = require('aws-sdk')
 
 const lambda = new AWS.Lambda()
 
-export const onCleanAvailabilities = (bookingId) => {
+module.exports.onCleanAvailabilities = (bookingId) => {
   return new Promise((resolve, reject) => {
     lambda.invoke({
       FunctionName: `spacenow-availabilities-api-${process.env.environment}-deleteByBooking`,

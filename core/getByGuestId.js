@@ -1,10 +1,10 @@
-import { Op } from 'sequelize'
+const { Op } = require('sequelize')
 
-import { success, failure } from '../libs/response-lib'
-import { BookingStates, resolveBooking } from './../validations'
-import { Bookings } from './../models'
+const { success, failure } = require('../libs/response-lib');
+const { BookingStates, resolveBooking } = require('./../validations')
+const { Bookings } = require('./../models')
 
-export const main = async (event) => {
+module.exports.main = async (event, context, callback) => {
   try {
     const bookings = await Bookings.findAll({
       where: {

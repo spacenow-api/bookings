@@ -5,7 +5,6 @@ plugins:
   - serverless-dotenv-plugin
   - serverless-domain-manager
   - serverless-prune-plugin
-  - serverless-webpack
 
 custom:
   ServiceName: 'bookings'
@@ -20,9 +19,6 @@ custom:
     prod: 3
     default: 1
   TableThroughput: ${self:custom.TableThroughputs.${self:custom.StageName}, self:custom.TableThroughputs.default}
-  webpack:
-    webpackConfig: ./webpack.config.js
-    includeModules: true
   domains:
     default: api-${self:custom.ServiceName}.${self:custom.StageName}.cloud.spacenow.com
     prod: api-${self:custom.ServiceName}.spacenow.com
@@ -302,6 +298,62 @@ functions:
           method: post
           cors: true
       - schedule: rate(2 hours)
+  voucherList:
+    handler: core/voucherList.main
+    memorySize: 1024
+    events:
+      - http:
+          path: bookings/voucher
+          method: get
+          cors: true
+  voucherCreate:
+    handler: core/voucherCreate.main
+    memorySize: 1024
+    events:
+      - http:
+          path: bookings/voucher
+          method: post
+          cors: true
+  voucherUpdateUsage:
+    handler: core/voucherUpdateUsage.main
+    memorySize: 1024
+    events:
+      - http:
+          path: bookings/voucher/{voucherCode}/usage
+          method: put
+          cors: true
+  voucherDesactive:
+    handler: core/voucherDesactive.main
+    memorySize: 1024
+    events:
+      - http:
+          path: bookings/voucher/{voucherCode}
+          method: delete
+          cors: true
+  voucherValidate:
+    handler: core/voucherValidate.main
+    memorySize: 1024
+    events:
+      - http:
+          path: bookings/voucher/{voucherCode}/validate
+          method: get
+          cors: true
+  voucherBookingInsert:
+    handler: core/voucherBookingInsert.main
+    memorySize: 1024
+    events:
+      - http:
+          path: bookings/voucher/{voucherCode}/booking/{bookingId}/insert
+          method: put
+          cors: true
+  voucherBookingRemove:
+    handler: core/voucherBookingRemove.main
+    memorySize: 1024
+    events:
+      - http:
+          path: bookings/voucher/{voucherCode}/booking/{bookingId}/remove
+          method: put
+          cors: true
 
 resources:
   - ${file(resources/api-gateway-errors.yml)}

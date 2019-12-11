@@ -1,8 +1,8 @@
-import AWS from 'aws-sdk'
+const AWS = require('aws-sdk')
 
 const lambda = new AWS.Lambda()
 
-export const onSendEmail = (emailFunctionName, bookingId) => {
+module.exports.onSendEmail = (emailFunctionName, bookingId) => {
   return new Promise((resolve, reject) => {
     lambda.invoke(
       {

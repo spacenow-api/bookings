@@ -1,9 +1,9 @@
-import { success, failure } from '../libs/response-lib'
-import { subDays } from "date-fns"
-import { Bookings } from './../models'
-import { Op } from 'sequelize'
+const { success, failure } = require('../libs/response-lib');
+const { subDays } = require("date-fns")
+const { Bookings } = require('./../models')
+const { Op } = require('sequelize')
 
-export const main = async (event) => {
+module.exports.main = async (event, context, callback) => {
   const days = event.queryStringParameters.days
   let where;
   if (days) {

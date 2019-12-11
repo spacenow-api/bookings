@@ -1,5 +1,5 @@
-import mysql2 from 'mysql2'
-import Sequelize from 'sequelize'
+const mysql2 = require('mysql2')
+const Sequelize = require('sequelize')
 
 let sequelize = null
 
@@ -29,4 +29,4 @@ function getInstance() {
   return sequelize
 }
 
-export { initInstance, getInstance }
+module.exports = { initInstance, getInstance }

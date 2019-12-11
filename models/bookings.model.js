@@ -1,4 +1,4 @@
-export default function(sequelize, DataTypes) {
+module.exports = function(sequelize, DataTypes) {
   return sequelize.define(
     'Bookings',
     {
@@ -97,6 +97,10 @@ export default function(sequelize, DataTypes) {
         type: DataTypes.STRING(10),
         allowNull: true
       },
+      message: {
+        type: DataTypes.STRING(255),
+        allowNull: true
+      },
       reservations: {
         type: DataTypes.TEXT,
         allowNull: false
@@ -117,9 +121,13 @@ export default function(sequelize, DataTypes) {
         type: DataTypes.STRING(10),
         allowNull: true
       },
-      message: {
-        type: DataTypes.STRING(255),
-        allowNull: true
+      voucherCode: {
+        type: DataTypes.STRING(10),
+        allowNull: true,
+        references: {
+          model: 'Vouchers',
+          key: 'code'
+        }
       }
     },
     {

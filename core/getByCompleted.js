@@ -1,10 +1,10 @@
-import moment from 'moment'
+const moment = require('moment')
 
-import { success, failure } from '../libs/response-lib'
-import { BookingStates, resolveBooking } from './../validations'
-import { Bookings } from './../models'
+const { success, failure } = require('../libs/response-lib');
+const { BookingStates, resolveBooking } = require('./../validations')
+const { Bookings } = require('./../models')
 
-export const main = async () => {
+module.exports.main = async (event, context, callback) => {
   try {
     const nextDay = moment()
       .subtract(1, 'days')
