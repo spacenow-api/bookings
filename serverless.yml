@@ -41,9 +41,6 @@ custom:
     certificateArn: ${ssm:/${self:custom.StageNameCert, ''}/ACM_CERTIFICATE, ''}
     createRoute53Record: true
     endpointType: 'regional'
-  dynamodb:
-    stages:
-      - ${self:custom.StageName}
   prune:
     automatic: true
     number: 5
@@ -70,16 +67,6 @@ provider:
   stage: ${self:custom.StageName, 'sandpit'}
   region: ${opt:region, 'ap-southeast-2'}
   iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - dynamodb:DescribeTable
-        - dynamodb:Query
-        - dynamodb:Scan
-        - dynamodb:GetItem
-        - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
-      Resource: '*'
     - Effect: 'Allow'
       Action:
         - 'sqs:SendMessage'
@@ -357,5 +344,3 @@ functions:
 
 resources:
   - ${file(resources/api-gateway-errors.yml)}
-  - ${file(resources/dynamodb-table.yml)}
-  - ${file(resources/dynamodb-pre-reservation-table.yml)}
