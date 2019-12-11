@@ -15,7 +15,6 @@ custom:
   TableName: ${self:custom.StageName}-${self:custom.ServiceName}
   PreReservationTableName: ${self:custom.StageName}-${self:custom.ServiceName}-pre-reservation
   TableThroughputs:
-    nonprod: 2
     prod: 3
     default: 1
   TableThroughput: ${self:custom.TableThroughputs.${self:custom.StageName}, self:custom.TableThroughputs.default}
