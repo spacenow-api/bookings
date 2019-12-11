@@ -103,7 +103,7 @@ async function insertVoucher(voucherCode, bookingId) {
   try {
     const bookingObj = await Bookings.findOne({ where: { bookingId } })
     if (!bookingObj) throw new Error(`Booking ${bookingId} not found.`)
-    if (bookingObj.voucherId) {
+    if (bookingObj.voucherCode) {
       console.warn(`Booking ${bookingId} has already a Voucher code.`)
       return resolveBooking(bookingObj)
     }
@@ -121,7 +121,7 @@ async function insertVoucher(voucherCode, bookingId) {
       const lessPercentual = bookingTotalValue * (voucherObj.value / 100)
       const bookingAmount = bookingTotalValue - lessPercentual
       await Bookings.update(
-        { totalPrice: bookingAmount, voucherId: voucherObj.id },
+        { totalPrice: bookingAmount, voucherCode: voucherObj.id },
         { where: { bookingId } }
       )
     } else if (voucherType === 'zerofee') {
@@ -131,7 +131,7 @@ async function insertVoucher(voucherCode, bookingId) {
       await Bookings.update(
         {
           totalPrice: bookingAmount,
-          voucherId: voucherObj.id
+          voucherCode: voucherObj.id
         },
         { where: { bookingId } }
       )
@@ -140,7 +140,7 @@ async function insertVoucher(voucherCode, bookingId) {
       await Bookings.update(
         {
           totalPrice: bookingTotalValue - voucherObj.value,
-          voucherId: voucherObj.id
+          voucherCode: voucherObj.id
         },
         { where: { bookingId } }
       )
@@ -156,7 +156,7 @@ async function removeVoucher(voucherCode, bookingId) {
   try {
     const bookingObj = await Bookings.findOne({ where: { bookingId } })
     if (!bookingObj) throw new Error(`Booking ${bookingId} not found.`)
-    if (!bookingObj.voucherId) {
+    if (!bookingObj.voucherCode) {
       console.warn(`Booking ${bookingId} does not have a Voucher.`)
       return resolveBooking(bookingObj)
     }
@@ -165,7 +165,7 @@ async function removeVoucher(voucherCode, bookingId) {
     }
     const bookingAmount = bookingService.getCalcTotalValue(bookingObj)
     await Bookings.update(
-      { totalPrice: bookingAmount, voucherId: null },
+      { totalPrice: bookingAmount, voucherCode: null },
       { where: { bookingId } }
     )
     const voucherObj = await getVoucherByCode(voucherCode)

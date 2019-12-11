@@ -121,12 +121,12 @@ module.exports = function(sequelize, DataTypes) {
         type: DataTypes.STRING(10),
         allowNull: true
       },
-      voucherId: {
-        type: DataTypes.STRING(36),
+      voucherCode: {
+        type: DataTypes.STRING(10),
         allowNull: true,
         references: {
           model: 'Vouchers',
-          key: 'id'
+          key: 'code'
         }
       }
     },
