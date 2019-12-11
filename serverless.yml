@@ -177,22 +177,6 @@ functions:
           path: bookings/request/{id}
           method: put
           cors: true
-  cancel:
-    handler: core/cancel.main
-    memorySize: 1024
-    events:
-      - http:
-          path: bookings/cancel/{id}
-          method: put
-          cors: true
-  complete:
-    handler: core/complete.main
-    memorySize: 1024
-    events:
-      - http:
-          path: bookings/complete/{id}
-          method: put
-          cors: true
   decline:
     handler: core/decline.main
     memorySize: 1024
@@ -259,14 +243,6 @@ functions:
           path: bookings/timeout/{id}
           method: put
           cors: true
-  databaseMigration:
-    handler: core/databaseMigration.main
-    memorySize: 1024
-    events:
-      - http:
-          path: bookings/migration/{token}/database
-          method: post
-          cors: true
   getHourlyAvailability:
     handler: core/getHourlyAvailability.main
     memorySize: 1024
@@ -316,14 +292,6 @@ functions:
       - http:
           path: bookings/voucher/{voucherCode}
           method: delete
-          cors: true
-  voucherValidate:
-    handler: core/voucherValidate.main
-    memorySize: 1024
-    events:
-      - http:
-          path: bookings/voucher/{voucherCode}/validate
-          method: get
           cors: true
   voucherBookingInsert:
     handler: core/voucherBookingInsert.main
