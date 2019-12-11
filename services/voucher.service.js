@@ -1,8 +1,5 @@
-const moment = require('moment')
-
 const { Bookings, Vouchers } = require('./../models')
-const { resolveBooking } = require('./../validations')
-const bookingService = require('./booking.service')
+const { resolveBooking, getCalcTotalValue } = require('./../validations')
 
 const MIN_CODE = 100000
 const MAX_CODE = 999999
@@ -115,13 +112,16 @@ async function insertVoucher(voucherCode, bookingId) {
     }
     const voucherObj = await getOrThrowVoucher(voucherCode)
     const voucherType = voucherObj.type
-    const bookingTotalValue = bookingService.getCalcTotalValue(bookingObj)
+    const bookingTotalValue = getCalcTotalValue(bookingObj)
     if (voucherType === 'percentual') {
       // Removing percentual...
       const lessPercentual = bookingTotalValue * (voucherObj.value / 100)
       const bookingAmount = bookingTotalValue - lessPercentual
       await Bookings.update(
-        { totalPrice: bookingAmount, voucherCode: voucherObj.id },
+        { 
+          totalPrice: bookingAmount, 
+          voucherCode: voucherObj.code
+        },
         { where: { bookingId } }
       )
     } else if (voucherType === 'zerofee') {
@@ -131,7 +131,7 @@ async function insertVoucher(voucherCode, bookingId) {
       await Bookings.update(
         {
           totalPrice: bookingAmount,
-          voucherCode: voucherObj.id
+          voucherCode: voucherObj.code
         },
         { where: { bookingId } }
       )
@@ -140,7 +140,7 @@ async function insertVoucher(voucherCode, bookingId) {
       await Bookings.update(
         {
           totalPrice: bookingTotalValue - voucherObj.value,
-          voucherCode: voucherObj.id
+          voucherCode: voucherObj.code
         },
         { where: { bookingId } }
       )
@@ -163,9 +163,12 @@ async function removeVoucher(voucherCode, bookingId) {
     if (bookingObj.paymentState !== 'pending') {
       throw new Error(`Booking ${bookingId} has already been paid.`)
     }
-    const bookingAmount = bookingService.getCalcTotalValue(bookingObj)
+    const bookingAmount = getCalcTotalValue(bookingObj)
     await Bookings.update(
-      { totalPrice: bookingAmount, voucherCode: null },
+      { 
+        totalPrice: bookingAmount, 
+        voucherCode: null
+      },
       { where: { bookingId } }
     )
     const voucherObj = await getVoucherByCode(voucherCode)

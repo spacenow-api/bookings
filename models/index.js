@@ -8,11 +8,13 @@ const Availabilities = require('./../models/availabilities.model')(sequelize, Da
 const ListingAccessDays = require('./../models/listingAccessDays.model')(sequelize, DataTypes);
 const ListingAccessHours = require('./../models/listingAccessHours.model')(sequelize, DataTypes);
 const Vouchers = require('./../models/vouchers.model')(sequelize, DataTypes);
+const User = require('./../models/user.model')(sequelize, DataTypes);
 
 module.exports = {
   Bookings,
   Availabilities,
   ListingAccessDays,
   ListingAccessHours,
-  Vouchers
+  Vouchers,
+  User
 };

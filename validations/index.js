@@ -16,6 +16,9 @@ const BookingStates = {
 }
 const BookingStatesArray = Object.values(BookingStates)
 
+/**
+ * @deprecated Need to refactory and use a similar approach as 'getCalcTotalValue'
+ */
 const calcTotal = (basePrice, quantity = 1, period, guestFee) => {
   let total = basePrice * quantity * period
   total += total * guestFee
@@ -56,24 +59,6 @@ const resolveBooking = (booking) => {
     booking.reservations = reservationsString.split(',')
   }
   return booking
-}
-
-const getHourlyPeriod = (startTime, endTime) => {
-  if (!startTime && !endTime) throw Error('Time not found.')
-  if (!startTime || !endTime) return 0
-  const startMoment = moment(startTime, 'HH:mm')
-  const endMoment = moment(endTime, 'HH:mm')
-  const hourDiff = endMoment.diff(startMoment, 'hours')
-  const minDiff = moment.utc(endMoment.diff(startMoment)).format('mm')
-  if (parseInt(hourDiff, 10) < 0) {
-    throw Error('End time is bigger than Start time.')
-  }
-  if (parseInt(minDiff, 10) > 0) {
-    throw Error(
-      'It is not possible to book a space with a half or less minutes of diference.'
-    )
-  }
-  return hourDiff
 }
 
 const hasBlockAvailabilities = (bookings, reservationDates) => {
@@ -158,6 +143,41 @@ const isAvailableThisDay = (
   }
 }
 
+const getHourlyPeriod = (startTime, endTime) => {
+  if (!startTime && !endTime) throw Error('Time not found.')
+  if (!startTime || !endTime) return 0
+  const startMoment = moment(startTime, 'HH:mm')
+  const endMoment = moment(endTime, 'HH:mm')
+  const hourDiff = endMoment.diff(startMoment, 'hours')
+  const minDiff = moment.utc(endMoment.diff(startMoment)).format('mm')
+  if (parseInt(hourDiff, 10) < 0) {
+    throw Error('End time is bigger than Start time.')
+  }
+  if (parseInt(minDiff, 10) > 0) {
+    throw Error('It is not possible to book a space with a half or less minutes of diference.')
+  }
+  return hourDiff
+}
+
+const getBookingPeriod = (bookingObject) => {
+  const booking = resolveBooking(bookingObject)
+  switch (booking.priceType) {
+    case 'hourly':
+      return getHourlyPeriod(booking.checkInHour, booking.checkOutHour)
+    case 'daily':
+      return booking.reservations.length
+    default:
+      return booking.period
+  }
+}
+
+const getCalcTotalValue = (bookingObject) => {
+  const bookingPeriod = getBookingPeriod(bookingObject)
+  let total = bookingObject.basePrice * bookingPeriod
+  total += total * bookingObject.guestServiceFee
+  return total
+}
+
 module.exports = {
   calcTotal,
   getDates,
@@ -168,5 +188,6 @@ module.exports = {
   getHourlyPeriod,
   hasBlockAvailabilities,
   hasBlockTime,
-  isAvailableThisDay
+  isAvailableThisDay,
+  getCalcTotalValue
 }

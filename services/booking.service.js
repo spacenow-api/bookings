@@ -4,7 +4,9 @@ const updateBookingState = require('./../helpers/updateBookingState')
 
 const { BookingStates, resolveBooking } = require('./../validations')
 
-const { Bookings } = require('./../models')
+const voucherService = require('./voucher.service')
+
+const { Bookings, User } = require('./../models')
 
 async function doRequestedBooking(bookingId) {
   try {
@@ -22,7 +24,9 @@ async function doApproveBooking(bookingId) {
   try {
     const bookingObj = await Bookings.findOne({ where: { bookingId }, raw: true })
     if (BookingStates.REQUESTED === bookingObj.bookingState || BookingStates.PENDING === bookingObj.bookingState) {
-      const bookingObjUpdated = await updateBookingState(bookingId, BookingStates.APPROVED)
+      let bookingObjUpdated = await updateBookingState(bookingId, BookingStates.APPROVED)
+      // Validating Host Voucher...
+      bookingObjUpdated = await onValidateVoucher(bookingObjUpdated)
       if ('request' === bookingObj.bookingType) {
         // It's not necessary to send email inviting to pay if booking is instant...
         await onSendEmail(`api-emails-${process.env.environment}-sendEmailByBookingReadyToPay`, bookingId)
@@ -34,6 +38,28 @@ async function doApproveBooking(bookingId) {
     }
   } catch (err) {
     console.error(`Problems to update booking ${bookingId} to Approved:`, err)
+    throw err
+  }
+}
+
+async function onValidateVoucher(bookingObject) {
+  try {
+    const { hostId, bookingId } = bookingObject
+    const { voucherCode } = await User.findOne({ where: { id: hostId } })
+    if (voucherCode) {
+      const { status } = await voucherService.validate(voucherCode)
+      if (status === 'VALID') {
+        try {
+          return voucherService.insertVoucher(voucherCode, bookingId)
+        } catch (err) {
+          console.error(`Error trying to use a host voucher:`, err)
+        }
+      } else {
+        console.warn(`The voucher ${voucherCode} of host ${userHostObj.email} is not valid any more.`)
+      }
+    }
+    return bookingObject
+  } catch (err) {
     throw err
   }
 }
@@ -80,48 +106,9 @@ async function doPaymentConfirmation(bookingId, sourceId, chargeId) {
   }
 }
 
-function getHourlyPeriod(startTime, endTime) {
-  if (!startTime && !endTime) throw Error('Time not found.')
-  if (!startTime || !endTime) return 0
-  const startMoment = moment(startTime, 'HH:mm')
-  const endMoment = moment(endTime, 'HH:mm')
-  const hourDiff = endMoment.diff(startMoment, 'hours')
-  const minDiff = moment.utc(endMoment.diff(startMoment)).format('mm')
-  if (parseInt(hourDiff, 10) < 0) {
-    throw Error('End time is bigger than Start time.')
-  }
-  if (parseInt(minDiff, 10) > 0) {
-    throw Error(
-      'It is not possible to book a space with a half or less minutes of diference.'
-    )
-  }
-  return hourDiff
-}
-
-function getBookingPeriod(bookingObject) {
-  const booking = resolveBooking(bookingObject)
-  switch (booking.priceType) {
-    case 'hourly':
-      return getHourlyPeriod(booking.checkInHour, booking.checkOutHour)
-    case 'daily':
-      return booking.reservations.length
-    default:
-      return booking.period
-  }
-}
-
-function getCalcTotalValue(bookingObject) {
-  const bookingPeriod = getBookingPeriod(bookingObject)
-  let total = bookingObject.basePrice * bookingPeriod
-  total += total * bookingObject.guestServiceFee
-  return total
-}
-
 module.exports = {
   doRequestedBooking,
   doApproveBooking,
   doDeclineBooking,
-  doPaymentConfirmation,
-  getBookingPeriod,
-  getCalcTotalValue
+  doPaymentConfirmation
 }
