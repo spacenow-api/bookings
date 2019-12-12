@@ -292,6 +292,14 @@ functions:
           path: bookings/voucher/{voucherCode}
           method: delete
           cors: true
+  voucherValidate:
+    handler: core/voucherValidate.main
+    memorySize: 1024
+    events:
+      - http:
+          path: bookings/voucher/{voucherCode}/validate
+          method: get
+          cors: true
   voucherBookingInsert:
     handler: core/voucherBookingInsert.main
     memorySize: 1024
