@@ -45,7 +45,7 @@ async function doApproveBooking(bookingId) {
 async function onValidateVoucher(bookingObject) {
   try {
     const { hostId, bookingId } = bookingObject
-    const { voucherCode } = await User.findOne({ where: { id: hostId } })
+    const { voucherCode, email } = await User.findOne({ where: { id: hostId } })
     if (voucherCode) {
       const { status } = await voucherService.validate(voucherCode)
       if (status === 'VALID') {
@@ -55,7 +55,7 @@ async function onValidateVoucher(bookingObject) {
           console.error(`Error trying to use a host voucher:`, err)
         }
       } else {
-        console.warn(`The voucher ${voucherCode} of host ${userHostObj.email} is not valid any more.`)
+        console.warn(`The voucher ${voucherCode} of host ${email} is not valid any more.`)
       }
     }
     return bookingObject
