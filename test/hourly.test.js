@@ -68,17 +68,19 @@ test('Expect a true availability for a 24/7 listing.', () => {
 test('Expect a true availability for open days.', () => {
   const availableAccessHours = {
     allday: 0,
-    openHour: '2019-10-09T23:00:57.000Z',
-    closeHour: '2019-10-10T04:00:55.000Z'
+    openHour: new Date('2019-09-19 22:00:00.0'),
+    closeHour: new Date('2019-09-20 07:00:00.0')
   }
-  expect(isAvailableThisDay('11:00', '14:00', availableAccessHours)).toBe(true)
+  const isAvailable = isAvailableThisDay('08:00', '17:00', availableAccessHours)
+  expect(isAvailable).toBe(true)
 })
 
 test('Expect a false availability for open days.', () => {
   const availableAccessHours = {
     allday: 0,
-    openHour: '2019-10-09T23:00:57.000Z',
-    closeHour: '2019-10-10T04:00:55.000Z'
+    openHour: new Date('2019-09-19 22:00:00.0'),
+    closeHour: new Date('2019-09-20 07:00:00.0')
   }
-  expect(isAvailableThisDay('08:00', '14:00', availableAccessHours)).toBe(false)
+  const isAvailable = isAvailableThisDay('07:00', '17:00', availableAccessHours)
+  expect(isAvailable).toBe(false)
 })

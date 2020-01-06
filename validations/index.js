@@ -109,27 +109,31 @@ const isAvailableThisDay = (
   checkOutHour,
   availableAccessHours
 ) => {
-  const minutesOfTime = (date) => {
-    const hour = date.split(':')[0]
-    const minute = date.split(':')[1]
-    const instance = moment().utcOffset('+1100')
-    instance.set({ hour, minute })
+  const minutesOfTime = (time) => {
+    const hour = time.split(':')[0]
+    const minute = time.split(':')[1]
+    const instance = moment().set({ hour, minute })
     return instance.minutes() + instance.hours() * 60
   }
   const minutesOfDate = (date) => {
-    const instance = moment(date).utcOffset('+1100')
+    let hours = date.getHours().toString()
+    hours = hours.padStart(2, "0")
+    let minutes = date.getMinutes().toString()
+    minutes = minutes.padStart(2, "0")
+    const baseDate = `1970-01-01T${hours}:${minutes}:00.000Z`
+    const instance = moment(baseDate)
     return instance.minutes() + instance.hours() * 60
   }
   try {
     if (!availableAccessHours) return false
     if (availableAccessHours.allday == 1) return true
-    
+
     const checkInMin = minutesOfTime(checkInHour)
     const checkOutMin = minutesOfTime(checkOutHour)
-    
+
     const openMin = minutesOfDate(availableAccessHours.openHour)
     const closeMin = minutesOfDate(availableAccessHours.closeHour)
-    
+
     if (
       (checkInMin >= openMin && checkInMin <= closeMin) &&
       (checkOutMin >= openMin && checkOutMin <= closeMin)
