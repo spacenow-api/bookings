@@ -29,6 +29,6 @@ module.exports.main = async (event, context, callback) => {
     return success({ status: true, hours, isAvailable })
   } catch (err) {
     console.error(err)
-    return failure({ status: false, error: err.message })
+    return failure({ status: false, error: err })
   }
 }
