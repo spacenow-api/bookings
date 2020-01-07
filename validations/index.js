@@ -117,11 +117,15 @@ const isAvailableThisDay = (
   }
   const minutesOfDate = (date) => {
     let hours = date.getHours().toString()
-    hours = hours.padStart(2, "0")
+    hours = hours.padStart(2, '0')
     let minutes = date.getMinutes().toString()
-    minutes = minutes.padStart(2, "0")
-    const baseDate = `1970-01-01T${hours}:${minutes}:00.000Z`
-    const instance = moment(baseDate)
+    minutes = minutes.padStart(2, '0')
+    let month = date.getMonth() + 1
+    month = month.toString().padStart(2, '0')
+    let day = date.getDate().toString()
+    day = day.padStart(2, '0')
+    const baseDate = `${date.getFullYear()}-${month}-${day}T${hours}:${minutes}:00.000Z`
+    let instance = moment(baseDate)
     return instance.minutes() + instance.hours() * 60
   }
   try {

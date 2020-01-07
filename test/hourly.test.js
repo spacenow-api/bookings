@@ -84,3 +84,13 @@ test('Expect a false availability for open days.', () => {
   const isAvailable = isAvailableThisDay('07:00', '17:00', availableAccessHours)
   expect(isAvailable).toBe(false)
 })
+
+test('Expect a true availability for daily save time.', () => {
+  const availableAccessHours = {
+    allday: 0,
+    openHour: new Date('2020-01-01 21:00:00.0'),
+    closeHour: new Date('2020-01-01 06:00:00.0')
+  }
+  const isAvailable = isAvailableThisDay('08:00', '17:00', availableAccessHours)
+  expect(isAvailable).toBe(true)
+})
