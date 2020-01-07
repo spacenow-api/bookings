@@ -116,16 +116,21 @@ const isAvailableThisDay = (
     return instance.minutes() + instance.hours() * 60
   }
   const minutesOfDate = (date) => {
-    let hours = date.getHours().toString()
-    hours = hours.padStart(2, '0')
-    let minutes = date.getMinutes().toString()
-    minutes = minutes.padStart(2, '0')
-    let month = date.getMonth() + 1
-    month = month.toString().padStart(2, '0')
-    let day = date.getDate().toString()
-    day = day.padStart(2, '0')
-    const baseDate = `${date.getFullYear()}-${month}-${day}T${hours}:${minutes}:00.000Z`
-    let instance = moment(baseDate)
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    if (timeZone === 'Australia/Sydney') {
+      let hours = date.getHours().toString()
+      hours = hours.padStart(2, '0')
+      let minutes = date.getMinutes().toString()
+      minutes = minutes.padStart(2, '0')
+      let month = date.getMonth() + 1
+      month = month.toString().padStart(2, '0')
+      let day = date.getDate().toString()
+      day = day.padStart(2, '0')
+      const baseDate = `${date.getFullYear()}-${month}-${day}T${hours}:${minutes}:00.000Z`
+      const instance = moment(baseDate)
+      return instance.minutes() + instance.hours() * 60
+    }
+    const instance = moment(date).utcOffset('+1100')
     return instance.minutes() + instance.hours() * 60
   }
   try {
