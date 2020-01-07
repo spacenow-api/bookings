@@ -19,6 +19,7 @@ const sequelize = new Sequelize({
 
 const ListingAccessDays = require('./../models/listingAccessDays.model')(sequelize, DataTypes);
 const ListingAccessHours = require('./../models/listingAccessHours.model')(sequelize, DataTypes);
+const ListingData = require('./../models/listingData.model')(sequelize, DataTypes);
 
 const { success, failure } = require('../libs/response-lib');
 const { getHourlyPeriod, isAvailableThisDay } = require('./../validations')
@@ -27,6 +28,10 @@ module.exports.main = async (event, context, callback) => {
   try {
     const data = JSON.parse(event.body)
     const hours = getHourlyPeriod(data.checkInHour, data.checkOutHour)
+    const listingDataObj = await ListingData.findOne({ where: { listingId: data.listingId } })
+    if (listingDataObj && listingDataObj.minTerm > hours) {
+      throw new Error(`This space must be booked for at least ${listingDataObj.minTerm} hours`)
+    }
     const weekDay = moment(data.date).day()
     const accessDay = await ListingAccessDays.findOne({
       where: { listingId: data.listingId }
