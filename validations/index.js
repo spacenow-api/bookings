@@ -173,7 +173,7 @@ const getHourlyPeriod = (startTime, endTime) => {
 }
 
 const getBookingPeriod = (bookingObject) => {
-  const booking = resolveBooking(bookingObject)
+  const booking = resolveBooking(JSON.parse(JSON.stringify(bookingObject)))
   switch (booking.priceType) {
     case 'hourly':
       return getHourlyPeriod(booking.checkInHour, booking.checkOutHour)
