@@ -1,5 +1,5 @@
 const { Bookings, Vouchers } = require('./../models')
-const { resolveBooking, getCalcTotalValue } = require('./../validations')
+const { resolveBooking, getCalcTotalValue, getCalcTotalWithoutFee } = require('./../validations')
 
 const MIN_CODE = 100000
 const MAX_CODE = 999999
@@ -126,8 +126,7 @@ async function insertVoucher(voucherCode, bookingId) {
       )
     } else if (voucherType === 'zerofee') {
       // Removing Fee by Voucher...
-      const lessFee = bookingTotalValue * bookingObj.guestServiceFee
-      const bookingAmount = bookingTotalValue - lessFee
+      const bookingAmount = getCalcTotalWithoutFee(bookingObj)
       await Bookings.update(
         {
           totalPrice: bookingAmount,

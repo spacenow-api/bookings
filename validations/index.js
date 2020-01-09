@@ -191,6 +191,11 @@ const getCalcTotalValue = (bookingObject) => {
   return total
 }
 
+const getCalcTotalWithoutFee = (bookingObject) => {
+  const bookingPeriod = getBookingPeriod(bookingObject)
+  return bookingObject.basePrice * bookingPeriod
+}
+
 module.exports = {
   calcTotal,
   getDates,
@@ -202,5 +207,6 @@ module.exports = {
   hasBlockAvailabilities,
   hasBlockTime,
   isAvailableThisDay,
-  getCalcTotalValue
+  getCalcTotalValue,
+  getCalcTotalWithoutFee
 }
