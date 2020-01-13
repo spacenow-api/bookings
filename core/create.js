@@ -2,6 +2,7 @@ const uuid = require('uuid')
 const moment = require('moment')
 const { Op } = require('sequelize')
 
+const { log } = require('./../helpers/log.utils')
 const queueLib = require('../libs/queue-lib')
 const { success, failure } = require('../libs/response-lib');
 const { calcTotal, getDates, getEndDate, BookingStates, resolveBooking, getHourlyPeriod, hasBlockAvailabilities, hasBlockTime } = require('../validations')
@@ -127,8 +128,9 @@ module.exports.main = async (event, context, callback) => {
         createdAt: Date.now(),
         updatedAt: Date.now()
       })
+      log(bookingId, 'Created.')
     } catch (err) {
-      console.error(err)
+      log(bookingId, err)
       return failure({ status: false, error: err })
     }
 
@@ -142,6 +144,7 @@ module.exports.main = async (event, context, callback) => {
           blockedDates: sortedReservations
         })
       })
+      log(bookingId, 'Reservations sent: ' + sortedReservations)
     } catch (err) {
       console.error('\nProblems to register reservation on Queue:', err)
     }
