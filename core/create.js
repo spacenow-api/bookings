@@ -4,8 +4,17 @@ const { Op } = require('sequelize')
 
 const { log } = require('./../helpers/log.utils')
 const queueLib = require('../libs/queue-lib')
-const { success, failure } = require('../libs/response-lib');
-const { calcTotal, getDates, getEndDate, BookingStates, resolveBooking, getHourlyPeriod, hasBlockAvailabilities, hasBlockTime } = require('../validations')
+const { success, failure } = require('../libs/response-lib')
+const {
+  calcTotal,
+  getDates,
+  getEndDate,
+  BookingStates,
+  resolveBooking,
+  getHourlyPeriod,
+  hasBlockAvailabilities,
+  hasBlockTime
+} = require('../validations')
 const { Bookings } = require('./../models')
 
 const bookingService = require('./../services/booking.service')
@@ -15,16 +24,12 @@ const QUEUE_ULR = `https://sqs.${process.env.region}.amazonaws.com/${process.env
 const IS_ABSORVE = 0.035 // Guest Fee
 const NO_ABSORVE = 0.135 // Host Fee
 
-const getValidateBookings = async (listingId) => {
+const getValidateBookings = async listingId => {
   const bookings = await Bookings.findAll({
     where: {
       listingId: listingId,
       bookingState: {
-        [Op.in]: [
-          BookingStates.PENDING,
-          BookingStates.REQUESTED,
-          BookingStates.ACCEPTED
-        ]
+        [Op.in]: [BookingStates.PENDING, BookingStates.REQUESTED, BookingStates.ACCEPTED]
       }
     }
   })
@@ -32,13 +37,12 @@ const getValidateBookings = async (listingId) => {
 }
 
 module.exports.main = async (event, context, callback) => {
-
   const data = JSON.parse(event.body)
 
   const bookingId = uuid.v1()
   const confirmationCode = Math.floor((100000 + Math.random()) * 900000)
   const guestServiceFee = data.isAbsorvedFee ? IS_ABSORVE : NO_ABSORVE
-  const hostServiceFee = data.isAbsorvedFee ? 0.1 : 0
+  const hostServiceFee = data.isAbsorvedFee ? 0.11 : 0
 
   let totalPrice
   let bookingPeriod
@@ -50,26 +54,12 @@ module.exports.main = async (event, context, callback) => {
   } else if (data.priceType === 'daily') {
     reservationDates = data.reservations
     bookingPeriod = reservationDates.length
-    totalPrice = calcTotal(
-      data.basePrice,
-      data.quantity,
-      bookingPeriod,
-      guestServiceFee
-    )
+    totalPrice = calcTotal(data.basePrice, data.quantity, bookingPeriod, guestServiceFee)
   } else {
     bookingPeriod = data.period
-    const endDate = getEndDate(
-      data.reservations[0],
-      bookingPeriod,
-      data.priceType
-    )
+    const endDate = getEndDate(data.reservations[0], bookingPeriod, data.priceType)
     reservationDates = getDates(data.reservations[0], endDate)
-    totalPrice = calcTotal(
-      data.basePrice,
-      data.quantity,
-      bookingPeriod,
-      guestServiceFee
-    )
+    totalPrice = calcTotal(data.basePrice, data.quantity, bookingPeriod, guestServiceFee)
   }
 
   // Getting pending bookings...
@@ -92,8 +82,12 @@ module.exports.main = async (event, context, callback) => {
     sortedReservations = onSortDates(sortedReservations)
 
     // Defining checkIn, checkOut booking dates...
-    const checkIn = moment(sortedReservations[0]).format('YYYY-MM-DD').toString()
-    const checkOut = moment(sortedReservations[sortedReservations.length - 1]).format('YYYY-MM-DD').toString()
+    const checkIn = moment(sortedReservations[0])
+      .format('YYYY-MM-DD')
+      .toString()
+    const checkOut = moment(sortedReservations[sortedReservations.length - 1])
+      .format('YYYY-MM-DD')
+      .toString()
 
     // Creating record on 'bookings' table...
     try {
@@ -160,7 +154,7 @@ module.exports.main = async (event, context, callback) => {
   }
 }
 
-const onSortDates = (dates) => {
+const onSortDates = dates => {
   return dates.sort((a, b) => {
     const dateA = new Date(a)
     const dateB = new Date(b)
