@@ -99,7 +99,7 @@ async function doPaymentConfirmation(bookingId, sourceId, chargeId) {
         paymentState: 'completed',
         updatedAt: Date.now()
       }, { where: { bookingId } })
-      log(bookingId, 'Payment confirmed.')
+      log(bookingId, 'State updated to Completed.')
       await onSendEmail(`api-emails-${process.env.environment}-sendEmailByBookingInstantHost`, bookingId)
       await onSendEmail(`api-emails-${process.env.environment}-sendEmailByBookingInstantGuest`, bookingId)
       const bookingObjUpdated = await Bookings.findOne({ where: { bookingId }, raw: true })
