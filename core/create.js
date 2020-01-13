@@ -1,9 +1,10 @@
+const AWS = require('aws-sdk')
 const uuid = require('uuid')
 const moment = require('moment')
 const { Op } = require('sequelize')
 
 const { log } = require('./../helpers/log.utils')
-const queueLib = require('../libs/queue-lib')
+
 const { success, failure } = require('../libs/response-lib')
 const {
   calcTotal,
@@ -130,14 +131,15 @@ module.exports.main = async (event, context, callback) => {
 
     // Creating availabilities...
     try {
-      await queueLib.call({
+      const sqs = new AWS.SQS();
+      await sqs.sendMessage({
         QueueUrl: QUEUE_ULR,
         MessageBody: JSON.stringify({
           bookingId: bookingId,
           listingId: data.listingId,
           blockedDates: sortedReservations
         })
-      })
+      }).promise()
       log(bookingId, 'Reservations sent: ' + sortedReservations)
     } catch (err) {
       console.error('\nProblems to register reservation on Queue:', err)
