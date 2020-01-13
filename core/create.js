@@ -142,7 +142,7 @@ module.exports.main = async (event, context, callback) => {
       }).promise()
       log(bookingId, 'Reservations sent: ' + sortedReservations)
     } catch (err) {
-      console.error('\nProblems to register reservation on Queue:', err)
+      log(bookingId, 'Problems to register reservation on Queue:' + err)
     }
 
     // Updating booking state and finishing...
