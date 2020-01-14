@@ -22,34 +22,71 @@ const ListingAccessHours = require('./../models/listingAccessHours.model')(seque
 const ListingData = require('./../models/listingData.model')(sequelize, DataTypes);
 
 const { success, failure } = require('../libs/response-lib');
-const { getHourlyPeriod, isAvailableThisDay } = require('./../validations')
+const { getHourlyPeriod, isAvailableThisDay, getMomentObjByDate } = require('./../validations')
 
 module.exports.main = async (event, context, callback) => {
   try {
-    const data = JSON.parse(event.body)
-    const hours = getHourlyPeriod(data.checkInHour, data.checkOutHour)
-    const listingDataObj = await ListingData.findOne({ where: { listingId: data.listingId } })
-    if (listingDataObj && listingDataObj.minTerm > hours) {
-      throw new Error(`This space must be booked for at least ${listingDataObj.minTerm} hours`)
-    }
-    const weekDay = moment(data.date).day()
-    const accessDay = await ListingAccessDays.findOne({
-      where: { listingId: data.listingId }
+    const { listingId, date, checkInHour, checkOutHour } = JSON.parse(event.body)
+
+    const weekDay = moment(date).day()
+
+    const listingDataObj = await ListingData.findOne({ where: { listingId: listingId } })
+
+    const accessDayObj = await ListingAccessDays.findOne({
+      where: { listingId: listingId }
     })
-    const accessHours = await ListingAccessHours.findOne({
+
+    const accessHoursObj = await ListingAccessHours.findOne({
       where: {
-        listingAccessDaysId: accessDay.id,
+        listingAccessDaysId: accessDayObj.id,
         weekday: `${weekDay}`
       }
     })
-    const isAvailable = await isAvailableThisDay(
-      data.checkInHour,
-      data.checkOutHour,
-      accessHours
-    )
-    return success({ status: true, hours, isAvailable })
+
+    if (checkInHour && checkOutHour) {
+      // Checking availability for a start-to-end time...
+      const hours = getHourlyPeriod(checkInHour, checkOutHour)
+      if (listingDataObj && listingDataObj.minTerm > hours) {
+        throw new Error(`This space must be booked for at least ${listingDataObj.minTerm} hours`)
+      }
+      const isAvailable = isAvailableThisDay(checkInHour, checkOutHour, accessHoursObj)
+      return success({
+        status: true,
+        hours,
+        isAvailable,
+        openHour: checkInHour,
+        closeHour: checkOutHour
+      })
+    } else {
+      // Checking availability for a date...
+      if (accessHoursObj) {
+        const startMoment = getMomentObjByDate(accessHoursObj.openHour)
+        const endMoment = getMomentObjByDate(accessHoursObj.closeHour)
+        const open = getTime(startMoment)
+        const close = getTime(endMoment)
+        const isAvailable = isAvailableThisDay(open, close, accessHoursObj)
+        const hours = getHourlyPeriod(open, close)
+        return success({
+          status: true,
+          hours,
+          isAvailable,
+          openHour: open,
+          closeHour: close
+        })
+      } else {
+        throw new Error(`Not open on this date`)
+      }
+    }
   } catch (err) {
     console.error(err)
     return failure({ status: false, error: err })
   }
+}
+
+const getTime = (moment) => {
+  let hours = moment.hours().toString()
+  hours = hours.padStart(2, '0')
+  let minutes = moment.minutes().toString()
+  minutes = minutes.padStart(2, '0')
+  return `${hours}:${minutes}`
 }
