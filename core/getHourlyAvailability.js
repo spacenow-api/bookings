@@ -22,7 +22,7 @@ const ListingAccessHours = require('./../models/listingAccessHours.model')(seque
 const ListingData = require('./../models/listingData.model')(sequelize, DataTypes);
 
 const { success, failure } = require('../libs/response-lib');
-const { getHourlyPeriod, isAvailableThisDay, getMomentObjByDate } = require('./../validations')
+const { getHourlyPeriod, isAvailableThisDay, getMomentObjByDate, getTime, getRange } = require('./../validations')
 
 module.exports.main = async (event, context, callback) => {
   try {
@@ -43,50 +43,48 @@ module.exports.main = async (event, context, callback) => {
       }
     })
 
-    if (checkInHour && checkOutHour) {
-      // Checking availability for a start-to-end time...
-      const hours = getHourlyPeriod(checkInHour, checkOutHour)
-      if (listingDataObj && listingDataObj.minTerm > hours) {
-        throw new Error(`This space must be booked for at least ${listingDataObj.minTerm} hours`)
-      }
-      const isAvailable = isAvailableThisDay(checkInHour, checkOutHour, accessHoursObj)
-      return success({
-        status: true,
-        hours,
-        isAvailable,
-        openHour: checkInHour,
-        closeHour: checkOutHour
-      })
-    } else {
-      // Checking availability for a date...
-      if (accessHoursObj) {
-        const startMoment = getMomentObjByDate(accessHoursObj.openHour)
-        const endMoment = getMomentObjByDate(accessHoursObj.closeHour)
-        const open = getTime(startMoment)
-        const close = getTime(endMoment)
-        const isAvailable = isAvailableThisDay(open, close, accessHoursObj)
-        const hours = getHourlyPeriod(open, close)
-        return success({
-          status: true,
-          hours,
-          isAvailable,
-          openHour: open,
-          closeHour: close
-        })
-      } else {
-        throw new Error(`Not open on this date`)
-      }
+    const hours = getHourlyPeriod(checkInHour, checkOutHour)
+    if (listingDataObj && listingDataObj.minTerm > hours) {
+      throw new Error(`This space must be booked for at least ${listingDataObj.minTerm} hours`)
     }
+
+    const isAvailable = isAvailableThisDay(checkInHour, checkOutHour, accessHoursObj)
+
+    // Primary object result...
+    let hourlyAvailability = {
+      status: true,
+      hours,
+      isAvailable
+    }
+
+    // Suggestion object...
+    const suggestionObj = getHourlySuggestion(accessHoursObj, listingDataObj.minTerm)
+    hourlyAvailability = { ...hourlyAvailability, suggestion: suggestionObj }
+
+    return success(hourlyAvailability)
   } catch (err) {
     console.error(err)
     return failure({ status: false, error: err })
   }
 }
 
-const getTime = (moment) => {
-  let hours = moment.hours().toString()
-  hours = hours.padStart(2, '0')
-  let minutes = moment.minutes().toString()
-  minutes = minutes.padStart(2, '0')
-  return `${hours}:${minutes}`
+const getHourlySuggestion = (accessHoursObj, minTerm) => {
+  const openMomentObj = getMomentObjByDate(accessHoursObj.openHour)
+  const closeMomentObj = getMomentObjByDate(accessHoursObj.closeHour)
+  const hourlyRange = getRange(openMomentObj, closeMomentObj)
+  const openRange = [...hourlyRange]
+  openRange.pop()
+  const closeRange = [...hourlyRange]
+  closeRange.shift()
+  const closeSuggestion = moment(openMomentObj)
+    .add(2, 'hours')
+    .format('HH:mm')
+  return {
+    firstHour: getTime(openMomentObj),
+    lastHour: getTime(closeMomentObj),
+    openRange: openRange,
+    closeRange: closeRange,
+    openSuggestion: getTime(openMomentObj),
+    closeSuggestion: closeSuggestion
+  }
 }

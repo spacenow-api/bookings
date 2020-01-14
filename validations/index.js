@@ -148,13 +148,13 @@ const getHourlyPeriod = (startTime, endTime) => {
   const startMoment = moment(startTime, 'HH:mm')
   const endMoment = moment(endTime, 'HH:mm')
   const hourDiff = endMoment.diff(startMoment, 'hours')
-  const minDiff = moment.utc(endMoment.diff(startMoment)).format('mm')
   if (parseInt(hourDiff, 10) < 0) {
     throw Error('Check-out time smaller than check-in.')
   }
-  if (parseInt(minDiff, 10) > 0) {
-    throw Error('It is not possible to book a space with a half or less minutes of diference.')
-  }
+  // const minDiff = moment.utc(endMoment.diff(startMoment)).format('mm')
+  // if (parseInt(minDiff, 10) > 0) {
+  //   throw Error('It is not possible to book a space with a half or less minutes of diference.')
+  // }
   return hourDiff
 }
 
@@ -199,6 +199,26 @@ const getMomentObjByDate = (date) => {
   return moment(date).utcOffset('+1100')
 }
 
+const getTime = (momentObj) => {
+  let hours = momentObj.hours().toString()
+  hours = hours.padStart(2, '0')
+  let minutes = momentObj.minutes().toString()
+  minutes = minutes.padStart(2, '0')
+  return `${hours}:${minutes}`
+}
+
+const getRange = (start, end) => {
+  const range = [];
+  const times = 24 * 4;
+  for (let i = 0; i < times; i += 1) {
+    const t = moment(start).add(15 * i, 'minutes');
+    if (t.isAfter(end))
+      break;
+    range.push(t.format('HH:mm'));
+  }
+  return range;
+}
+
 module.exports = {
   calcTotal,
   getDates,
@@ -212,5 +232,7 @@ module.exports = {
   isAvailableThisDay,
   getCalcTotalValue,
   getCalcTotalWithoutFee,
-  getMomentObjByDate
+  getMomentObjByDate,
+  getTime,
+  getRange
 }
