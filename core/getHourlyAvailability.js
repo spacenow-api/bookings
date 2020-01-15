@@ -25,6 +25,7 @@ const { success, failure } = require('../libs/response-lib');
 const { getHourlyPeriod, isAvailableThisDay, getMomentObjByDate, getTime, getRange } = require('./../validations')
 
 module.exports.main = async (event, context, callback) => {
+  let errValidation
   try {
     const { listingId, date, checkInHour, checkOutHour } = JSON.parse(event.body)
 
@@ -43,16 +44,25 @@ module.exports.main = async (event, context, callback) => {
       }
     })
 
-    const hours = getHourlyPeriod(checkInHour, checkOutHour)
-    if (listingDataObj && listingDataObj.minTerm > hours) {
-      throw new Error(`This space must be booked for at least ${listingDataObj.minTerm} hours`)
+    if (!accessHoursObj)
+      throw new Error('Not working this day')
+
+    let hours = 0
+    try {
+      hours = getHourlyPeriod(checkInHour, checkOutHour)
+      if (listingDataObj && listingDataObj.minTerm > hours) {
+        errValidation = `This space must be booked for at least ${listingDataObj.minTerm} hours`
+      }
+    } catch (err) {
+      errValidation = err.message ? err.message : err
     }
 
-    const isAvailable = isAvailableThisDay(checkInHour, checkOutHour, accessHoursObj)
+    let isAvailable = isAvailableThisDay(checkInHour, checkOutHour, accessHoursObj)
+    if (errValidation)
+      isAvailable = false
 
     // Primary object result...
     let hourlyAvailability = {
-      status: true,
       hours,
       isAvailable
     }
@@ -61,23 +71,27 @@ module.exports.main = async (event, context, callback) => {
     const suggestionObj = getHourlySuggestion(accessHoursObj, listingDataObj.minTerm)
     hourlyAvailability = { ...hourlyAvailability, suggestion: suggestionObj }
 
-    return success(hourlyAvailability)
+    return success({ ...hourlyAvailability, error: errValidation })
   } catch (err) {
     console.error(err)
-    return failure({ status: false, error: err })
+    return failure({ error: err })
   }
 }
 
 const getHourlySuggestion = (accessHoursObj, minTerm) => {
-  const openMomentObj = getMomentObjByDate(accessHoursObj.openHour)
-  const closeMomentObj = getMomentObjByDate(accessHoursObj.closeHour)
+  let openMomentObj = moment().set({ hour: 1, minute: 0 })
+  let closeMomentObj = moment().set({ hour: 23, minute: 0 })
+  if (!accessHoursObj.allday) {
+    openMomentObj = getMomentObjByDate(accessHoursObj.openHour)
+    closeMomentObj = getMomentObjByDate(accessHoursObj.closeHour)
+  }
   const hourlyRange = getRange(openMomentObj, closeMomentObj)
   const openRange = [...hourlyRange]
   openRange.pop()
   const closeRange = [...hourlyRange]
   closeRange.shift()
   const closeSuggestion = moment(openMomentObj)
-    .add(2, 'hours')
+    .add(minTerm, 'hours')
     .format('HH:mm')
   return {
     firstHour: getTime(openMomentObj),
