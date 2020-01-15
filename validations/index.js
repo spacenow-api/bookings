@@ -151,10 +151,6 @@ const getHourlyPeriod = (startTime, endTime) => {
   if (parseInt(hourDiff, 10) < 0) {
     throw Error('Check-out time smaller than check-in.')
   }
-  // const minDiff = moment.utc(endMoment.diff(startMoment)).format('mm')
-  // if (parseInt(minDiff, 10) > 0) {
-  //   throw Error('It is not possible to book a space with a half or less minutes of diference.')
-  // }
   return hourDiff
 }
 
