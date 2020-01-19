@@ -29,7 +29,7 @@ jobs:
       - run:
           name: Deploy dev application
           command: |
-            export ACCOUNT_ID=159220020591
+            export ACCOUNT_ID=159220020591 SLS_DEBUG=*
             chmod +x scripts/aws-cli-assumerole.sh
             source scripts/aws-cli-assumerole.sh
             sls create_domain --accountId ${ACCOUNT_ID}
