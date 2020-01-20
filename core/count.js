@@ -20,7 +20,16 @@ module.exports.main = async (event, context, callback) => {
   }
   try {
     const data = await Bookings.count(where);
-    return success({ count: data })
+    const approved = await Bookings.count({
+      where: { ...where, bookingState: "approved" }
+    });
+    const completed = await Bookings.count({
+      where: { ...where, bookingState: "completed" }
+    });
+    const cancelled = await Bookings.count({
+      where: { ...where, bookingState: "cancelled",  }
+    });
+    return success({ count: { all, approved, completed, cancelled } })
   } catch (error) {
     return failure({ status: false })
   }
