@@ -19,7 +19,7 @@ module.exports.main = async (event, context, callback) => {
     where = {}
   }
   try {
-    const data = await Bookings.count(where);
+    const all = await Bookings.count(where);
     const approved = await Bookings.count({
       where: { ...where, bookingState: "approved" }
     });
