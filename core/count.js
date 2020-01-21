@@ -4,7 +4,7 @@ const { Bookings } = require('./../models')
 const { Op } = require('sequelize')
 
 module.exports.main = async (event, context, callback) => {
-  const days = event.queryStringParameters.days
+  const days = event.queryStringParameters.days || 10000
   let where;
   if (days) {
     const date = subDays(new Date(), days);
@@ -15,8 +15,6 @@ module.exports.main = async (event, context, callback) => {
         }
       }
     }
-  } else {
-    where = {}
   }
   try {
     const all = await Bookings.count(where);
