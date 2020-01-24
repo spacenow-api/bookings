@@ -11,21 +11,23 @@ const { onCleanAvailabilities } = require('../helpers/availabilities.function')
 
 module.exports.main = async (event, context, callback) => {
   try {
-    const plusHour =
-      moment()
-        .add(3, 'minutes')
-        .unix() * 1000
     const bookings = await Bookings.findAll({
       where: {
-        bookingState: BookingStates.PENDING,
-        createdAt: { [Op.gt]: plusHour }
+        bookingState: BookingStates.PENDING
       },
       raw: true
     })
     for (const item of bookings) {
-      await updateBookingState(item.bookingId, BookingStates.TIMEOUT)
-      await onCleanAvailabilities(item.bookingId)
-      await onSendEmail(`api-emails-${process.env.environment}-sendEmailBookingTimedOutGuest`, item.id)
+      const plusHour =
+        moment(item.createdAt)
+          .add(30, 'minutes')
+          .unix() * 1000
+      console.log(item.createdAt, plusHour)
+      if (item.createdAt > plusHour) {
+        await updateBookingState(item.bookingId, BookingStates.TIMEOUT)
+        await onCleanAvailabilities(item.bookingId)
+        await onSendEmail(`api-emails-${process.env.environment}-sendEmailBookingTimedOutGuest`, item.id)
+      }
     }
     return success({ count: bookings.length, items: bookings.map(resolveBooking) })
   } catch (err) {
