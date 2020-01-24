@@ -17,6 +17,7 @@ module.exports.main = async (event, context, callback) => {
       },
       raw: true
     })
+    console.log('bookings', bookings)
     for (const item of bookings) {
       const current = moment().unix() * 1000
       const lessHour =
