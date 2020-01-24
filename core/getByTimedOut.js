@@ -13,7 +13,7 @@ module.exports.main = async (event, context, callback) => {
   try {
     const plusHour =
       moment()
-        .add(30, 'minutes')
+        .add(3, 'minutes')
         .unix() * 1000
     const bookings = await Bookings.findAll({
       where: {
