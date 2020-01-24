@@ -7,11 +7,11 @@ plugins:
   - serverless-prune-plugin
 
 custom:
-  ServiceName: 'bookings'
+  ServiceName: "bookings"
   StageName: ${opt:stage, 'sandpit'}
   StageNameCert: ${opt:stageCert, ''}
-  SubdomainName: 'spacenow'
-  FirstAttributeName: 'bookingId'
+  SubdomainName: "spacenow"
+  FirstAttributeName: "bookingId"
   TableName: ${self:custom.StageName}-${self:custom.ServiceName}
   PreReservationTableName: ${self:custom.StageName}-${self:custom.ServiceName}-pre-reservation
   TableThroughputs:
@@ -35,11 +35,11 @@ custom:
     prod: sg-00b4a2172f7e29276
   customDomain:
     domainName: ${self:custom.domains.${self:custom.StageName}, self:custom.domains.default}
-    basePath: ''
+    basePath: ""
     stage: ${self:custom.StageName}
     certificateArn: ${ssm:/${self:custom.StageNameCert, ''}/ACM_CERTIFICATE, ''}
     createRoute53Record: true
-    endpointType: 'regional'
+    endpointType: "regional"
   prune:
     automatic: true
     number: 5
@@ -66,16 +66,16 @@ provider:
   stage: ${self:custom.StageName, 'sandpit'}
   region: ${opt:region, 'ap-southeast-2'}
   iamRoleStatements:
-    - Effect: 'Allow'
+    - Effect: "Allow"
       Action:
-        - 'sqs:SendMessage'
-        - 'sqs:GetQueueUrl'
+        - "sqs:SendMessage"
+        - "sqs:GetQueueUrl"
       Resource: "arn:aws:sqs:${opt:region, 'ap-southeast-2'}:${opt:accountId, ''}:${self:custom.SubdomainName}-${self:custom.TableName}"
     - Effect: Allow
       Action:
         - lambda:InvokeFunction
         - lambda:InvokeAsync
-      Resource: '*'
+      Resource: "*"
   vpc:
     securityGroupIds:
       - ${self:custom.securityGroup.${self:custom.StageName, 'sandpit'}}
@@ -316,6 +316,15 @@ functions:
           path: bookings/voucher/{voucherCode}/booking/{bookingId}/remove
           method: put
           cors: true
+  getByTimedOut:
+    handler: core/getByTimedOut.main
+    memorySize: 1024
+    events:
+      - http:
+          path: bookings/getByTimedOut
+          method: get
+          cors: true
+      - schedule: rate(30 minutes)
 
 resources:
   - ${file(resources/api-gateway-errors.yml)}
