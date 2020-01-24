@@ -28,12 +28,11 @@ module.exports.main = async (event, context, callback) => {
         moment(item.createdAt)
           .add(3, 'minutes')
           .unix() * 1000
-      console.log(plusHour, current)
       if (current > plusHour) {
         await updateBookingState(item.bookingId, BookingStates.TIMEOUT)
         await onCleanAvailabilities(item.bookingId)
         if (item.createdAt > lessHour) {
-          await onSendEmail(`api-emails-${process.env.environment}-sendEmailBookingTimedOutGuest`, item.id)
+          await onSendEmail(`api-emails-${process.env.environment}-sendEmailBookingTimedOutGuest`, item.bookingId)
         }
       }
     }
