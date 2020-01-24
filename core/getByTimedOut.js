@@ -13,7 +13,9 @@ module.exports.main = async (event, context, callback) => {
   try {
     const bookings = await Bookings.findAll({
       where: {
-        bookingState: BookingStates.PENDING
+        bookingState: BookingStates.APPROVED,
+        paymentState: 'pending',
+        bookingType: 'instant'
       },
       raw: true
     })
