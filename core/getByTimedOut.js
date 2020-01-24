@@ -26,7 +26,7 @@ module.exports.main = async (event, context, callback) => {
           .unix() * 1000
       const plusHour =
         moment(item.createdAt)
-          .add(3, 'minutes')
+          .add(30, 'minutes')
           .unix() * 1000
       if (current > plusHour) {
         await updateBookingState(item.bookingId, BookingStates.TIMEOUT)
