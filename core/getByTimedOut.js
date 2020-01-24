@@ -18,12 +18,17 @@ module.exports.main = async (event, context, callback) => {
       raw: true
     })
     for (const item of bookings) {
+      const current = moment().unix() * 1000
+      const lessHour =
+        moment()
+          .subtract(60, 'minutes')
+          .unix() * 1000
       const plusHour =
         moment(item.createdAt)
-          .add(30, 'minutes')
+          .add(3, 'minutes')
           .unix() * 1000
       console.log(item.createdAt, plusHour)
-      if (item.createdAt > plusHour) {
+      if (current > plusHour && item.createdAt > lessHour) {
         await updateBookingState(item.bookingId, BookingStates.TIMEOUT)
         await onCleanAvailabilities(item.bookingId)
         await onSendEmail(`api-emails-${process.env.environment}-sendEmailBookingTimedOutGuest`, item.id)
