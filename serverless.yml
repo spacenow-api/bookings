@@ -259,7 +259,7 @@ functions:
           path: bookings/checkOutTrigger
           method: post
           cors: true
-      - schedule: rate(2 hours)
+      - schedule: rate(24 hours)
   voucherList:
     handler: core/voucherList.main
     memorySize: 1024
