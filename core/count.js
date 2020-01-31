@@ -4,24 +4,20 @@ const { Bookings } = require('./../models')
 const { Op } = require('sequelize')
 
 module.exports.main = async (event, context, callback) => {
-
   let days = 10000;
-  if (event.queryStringParameters)
+  if (event.queryStringParameters) {
     days = event.queryStringParameters.days
-
-  let where;
-  if (days) {
-    const date = subDays(new Date(), days);
-    where = {
-      where: {
-        createdAt: {
-          [Op.gte]: `${date.getTime()}`
-        }
-      }
-    }
   }
+  
+  const date = subDays(new Date(), days);
+
+  let where = {
+    createdAt: {
+      [Op.gte]: `${date}`
+    }
+  };
   try {
-    const all = await Bookings.count(where);
+    const all = await Bookings.count({ where: where });
     const approved = await Bookings.count({
       where: { ...where, bookingState: "approved" }
     });
@@ -31,7 +27,7 @@ module.exports.main = async (event, context, callback) => {
     const cancelled = await Bookings.count({
       where: { ...where, bookingState: "cancelled", }
     });
-    return success({ count: { all, approved, completed, cancelled } })
+    return success({ count: { all: all, approved, completed, cancelled } })
   } catch (error) {
     return failure({ status: false })
   }
