@@ -17,11 +17,11 @@ const sequelize = new Sequelize({
   }
 })
 
-const ListingAccessDays = require('./../models/listingAccessDays.model')(sequelize, DataTypes);
-const ListingAccessHours = require('./../models/listingAccessHours.model')(sequelize, DataTypes);
-const ListingData = require('./../models/listingData.model')(sequelize, DataTypes);
+const ListingAccessDays = require('./../models/listingAccessDays.model')(sequelize, DataTypes)
+const ListingAccessHours = require('./../models/listingAccessHours.model')(sequelize, DataTypes)
+const ListingData = require('./../models/listingData.model')(sequelize, DataTypes)
 
-const { success, failure } = require('../libs/response-lib');
+const { success, failure } = require('../libs/response-lib')
 const { getHourlyPeriod, isAvailableThisDay, getMomentObjByDate, getTime, getRange } = require('./../validations')
 
 module.exports.main = async (event, context, callback) => {
@@ -44,8 +44,7 @@ module.exports.main = async (event, context, callback) => {
       }
     })
 
-    if (!accessHoursObj)
-      throw new Error('Not working this day')
+    if (!accessHoursObj) throw new Error('Not working this day')
 
     let hours = 0
     try {
@@ -58,8 +57,7 @@ module.exports.main = async (event, context, callback) => {
     }
 
     let isAvailable = isAvailableThisDay(checkInHour, checkOutHour, accessHoursObj)
-    if (errValidation)
-      isAvailable = false
+    if (errValidation) isAvailable = false
 
     // Primary object result...
     let hourlyAvailability = {
@@ -87,7 +85,10 @@ const getHourlySuggestion = (accessHoursObj, minTerm) => {
   }
   const hourlyRange = getRange(openMomentObj, closeMomentObj)
   const openRange = [...hourlyRange]
-  openRange.pop()
+  openRange
+    .pop()
+    .pop()
+    .pop()
   const closeRange = [...hourlyRange]
   closeRange.shift()
   const closeSuggestion = moment(openMomentObj)
