@@ -85,10 +85,11 @@ const getHourlySuggestion = (accessHoursObj, minTerm) => {
   }
   const hourlyRange = getRange(openMomentObj, closeMomentObj)
   const openRange = [...hourlyRange]
-  openRange
-    .pop()
-    .pop()
-    .pop()
+  // pop 3 times to remove last hour options (booking just 1 complete hour)
+  openRange.pop()
+  openRange.pop()
+  openRange.pop()
+  openRange.pop()
   const closeRange = [...hourlyRange]
   closeRange.shift()
   const closeSuggestion = moment(openMomentObj)
