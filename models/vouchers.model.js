@@ -9,7 +9,7 @@ module.exports = function(sequelize, DataTypes) {
         primaryKey: true
       },
       code: {
-        type: DataTypes.STRING(10),
+        type: DataTypes.STRING(50),
         allowNull: false
       },
       type: {
@@ -36,6 +36,10 @@ module.exports = function(sequelize, DataTypes) {
         type: DataTypes.ENUM('active', 'disabled'),
         allowNull: false,
         defaultValue: 'active'
+      },
+      expireAt: {
+        type: DataTypes.DATE,
+        allowNull: false
       },
       createdAt: {
         type: DataTypes.DATE,

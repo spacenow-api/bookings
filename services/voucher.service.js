@@ -25,13 +25,14 @@ async function list() {
   return Vouchers.findAll({ order: [['createdAt', 'DESC']] })
 }
 
-async function create({ type, value, usageLimit }) {
+async function create({ code, type, value, usageLimit, expireAt }) {
   const newCode = await getNewCode()
   const voucherCreated = await Vouchers.create({
-    code: newCode,
+    code: code,
     type: type,
     value: value,
-    usageLimit: usageLimit
+    usageLimit: usageLimit,
+    expireAt: expireAt
   })
   return voucherCreated
 }
@@ -74,6 +75,11 @@ async function validate(voucherCode) {
     if (voucherObj.usageCount == voucherObj.usageLimit) {
       return { status: 'USED' }
     }
+    // Check if voucher has already been expired...
+    var today = new Date(); 
+    if (voucherObj.expireAt <= today) {
+      return { status: 'EXPIRED' }
+    }
     return { status: 'VALID', data: voucherObj }
   } catch (err) {
     throw err
@@ -88,6 +94,8 @@ async function getOrThrowVoucher(voucherCode) {
         throw new Error(`Voucher ${voucherCode} was disabled.`)
       case 'USED':
         throw new Error(`Voucher ${voucherCode} has already been used.`)
+      case 'EXPIRED':
+        throw new Error(`Voucher ${voucherCode} has already been expired.`)
       default:
         return validation.data
     }
