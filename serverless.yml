@@ -208,7 +208,7 @@ functions:
           path: bookings/getByExpired
           method: get
           cors: true
-      - schedule: rate(30 minutes)
+      - schedule: rate(24 hours)
   cleanAvailabilities:
     handler: core/cleanAvailabilities.main
     memorySize: 1024
@@ -324,7 +324,7 @@ functions:
           path: bookings/getByTimedOut
           method: get
           cors: true
-      - schedule: rate(30 minutes)
+      - schedule: rate(24 hours)
 
 resources:
   - ${file(resources/api-gateway-errors.yml)}
